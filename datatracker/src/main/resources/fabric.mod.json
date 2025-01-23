@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "DataTracker",
+  "id": "datatracker",
+  "version": "${version}",
+  "description": "easy syncing of data between server and client",
+  "authors": [
+    "NoRiskk"
+  ],
+  "icon": "assets/datatracker/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.datatracker.DataTracker"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.datatracker.DataTracker"
+      }
+    ]
+  },
+  "mixins": [
+    "datatracker.mixins.json"
+  ],
+  "accessWidener": "datatracker.accesswidener",
+  "depends": {
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "noriskclient"
+      }
+    }
+  }
+}

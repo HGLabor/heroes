@@ -14,13 +14,5 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 rootProject.name = "template"
 include(":api")
 include(":client")
+include(":datatracker")
 
-// prefix all submodules with the name of the root project
-changeProjectNames(rootProject.name, rootProject)
-
-fun changeProjectNames(prefix: String, parent: ProjectDescriptor) {
-	parent.children.forEach {
-		it.name = "${prefix}-${it.name}"
-		changeProjectNames(prefix, it)
-	}
-}

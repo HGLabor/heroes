@@ -1,5 +1,6 @@
 dependencies {
-  api(project(":template-api", configuration = "namedElements"))
+  api(project(":api", configuration = "namedElements"))
+  api(project(":datatracker", configuration = "namedElements"))
 
   modApi(libs.bundles.fabric)
   modApi(libs.bundles.silk)
