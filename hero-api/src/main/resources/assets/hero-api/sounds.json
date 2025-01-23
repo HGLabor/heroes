@@ -1,0 +1,7 @@
+{
+  "flying": {
+    "sounds": [
+      "hero-api:flying"
+    ]
+  }
+}

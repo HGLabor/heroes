@@ -15,4 +15,5 @@ rootProject.name = "heroes"
 include(":api")
 include(":client")
 include(":datatracker")
+include(":hero-api")
 

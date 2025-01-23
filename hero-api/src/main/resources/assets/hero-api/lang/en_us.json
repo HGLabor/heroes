@@ -1,0 +1,10 @@
+{
+  "key.heroes.first": "First Ability",
+  "key.heroes.second": "Second Ability",
+  "key.heroes.third": "Third Ability",
+  "key.heroes.fourth": "Fourth Ability",
+  "key.heroes.fifth": "Fifth Ability",
+  "category.heroes.abilities": "Abilities",
+  "heroes.announce_kill_streak": "%s is on a %s killstreak",
+  "heroes.end_kill_streak": "§4%s has been killed on a %s killstreak."
+}

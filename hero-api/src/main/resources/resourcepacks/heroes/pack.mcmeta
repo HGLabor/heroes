@@ -1,0 +1,11 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": "Heroes Datapack"
+  },
+  "features": {
+    "enabled": [
+      "hero-api:heroes"
+    ]
+  }
+}

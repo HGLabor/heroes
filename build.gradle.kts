@@ -30,8 +30,22 @@ allprojects {
 
   repositories {
     mavenCentral()
+    maven("https://maven.kosmx.dev/")
+    maven(uri("https://maven.wispforest.io"))
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+
+    maven {
+      name = "GeckoLib"
+      url = uri("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+      content {
+        includeGroup("software.bernie.geckolib")
+      }
+    }
+
+    maven {
+      url = uri("https://maven.norisk.gg/repository/norisk-production/")
+    }
 
     // more stable replacement for jitpack
     maven("https://repository.derklaro.dev/releases/") {
@@ -77,6 +91,7 @@ subprojects {
   version = rootProject.libs.versions.minecraft.get() + "-" + when (name) {
     "template-api" -> "1.0.0"
     "template-client" -> "1.0.0"
+    "hero-api" -> "1.2.40"
     else -> version
   }
 

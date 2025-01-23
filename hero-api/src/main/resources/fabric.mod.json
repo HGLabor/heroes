@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "Hero-Api",
+  "id": "hero-api",
+  "version": "${version}",
+  "description": "Hero Api",
+  "authors": [
+    "NoRiskk",
+    "Freshkenny",
+    "BestAuto"
+  ],
+  "icon": "assets/hero-api/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.common.HeroesManager"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.client.HeroesManagerClient"
+      }
+    ]
+  },
+  "accessWidener": "hero-api.accesswidener",
+  "mixins": [
+    "hero-api.mixins.json"
+  ],
+  "depends": {
+  }
+}

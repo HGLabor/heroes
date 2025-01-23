@@ -18,6 +18,10 @@ kotlin = "2.1.0"
 silkMc = "1.10.7"
 # Also modrinth version in gradle.properties
 
+# animation
+playerAnimator = "1.0.2-rc1+1.21"
+geckolib = "4.5.6"
+
 
 # general
 gson = "2.11.0"
@@ -71,12 +75,25 @@ silk-core = { group = "net.silkmc", name = "silk-core", version.ref = "silkMc" }
 silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "silkMc" }
 silk-nbt = { group = "net.silkmc", name = "silk-nbt", version.ref = "silkMc" }
 silk-game = { group = "net.silkmc", name = "silk-game", version.ref = "silkMc" }
+owolib = { group = "io.wispforest", name = "owo-lib", version = "0.12.15+1.21" }
 
 # perfomance
 sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.21-0.5.11" }
 lithium = { group = "maven.modrinth", name = "lithium", version = "mc1.21-0.13.1" }
 modmenu = { group = "maven.modrinth", name = "modmenu", version = "11.0.3" }
 ferrite-core = { group = "maven.modrinth", name = "ferrite-core", version = "7.0.0-fabric" }
+nvidium = { group = "maven.modrinth", name = "nvidium", version = "0.3.1" }
+
+# npc-lib
+npcLibApi = { group = "io.github.juliarn", name = "npc-lib-api", version = "3.0.0-beta10" }
+npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version = "3.0.0-beta10" }
+
+# animation
+playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib-fabric", version.ref = "playerAnimator" }
+geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", version.ref = "geckolib" }
+emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.18" }
+
+# nrc
 
 
 # dummy version, just here for renovate to detect that there is something to update
@@ -85,7 +102,7 @@ checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version
 [bundles]
 #silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
 silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
-performance = ["sodium", "lithium", "modmenu", "ferrite-core"]
+performance = ["sodium", "lithium", "modmenu", "ferrite-core", "nvidium"]
 fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
 
 [plugins]
