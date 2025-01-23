@@ -80,9 +80,6 @@ val registeredTypes = buildMap {
     put(BlockPos::class, BlockPosSerializer)
 }.toMutableMap()
 
-@Serializable
-data class DerTest(val yoo: String)
-
 val addSyncedData = s2cPacket<Pair<EntityWrapper, DataWrapper>>("add-sync".toId())
 val removeSyncedData = s2cPacket<EntityWrapper>("remove-sync".toId())
 
