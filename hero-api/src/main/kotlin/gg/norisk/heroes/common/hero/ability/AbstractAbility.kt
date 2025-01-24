@@ -72,7 +72,6 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     }
 
     fun setCooldown(cooldownInfo: CooldownInfo, player: PlayerEntity) {
-        println("DER COOLDOWN KAM REIn $cooldownInfo ${cooldownInfo.remaining} ${cooldownInfo.duration} Bekommen: ${System.currentTimeMillis()}")
         if (cooldownInfo.duration == 0L && cooldownInfo.startTime == 0L && cooldownInfo.currentTime == 0L) {
             cooldowns.remove(player.uuid)
         } else {

@@ -31,6 +31,7 @@ allprojects {
   repositories {
     mavenCentral()
     maven("https://maven.kosmx.dev/")
+    maven("https://maven.enginehub.org/repo/")
     maven(uri("https://maven.wispforest.io"))
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -93,6 +94,7 @@ subprojects {
     "template-client" -> "1.0.0"
     "hero-api" -> "1.2.40"
     "katara" -> "1.0.13"
+    "ffa-server" -> "1.2.18"
     else -> version
   }
 

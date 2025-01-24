@@ -95,6 +95,8 @@ emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.18" }
 
 # nrc
 
+# misc
+worldedit = { group = "com.sk89q.worldedit", name = "worldedit-fabric-mc1.21", version = "7.3.4" }
 
 # dummy version, just here for renovate to detect that there is something to update
 checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version.ref = "checkstyleTools" }
