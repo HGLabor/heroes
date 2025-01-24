@@ -30,11 +30,16 @@ public abstract class DamageTrackerMixin implements IDamageTrackerExt {
             cancellable = true
     )
     private void dontApplyKillDamage(DamageSource damageSource, float f, CallbackInfo ci) {
+        PlayerEntity attacker = null;
         if (damageSource.getAttacker() instanceof PlayerEntity player) {
             lastPlayer = player;
+            attacker = player;
         }
         //System.out.println("### APPLYING " + damageSource);
         if (damageSource.isOf(DamageTypes.GENERIC_KILL)) {
+            ci.cancel();
+        } else if (attacker == null) {
+            //only player combat should trigger combat logger
             ci.cancel();
         }
     }
