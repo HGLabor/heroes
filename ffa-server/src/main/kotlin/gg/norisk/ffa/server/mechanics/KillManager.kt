@@ -93,6 +93,17 @@ object KillManager {
         ExperienceManager.addXp(player, ExperienceManager.Reason("kill_streak", killStreakXp))
     }
 
+    private fun provideExtraBountyForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
+        val currentKillStreak = dbPlayer.currentKillStreak
+        val bountyXp = when (currentKillStreak) {
+            10 -> 1000
+            20 -> 2000
+            else -> return
+        }
+
+        dbPlayer.bounty += bountyXp
+    }
+
     private fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
         if (attacker.getHero() != null) {
             val cachedAttacker = provider.getCachedPlayer(attacker.uuid)
@@ -110,6 +121,7 @@ object KillManager {
                     }
                 }
                 provideExtraXpForKillStreak(attacker, cachedAttacker)
+                provideExtraBountyForKillStreak(attacker, cachedAttacker)
             }
             mcCoroutineTask(sync = false, client = false) {
                 provider.save(cachedAttacker)
