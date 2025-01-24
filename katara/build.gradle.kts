@@ -6,12 +6,8 @@ dependencies {
     modApi(libs.bundles.silk)
     modApi(libs.bundles.performance)
     modApi(libs.owolib)
-    modApi(libs.npcLibApi)
-    modApi(libs.npcLibCommon)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
-
-    modImplementation(files("../libs/npc-lib-fabric-3.0.0-SNAPSHOT.jar"))
 }
 
 loom {

@@ -33,17 +33,6 @@ object Scoreboard {
             emptyLine()
             updatingLine(1.seconds) {
                 literalText {
-                    text("Xp") {
-                        color = mainColor
-                    }
-                    text(": ") {
-                        color = secondaryColor
-                    }
-                    text(player.dbPlayer.xp.toString())
-                }
-            }
-            updatingLine(1.seconds) {
-                literalText {
                     text("Kills") {
                         color = mainColor
                     }
@@ -100,7 +89,17 @@ object Scoreboard {
                         text(player.dbPlayer.bounty.toString())
                     }
                 }
-
+            }
+            updatingLine(1.seconds) {
+                literalText {
+                    text("Xp") {
+                        color = mainColor
+                    }
+                    text(": ") {
+                        color = secondaryColor
+                    }
+                    text(player.dbPlayer.xp.toString())
+                }
             }
             emptyLine()
             line(literalText("                           ") {

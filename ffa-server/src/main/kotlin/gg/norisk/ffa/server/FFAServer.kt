@@ -2,9 +2,10 @@ package gg.norisk.ffa.server
 
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
-import gg.norisk.ffa.server.command.KillCommand
+import gg.norisk.ffa.server.command.MeCommand
 import gg.norisk.ffa.server.mechanics.Bounty
 import gg.norisk.ffa.server.mechanics.CombatTag
+import gg.norisk.ffa.server.mechanics.KillManager
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.selector.SelectorServerManager
 import gg.norisk.ffa.server.world.WorldManager
@@ -23,10 +24,11 @@ object FFAServer : ModInitializer {
         if (!isServer) return
         SelectorServerManager.initServer()
         WorldManager.initServer()
-        KillCommand.init()
+        MeCommand.init()
         KitEditor.initServer()
         Bounty.init()
         CombatTag.init()
+        KillManager.init()
     }
 
     const val FFA_KEY = "hero-ffa"
