@@ -1,5 +1,6 @@
 package gg.norisk.heroes.toph.ability
 
+import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
@@ -11,6 +12,7 @@ import gg.norisk.heroes.common.utils.RaycastUtils
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.toph.TophManager.isEarthBlock
+import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.entity.BendingBlockEntity
 import gg.norisk.heroes.toph.entity.BendingBlockEntity.Companion.owner
 import gg.norisk.heroes.toph.registry.ParticleRegistry
@@ -47,7 +49,7 @@ val EarthPushAbility = object : PressAbility("Earth Push") {
                 player.sound(SoundRegistry.STONE_SMASH)
                 player.sound(SoundRegistry.EARTH_COLUMN_1)
                 entity.forcePush(player)
-                //AnimationManagerServer.playAnimation(player, "earth-kick".toId())
+                player.playEmote("earth-kick".toEmote())
             }
         }
     }

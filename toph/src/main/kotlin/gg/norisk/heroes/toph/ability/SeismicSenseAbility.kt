@@ -2,6 +2,7 @@ package gg.norisk.heroes.toph.ability
 
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
+import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
@@ -12,6 +13,7 @@ import gg.norisk.heroes.common.networking.cameraShakePacket
 import gg.norisk.heroes.common.utils.SphereUtils
 import gg.norisk.heroes.common.utils.toVec
 import gg.norisk.heroes.toph.TophManager.isEarthBlock
+import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.entity.toph
 import gg.norisk.heroes.toph.mixin.render.GameRendererAccessor
@@ -78,7 +80,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
         println("Seismic Sense Hallo $player")
         if (player is ServerPlayerEntity) {
             val world = player.world as ServerWorld
-            //AnimationManagerServer.playAnimation(player, "seismic-sense".toId())
+            player.playEmote("seismic-sense".toEmote())
             player.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 140, 2, false, false))
             mcCoroutineTask(sync = true, client = false, delay = 0.32.seconds) {
                 player.addStatusEffect(StatusEffectInstance(StatusEffects.DARKNESS, 140, 1, false, false))

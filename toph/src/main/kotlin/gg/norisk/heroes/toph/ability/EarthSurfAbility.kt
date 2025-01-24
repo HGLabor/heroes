@@ -3,6 +3,8 @@ package gg.norisk.heroes.toph.ability
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
+import gg.norisk.emote.network.EmoteNetworking.playEmote
+import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
@@ -15,6 +17,7 @@ import gg.norisk.heroes.common.utils.calculateProbability
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.common.utils.toBlockPos
+import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
@@ -88,7 +91,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
     override fun onStart(player: PlayerEntity) {
         super.onStart(player)
         if (player is ServerPlayerEntity) {
-            //AnimationManagerServer.playAnimation(heroPlayer, "earth-surfing".toId())
+            player.playEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, true)
             kotlin.runCatching {
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
@@ -104,7 +107,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
     override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
         super.onEnd(player, abilityEndInformation)
         if (player is ServerPlayerEntity) {
-            //AnimationManagerServer.resetAnimation(heroPlayer)
+            player.stopEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, false)
             player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
             player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)

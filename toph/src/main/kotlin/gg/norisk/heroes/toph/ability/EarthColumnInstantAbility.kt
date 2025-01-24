@@ -2,6 +2,8 @@ package gg.norisk.heroes.toph.ability
 
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
+import gg.norisk.emote.network.EmoteNetworking.playEmote
+import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
@@ -14,6 +16,7 @@ import gg.norisk.heroes.common.networking.dto.BlockInfoSmall
 import gg.norisk.heroes.common.serialization.BlockPosSerializer
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
+import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.network.earthColumnBlockInfos
 import gg.norisk.heroes.toph.registry.ParticleRegistry
@@ -126,7 +129,7 @@ val EarthColumnInstantAbility = object : HoldAbility(
         super.onStart(player)
         if (player is ServerPlayerEntity) {
             player.setSyncedData(EarthColumnKey, true)
-            //AnimationManagerServer.playAnimation(heroPlayer, "earth-column-start".toId())
+            player.playEmote("earth-column-start".toEmote())
             player.world.playSoundFromEntity(
                 null,
                 player,
@@ -147,7 +150,8 @@ val EarthColumnInstantAbility = object : HoldAbility(
         if (player is ServerPlayerEntity) {
             val startTime = System.currentTimeMillis()
             val world = player.world as ServerWorld
-            //AnimationManagerServer.playAnimation(heroPlayer, "earth-column-end".toId())
+            player.stopEmote("earth-column-start".toEmote())
+            player.playEmote("earth-column-end".toEmote())
             player.world.playSoundFromEntity(
                 null,
                 player,

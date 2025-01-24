@@ -91,7 +91,7 @@ npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version =
 # animation
 playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib-fabric", version.ref = "playerAnimator" }
 geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", version.ref = "geckolib" }
-emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.18" }
+emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
 
 # nrc
 

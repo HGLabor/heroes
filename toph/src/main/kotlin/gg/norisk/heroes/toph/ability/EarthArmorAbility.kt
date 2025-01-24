@@ -1,5 +1,6 @@
 package gg.norisk.heroes.toph.ability
 
+import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
@@ -7,6 +8,7 @@ import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.cameraShakePacket
 import gg.norisk.heroes.common.utils.pos3i
+import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.entity.IBendingItemEntity
 import gg.norisk.heroes.toph.registry.SoundRegistry
@@ -126,7 +128,7 @@ object EarthArmorAttributeModifiers {
             if (player is ServerPlayerEntity) {
                 player.swingHand(Hand.MAIN_HAND, true)
                 val world = player.world as ServerWorld
-                //AnimationManagerServer.playAnimation(player, "earth-armor".toId())
+                player.playEmote("earth-armor".toEmote())
                 (player as ServerPlayerEntity).spawnEarthArmorParticle()
                 world.playSoundFromEntity(
                     null,
