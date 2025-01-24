@@ -16,11 +16,13 @@ open class ToggleAbility(name: String) : AbstractAbility<Any>(name) {
 
     }
 
-    open fun onEnd(player: PlayerEntity) {
+    open fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
 
     }
 
     var maxDurationProperty = buildMaxDuration(10.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
+
+    data class AbilityEndInformation(var applyCooldown: Boolean = true)
 
     protected fun buildMaxDuration(baseValue: Double, maxLevel: Int, operation: Operation): CooldownProperty {
         return CooldownProperty(

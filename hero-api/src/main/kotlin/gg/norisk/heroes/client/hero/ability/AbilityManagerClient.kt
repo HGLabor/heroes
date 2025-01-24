@@ -67,7 +67,7 @@ object AbilityManagerClient : IAbilityManager {
 
                             is AbilityPacketDescription.End -> {
                                 abilitiesInUse.remove(packet.playerUuid)
-                                ability.onEnd(player)
+                                ability.onEnd(player, ToggleAbility.AbilityEndInformation())
                                 //(ability).internalCallbacks.END
                             }
                         }

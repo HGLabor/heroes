@@ -7,6 +7,7 @@ import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.ability.CooldownProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.Networking.mousePacket
@@ -44,6 +45,7 @@ import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.network.packet.s2cPacket
 import kotlin.random.Random
 
@@ -72,7 +74,7 @@ object WaterBendingAbility {
             }
         }
 
-        override fun onEnd(player: PlayerEntity) {
+        override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             if (player is ServerPlayerEntity) {
                 player.isWaterSelecting = false
                 // player.sendMessage("END".literal)
@@ -112,6 +114,8 @@ object WaterBendingAbility {
                         water.ownerId = player.id
                         water.isInitial = false
                         player.serverWorld.spawnEntity(water)
+                    } else {
+                        abilityEndInformation.applyCooldown = false
                     }
                 }
                 player.selectedWaterBlocks = SelectedWaterBlocks(mutableListOf())

@@ -310,7 +310,7 @@ object WaterPillarAbility {
             }
         }
 
-        override fun onEnd(player: PlayerEntity) {
+        override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             if (player is ServerPlayerEntity) {
                 if (player.isWaterPillar) {
                     player.waterPillarOrigin = null

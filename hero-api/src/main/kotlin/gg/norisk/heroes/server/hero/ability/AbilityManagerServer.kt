@@ -139,7 +139,7 @@ object AbilityManagerServer : IAbilityManager {
                         is AbilityPacketDescription.End -> {
                             if (abilityJobs[player.uuid]?.containsKey(ability) == false) return@runCatching
                             forceEndAbility(player, ability)
-                            null
+                            return
                         }
                     }
                     //callbacks?.handleServer?.invoke(abilityScope, player, packet.description)
@@ -184,8 +184,11 @@ object AbilityManagerServer : IAbilityManager {
         val description = AbilityPacketDescription.End
         val packet = AbilityPacket(player.uuid, ability.hero.internalKey, ability.internalKey, description)
         s2cAbilityPacket.sendToAll(packet)
-        ability.onEnd(player)
-        ability.addCooldown(player)
+        val abilityEndInformation = ToggleAbility.AbilityEndInformation(true)
+        ability.onEnd(player, abilityEndInformation)
+        if (abilityEndInformation.applyCooldown) {
+            ability.addCooldown(player)
+        }
     }
 
     private fun getAbilityFromAbilityUsePacket(abilityPacket: AbilityPacket<out AbilityPacketDescription>): AbstractAbility<*>? {

@@ -61,8 +61,8 @@ object WaterFormingAbility {
             }
         }
 
-        override fun onEnd(player: PlayerEntity) {
-            super.onEnd(player)
+        override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
+            super.onEnd(player, abilityEndInformation)
             if (player is ServerPlayerEntity) {
                 placeIceSelection(
                     player.serverWorld,
