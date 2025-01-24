@@ -6,7 +6,6 @@ import gg.norisk.heroes.client.ui.components.AbilitiesComponent
 import gg.norisk.heroes.client.ui.components.HeroListComponent
 import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.hero.Hero
-import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.Containers
@@ -18,8 +17,9 @@ import net.minecraft.client.MinecraftClient
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 
-class HeroSelectorScreen(val heroes: List<Hero<*>>, val isKitEditorEnabled: Boolean = false) : BaseOwoScreen<FlowLayout>() {
-    var hero: Hero<*>? = null
+class HeroSelectorScreen(val heroes: List<Hero>, val isKitEditorEnabled: Boolean = false) :
+    BaseOwoScreen<FlowLayout>() {
+    var hero: Hero? = null
         set(value) {
             heroInfoComponent?.remove()
             centerLabel.remove()
@@ -35,13 +35,13 @@ class HeroSelectorScreen(val heroes: List<Hero<*>>, val isKitEditorEnabled: Bool
             }
         }
     var heroInfoComponent: FlowLayout? = null
-    var centerLabel: FlowLayout = Containers.horizontalFlow(Sizing.fill(),Sizing.content()).apply {
+    var centerLabel: FlowLayout = Containers.horizontalFlow(Sizing.fill(), Sizing.content()).apply {
         child(ScalableLabelComponent(literalText {
             text("CHOOSE YOUR HERO")
         }, 3f).apply {
             shadow(true)
         })
-        alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER)
+        alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
         positioning(Positioning.relative(30, 50))
     }
 
@@ -49,10 +49,10 @@ class HeroSelectorScreen(val heroes: List<Hero<*>>, val isKitEditorEnabled: Bool
         return OwoUIAdapter.create(this, Containers::verticalFlow);
     }
 
-    private fun heroAbility(hero: Hero<*>): FlowLayout {
+    private fun heroAbility(hero: Hero): FlowLayout {
         val container = Containers.verticalFlow(Sizing.content(), Sizing.content())
             .apply { positioning(Positioning.relative(0, 30)) }
-        container.child(Containers.verticalFlow(Sizing.content(),Sizing.content()).apply {
+        container.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).apply {
             child(ScalableLabelComponent(literalText {
                 text(hero.name.uppercase())
                 bold = true

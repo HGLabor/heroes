@@ -1,8 +1,6 @@
 package gg.norisk.heroes.common.networking
 
-import SettingChange
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.animations.AnimationPacket
 import gg.norisk.heroes.common.cooldown.CooldownInfo
 import gg.norisk.heroes.common.hero.ability.AbilityPacket
 import gg.norisk.heroes.common.hero.ability.AbilityPacketDescription
@@ -16,14 +14,10 @@ object Networking {
     val c2sAbilityPacket = c2sPacket<AbilityPacket<out AbilityPacketDescription>>("use-ability".toId())
     val s2cAbilityPacket = s2cPacket<AbilityPacket<out AbilityPacketDescription>>("use-ability".toId())
 
-    val c2sAnimationStart = c2sPacket<AnimationPacket>("play-animation".toId())
-    val s2cAnimationStart = s2cPacket<AnimationPacket>("play-animation".toId())
-
     val c2sSkillProperty = c2sPacket<SkillPropertyPacket>("skill-property".toId())
     val s2cHeroSelectorPacket = s2cPacket<HeroSelectorPacket>("hero-selector-s2c".toId())
     val c2sHeroSelectorPacket = c2sPacket<String>("hero-selector-c2s".toId())
     val c2sKitEditorRequestPacket = c2sPacket<Unit>("kit-editor-request".toId())
-    val s2cSettingChangePacket = s2cPacket<SettingChange>("hero-setting-change".toId())
 
     val s2cCooldownPacket = s2cPacket<CooldownInfo>("cooldown".toId())
 

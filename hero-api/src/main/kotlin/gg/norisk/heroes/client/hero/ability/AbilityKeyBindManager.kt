@@ -66,7 +66,7 @@ object AbilityKeyBindManager {
 
     private fun handleAbility(
         player: PlayerEntity,
-        hero: Hero<*>,
+        hero: Hero,
         ability: AbstractAbility<*>,
         pressed: Boolean,
         hold: Boolean,

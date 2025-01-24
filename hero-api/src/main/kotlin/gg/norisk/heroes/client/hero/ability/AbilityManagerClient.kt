@@ -96,7 +96,7 @@ object AbilityManagerClient : IAbilityManager {
 
     override fun useAbility(
         player: PlayerEntity,
-        hero: Hero<*>,
+        hero: Hero,
         ability: AbstractAbility<*>,
         description: AbilityPacketDescription.Use
     ): Boolean {
@@ -120,7 +120,7 @@ object AbilityManagerClient : IAbilityManager {
         Networking.c2sAbilityPacket.send(packet)
     }
 
-    fun startAbility(player: PlayerEntity, hero: Hero<*>, ability: ToggleAbility): Boolean {
+    fun startAbility(player: PlayerEntity, hero: Hero, ability: ToggleAbility): Boolean {
         if (ability.hasCooldown(player)) {
             return false
         } else {
@@ -132,7 +132,7 @@ object AbilityManagerClient : IAbilityManager {
         }
     }
 
-    fun endAbility(player: PlayerEntity, hero: Hero<*>, ability: ToggleAbility): Boolean {
+    fun endAbility(player: PlayerEntity, hero: Hero, ability: ToggleAbility): Boolean {
         player.sendDebugMessage("Sending End Ability $ability".literal)
         val packet = AbilityPacket(player.uuid, hero.internalKey, ability.internalKey, AbilityPacketDescription.End)
         Networking.c2sAbilityPacket.send(packet)

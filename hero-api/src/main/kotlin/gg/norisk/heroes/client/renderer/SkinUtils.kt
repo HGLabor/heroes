@@ -19,7 +19,7 @@ object SkinUtils {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment) return
     }
 
-    fun applyOverlay(baseSkinId: Identifier, overlayId: Identifier, hero: Hero<*>) {
+    fun applyOverlay(baseSkinId: Identifier, overlayId: Identifier, hero: Hero) {
         val result = combineSkins(baseSkinId, overlayId)
         if (FabricLoader.getInstance().isDevelopmentEnvironment) {
             logger.info("Merged Skin $baseSkinId $overlayId: $result")

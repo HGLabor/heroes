@@ -1,9 +1,6 @@
 package gg.norisk.heroes.server
 
 import gg.norisk.heroes.common.HeroesManager.MOD_ID
-import gg.norisk.heroes.common.HeroesManager.abilityManagers
-import gg.norisk.heroes.common.HeroesManager.animationManagers
-import gg.norisk.heroes.common.HeroesManager.configManagers
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.command.DebugCommand
@@ -15,7 +12,6 @@ import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.setHero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
-import gg.norisk.heroes.server.animations.AnimationManagerServer
 import gg.norisk.heroes.server.config.ConfigManagerServer
 import gg.norisk.heroes.server.hero.ability.AbilityManagerServer
 import net.fabricmc.api.EnvType
@@ -27,12 +23,8 @@ import net.silkmc.silk.core.task.mcCoroutineTask
 object HeroesManagerServer {
     fun initServer() {
         logger.info("Init Hero server...")
-        configManagers.add(ConfigManagerServer)
-        animationManagers.add(AnimationManagerServer)
-        abilityManagers.add(AbilityManagerServer)
 
         ConfigManagerServer.init()
-        AnimationManagerServer.init()
         AbilityManagerServer.init()
         DebugCommand.initServer()
         DatabaseManager.init()

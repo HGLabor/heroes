@@ -195,7 +195,7 @@ object AbilityManagerServer : IAbilityManager {
 
     override fun useAbility(
         player: PlayerEntity,
-        hero: Hero<*>,
+        hero: Hero,
         ability: AbstractAbility<*>,
         description: AbilityPacketDescription.Use
     ): Boolean {

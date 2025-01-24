@@ -42,7 +42,7 @@ object OrthoCamera {
     }
 
     fun openHeroSelectorScreen(
-        heroes: List<Hero<*>> = HeroManager.registeredHeroes.values.toList(),
+        heroes: List<Hero> = HeroManager.registeredHeroes.values.toList(),
         packet: HeroSelectorPacket
     ) {
         mcCoroutineTask(delay = 1.ticks, sync = true, client = true) {

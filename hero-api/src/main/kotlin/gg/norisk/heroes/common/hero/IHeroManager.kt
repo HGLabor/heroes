@@ -14,19 +14,19 @@ import net.silkmc.silk.core.Silk.server
 import net.silkmc.silk.core.text.broadcastText
 
 object HeroManager {
-    val registeredHeroes: MutableMap<String, Hero<*>> = mutableMapOf()
+    val registeredHeroes: MutableMap<String, Hero> = mutableMapOf()
     const val HERO_KEY = "hero"
 
     fun getHero(internalKey: String) = registeredHeroes[internalKey.replace(' ', '_')]
 
-    fun registerHero(hero: Hero<*>): Boolean {
+    fun registerHero(hero: Hero): Boolean {
         logger.info("Register Hero ${hero.name}... on $this")
         registeredHeroes[hero.internalKey] = hero
         hero.abilities.values.forEach(AbstractAbility<*>::init)
         return true
     }
 
-    fun reloadHeroes(vararg heroes: Hero<*>) {
+    fun reloadHeroes(vararg heroes: Hero) {
         for (hero in heroes) {
             runCatching {
                 hero.load()
@@ -41,7 +41,7 @@ object HeroManager {
     }
 }
 
-fun PlayerEntity.setHero(hero: Hero<*>?) {
+fun PlayerEntity.setHero(hero: Hero?) {
     if (isClient && this == MinecraftClient.getInstance().player) {
         AbilityCoroutineManager.cancelClientJobs()
     } else {
@@ -52,8 +52,8 @@ fun PlayerEntity.setHero(hero: Hero<*>?) {
     getHero()?.internalCallbacks?.onEnable?.invoke(this)
 }
 
-fun PlayerEntity.getHero(): Hero<*>? {
+fun PlayerEntity.getHero(): Hero? {
     return HeroManager.getHero(this.getSyncedData<String>(HERO_KEY) ?: "NONE")
 }
 
-fun PlayerEntity.isHero(hero: Hero<*>?) = this.getHero() == hero
+fun PlayerEntity.isHero(hero: Hero?) = this.getHero() == hero

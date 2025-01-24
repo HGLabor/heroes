@@ -14,7 +14,7 @@ object HeroEvents {
 
     val heroChangeEvent = Event.onlySync<HeroChangeEvent>()
 
-    open class HeroSelectEvent(val player: PlayerEntity, val hero: Hero<*>, var canSelect: Boolean = false)
+    open class HeroSelectEvent(val player: PlayerEntity, val hero: Hero, var canSelect: Boolean = false)
 
     val heroSelectEvent = Event.onlySync<HeroSelectEvent>()
 

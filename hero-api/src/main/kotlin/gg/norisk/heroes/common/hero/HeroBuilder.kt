@@ -7,7 +7,7 @@ import net.silkmc.silk.core.event.Event
 import net.silkmc.silk.core.event.EventPriority
 import net.silkmc.silk.core.event.MutableEventScope
 
-class HeroBuilder<T : HeroConfig>(val hero: Hero<T>) {
+class HeroBuilder(val hero: Hero) {
     var color: Int
         get() = hero.color
         set(value) {
@@ -46,8 +46,6 @@ class HeroBuilder<T : HeroConfig>(val hero: Hero<T>) {
             callback.invoke(MutableEventScope, it)
         }
     }
-
-    val config get() = hero.config
 
     fun onTick(callback: (player: PlayerEntity) -> Unit) {
         hero.internalCallbacks.onTick = callback

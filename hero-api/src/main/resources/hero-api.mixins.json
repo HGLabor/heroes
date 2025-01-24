@@ -17,7 +17,6 @@
     "WorldAccessor"
   ],
   "client": [
-    "client.AbstractClientPlayerEntityMixin",
     "client.CameraMixin",
     "client.ClientPlayerEntityMixin",
     "client.EntityRenderDispatcherMixin",

@@ -18,7 +18,7 @@ sealed class PlayerProperty<T> {
     abstract var levelScale: Int
 
     @Transient
-    lateinit var hero: Hero<*>
+    lateinit var hero: Hero
 
     @Transient
     lateinit var ability: AbstractAbility<*>
@@ -78,7 +78,7 @@ sealed class PlayerProperty<T> {
             100.0 // Max-Level erreicht
         }
 
-        if (currentLevel == maxLevel -1 && percentageTillNextLevel >= 100f ) {
+        if (currentLevel == maxLevel - 1 && percentageTillNextLevel >= 100f) {
             return LevelInformation(
                 maxLevel,
                 maxLevel,

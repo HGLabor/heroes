@@ -1,21 +1,20 @@
 package gg.norisk.heroes.common.hero
 
-import gg.norisk.heroes.common.HeroesManager.abilityManagers
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.ability.PlayerProperty.Companion.JSON
 import gg.norisk.heroes.common.db.JsonProvider
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
-import net.fabricmc.loader.api.FabricLoader
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import java.io.File
 
-open class Hero<T : HeroConfig>(val name: String, val config: T) {
+open class Hero(val name: String) {
     companion object {
         /**
          * Creates a new lazy hero delegate.
@@ -23,12 +22,11 @@ open class Hero<T : HeroConfig>(val name: String, val config: T) {
          * @param config the config of this hero
          * @param builder the [HeroBuilder]
          */
-        inline operator fun <T : HeroConfig> invoke(
+        inline operator fun invoke(
             name: String,
-            crossinline config: () -> T,
-            crossinline builder: HeroBuilder<T>.() -> Unit
+            crossinline builder: HeroBuilder.() -> Unit
         ) = lazy {
-            Hero(name, config.invoke()).apply {
+            Hero(name).apply {
                 HeroBuilder(this).apply(builder)
             }
         }
@@ -45,10 +43,8 @@ open class Hero<T : HeroConfig>(val name: String, val config: T) {
 
     fun registerAbility(ability: AbstractAbility<*>) {
         ability.hero = this
-        abilityManagers.forEach { it.registerAbility(ability) }
         // REMOVED AbilityKeyBindManager.initializeKeyBind(ability)
         abilities[ability.internalKey] = ability
-        config.addSubconfig(ability)
     }
 
     @Serializable

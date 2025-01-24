@@ -10,7 +10,6 @@ import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.ui.components.ScalableButtonComponent
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.component.ButtonComponent
-import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*

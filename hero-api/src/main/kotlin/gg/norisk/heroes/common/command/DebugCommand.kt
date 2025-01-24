@@ -107,7 +107,7 @@ object DebugCommand {
         }
     }
 
-    fun <S> CommandContext<S>.getHeroInformation(): Triple<Hero<*>, AbstractAbility<*>, PlayerProperty<*>> {
+    fun <S> CommandContext<S>.getHeroInformation(): Triple<Hero, AbstractAbility<*>, PlayerProperty<*>> {
         val hero = HeroManager.getHero(this.getArgument("hero", String::class.java))!!
         val propertyKey = this.getArgument("property", String::class.java)
         val abilityKey = this.getArgument("ability", String::class.java)

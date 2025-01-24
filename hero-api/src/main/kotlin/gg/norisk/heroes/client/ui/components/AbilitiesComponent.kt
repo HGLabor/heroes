@@ -3,9 +3,7 @@ package gg.norisk.heroes.client.ui.components
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.ui.components.ScalableButtonComponent
-import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.component.ButtonComponent
-import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.OwoUIDrawContext
@@ -15,7 +13,7 @@ import net.silkmc.silk.core.text.literal
 import java.util.*
 
 class AbilitiesComponent(
-    val hero: Hero<*>,
+    val hero: Hero,
     val uuid: UUID = MinecraftClient.getInstance().player!!.uuid,
     horizontalSizing: Sizing = Sizing.content(),
     verticalSizing: Sizing = Sizing.content()

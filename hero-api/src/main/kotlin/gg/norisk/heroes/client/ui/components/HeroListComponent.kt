@@ -14,16 +14,13 @@ import io.wispforest.owo.ui.util.UISounds
 import net.silkmc.silk.core.text.literal
 
 class HeroListComponent(
-    val heroes: List<Hero<*>>,
+    val heroes: List<Hero>,
     val heroSelectorScreen: HeroSelectorScreen,
     horizontalSizing: Sizing = Sizing.content(),
     verticalSizing: Sizing = Sizing.content()
-) :
-    FlowLayout(
-        horizontalSizing,
-        verticalSizing,
-        Algorithm.VERTICAL
-    ) {
+) : FlowLayout(
+    horizontalSizing, verticalSizing, Algorithm.VERTICAL
+) {
     val lockInButton = ScalableButtonComponent("LOCK IN".literal, 1f, ::onLockInButton).apply {
         horizontalSizing(Sizing.fixed(100))
     }
@@ -63,13 +60,9 @@ class HeroListComponent(
     }
 
     inner class HeroHeadComponent(
-        val hero: Hero<*>,
-        horizontalSizing: Sizing = Sizing.content(),
-        verticalSizing: Sizing = Sizing.content()
+        val hero: Hero, horizontalSizing: Sizing = Sizing.content(), verticalSizing: Sizing = Sizing.content()
     ) : FlowLayout(
-        horizontalSizing,
-        verticalSizing,
-        Algorithm.HORIZONTAL
+        horizontalSizing, verticalSizing, Algorithm.HORIZONTAL
     ) {
         init {
             val l = 8

@@ -8,14 +8,12 @@ import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.ability.operation.MultiplyBase
 import gg.norisk.heroes.common.ability.operation.Operation
 import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
-import gg.norisk.heroes.common.config.ConfigNode
 import gg.norisk.heroes.common.cooldown.CooldownInfo
 import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import kotlinx.coroutines.*
-import kotlinx.serialization.encodeToString
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.option.KeyBinding
@@ -23,18 +21,15 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.Util
 import net.silkmc.silk.core.text.literal
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicLong
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
-abstract class AbstractAbility<T : Any>(name: String) : ConfigNode(name) {
-    lateinit var hero: Hero<*>
+abstract class AbstractAbility<T : Any>(val name: String) {
+    lateinit var hero: Hero
     val internalKey = name.lowercase().replace(' ', '_')
     val description by lazy { Text.translatable("text.hero.${hero.internalKey}.ability.$internalKey.description") }
     val icon: Identifier by lazy { "textures/hero/${hero.internalKey}/abilities/$internalKey.png".toId() }
@@ -124,9 +119,13 @@ abstract class AbstractAbility<T : Any>(name: String) : ConfigNode(name) {
         ).apply {
             this.durationString = getCooldownText(this)
         }
-        logger.info("###REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime} ${cooldownInfo.endTime?.minus(
-            (cooldownInfo.startTime ?: 0L)
-        )}")
+        logger.info(
+            "###REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime} ${
+                cooldownInfo.endTime?.minus(
+                    (cooldownInfo.startTime ?: 0L)
+                )
+            }"
+        )
         logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
         logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
         logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
