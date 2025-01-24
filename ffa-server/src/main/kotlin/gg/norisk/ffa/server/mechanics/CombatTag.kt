@@ -1,12 +1,9 @@
 package gg.norisk.ffa.server.mechanics
 
-import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
 import gg.norisk.heroes.common.events.HeroEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.entity.player.PlayerEntity
 import net.silkmc.silk.core.kotlin.ticks
-import net.silkmc.silk.core.text.broadcastText
-import net.silkmc.silk.core.text.literal
 
 object CombatTag {
     interface ICombatPlayer {
@@ -19,7 +16,6 @@ object CombatTag {
         ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect { handler, server ->
             val player = handler.player
             player.kill()
-            server.broadcastText("KILLED PLAYER?".literal)
         })
         HeroEvents.heroDeathEvent.listen { event ->
             /*if (event.player.isInCombat()) {

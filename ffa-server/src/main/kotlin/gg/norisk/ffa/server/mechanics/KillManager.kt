@@ -79,6 +79,10 @@ object KillManager {
             if (killed != null) {
                 increaseDeathForPlayer(killed, event.source)
             }
+
+            if (killer != killed && killer != null && killed != null) {
+                Bounty.receiveBounty(killer, killed)
+            }
         }
     }
 

@@ -13,7 +13,10 @@ import net.minecraft.scoreboard.number.BlankNumberFormat
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.server.players
+import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literalText
+import java.awt.Color
 
 object Bounty {
     fun init() {
@@ -53,9 +56,22 @@ object Bounty {
                         DatabaseManager.provider.save(sourceDbPlayer)
                         DatabaseManager.provider.save(dbPlayer)
 
-                        source.sendMessage(literalText {
-                            text("${source.gameProfile.name} hat ein Kopfgeld von ${bountyToGive()} auf ${player.gameProfile.name} erteilt")
-                        })
+                        this.source.server.broadcastText {
+                            text(source.name)
+                            text(" hat das Kopfgeld von ") {
+                                color = Color.YELLOW.rgb
+                            }
+                            text(bountyToGive().toString()) {
+                                color = Color.GREEN.rgb
+                            }
+                            text(" auf ") {
+                                color = Color.YELLOW.rgb
+                            }
+                            text(player.name)
+                            text(" erteilt") {
+                                color = Color.YELLOW.rgb
+                            }
+                        }
                     }
                 }
             }
@@ -65,6 +81,41 @@ object Bounty {
             for (player in server.players) {
                 if (!player.isFFA) continue
                 updateBountyScoreboard(player)
+            }
+        }
+    }
+
+    fun receiveBounty(receiver: ServerPlayerEntity, target: ServerPlayerEntity) {
+        val targetDb = DatabaseManager.provider.getCachedPlayer(target.uuid)
+        val receiverDb = DatabaseManager.provider.getCachedPlayer(receiver.uuid)
+
+        if (targetDb.bounty > 0) {
+            val bounty = targetDb.bounty
+            targetDb.bounty = 0
+            receiverDb.xp += bounty
+            receiver.server.broadcastText {
+                text(receiver.name)
+                text(" hat das Kopfgeld von ") {
+                    color = Color.YELLOW.rgb
+                }
+                text(bounty.toString()) {
+                    color = Color.GREEN.rgb
+                }
+                text(" für") {
+                    color = Color.YELLOW.rgb
+                }
+                text(target.name)
+                text(" erhalten") {
+                    color = Color.YELLOW.rgb
+                }
+            }
+
+            receiver.dbPlayer = receiverDb
+            target.dbPlayer = targetDb
+
+            mcCoroutineTask(sync = false, client = false) {
+                DatabaseManager.provider.save(receiverDb)
+                DatabaseManager.provider.save(targetDb)
             }
         }
     }
