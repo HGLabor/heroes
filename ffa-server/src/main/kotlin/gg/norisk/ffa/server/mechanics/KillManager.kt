@@ -7,6 +7,7 @@ import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
 import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.db.DatabaseManager.provider
+import gg.norisk.heroes.common.db.DatabasePlayer
 import gg.norisk.heroes.common.db.ExperienceManager
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.hero.getHero
@@ -86,13 +87,19 @@ object KillManager {
         }
     }
 
+    private fun provideExtraXpForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
+        val currentKillStreak = dbPlayer.currentKillStreak
+        val killStreakXp = Math.min(3000, ExperienceManager.KILLED_PLAYER.value * currentKillStreak * 10)
+        ExperienceManager.addXp(player, ExperienceManager.Reason("kill_streak", killStreakXp))
+    }
+
     private fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
         if (attacker.getHero() != null) {
             val cachedAttacker = provider.getCachedPlayer(attacker.uuid)
             cachedAttacker.kills++
             cachedAttacker.currentKillStreak++
             attacker.dbPlayer = cachedAttacker
-            if (cachedAttacker.currentKillStreak.mod(5) == 0) {
+            if (cachedAttacker.currentKillStreak.mod(10) == 0 || cachedAttacker.currentKillStreak == 5) {
                 attacker.server.broadcastText {
                     text(attacker.name)
                     text(" hat eine Killstreak von ") {
@@ -102,6 +109,7 @@ object KillManager {
                         color = Color.RED.rgb
                     }
                 }
+                provideExtraXpForKillStreak(attacker, cachedAttacker)
             }
             mcCoroutineTask(sync = false, client = false) {
                 provider.save(cachedAttacker)

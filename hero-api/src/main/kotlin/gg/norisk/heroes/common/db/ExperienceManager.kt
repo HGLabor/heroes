@@ -22,7 +22,6 @@ object ExperienceManager {
     val SOUP_EATEN = register("soup_eaten", 5)
     val SMALL_ABILITY_USE = register("small_ability_use", 5)
     val RECRAFT = register("soup_recraft", 5)
-    val KILL_STREAK = register("kill_streak", 100)
     val END_KILL_STREAK = register("end_kill_streak", 1000)
     val DEALING_DAMAGE = register("dealing_damage", 1)
     val TAKING_DAMAGE = register("taking_damage", 1)
