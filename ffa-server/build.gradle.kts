@@ -4,6 +4,7 @@ dependencies {
     api(project(":hero-api", configuration = "namedElements"))
     api(project(":datatracker", configuration = "namedElements"))
     api(project(":katara", configuration = "namedElements"))
+    api(project(":aang", configuration = "namedElements"))
 
     modApi(libs.bundles.fabric)
     modApi(libs.bundles.silk)

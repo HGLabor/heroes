@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "Aang",
+  "id": "aang",
+  "version": "${version}",
+  "description": "Aang",
+  "authors": [
+    "NoRiskk"
+  ],
+  "icon": "assets/aang/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.aang.AangManager"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.aang.AangManager"
+      }
+    ],
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.aang.AangManager"
+      }
+    ]
+  },
+  "mixins": [
+    "aang.mixins.json"
+  ],
+  "accessWidener": "aang.accesswidener",
+  "depends": {
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "hero-api"
+      }
+    }
+  }
+}

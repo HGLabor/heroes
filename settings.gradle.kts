@@ -15,5 +15,6 @@ rootProject.name = "heroes"
 include(":datatracker")
 include(":hero-api")
 include(":katara")
+include(":aang")
 include(":ffa-server")
 

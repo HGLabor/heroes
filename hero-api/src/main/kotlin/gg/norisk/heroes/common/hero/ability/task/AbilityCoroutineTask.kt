@@ -27,10 +27,13 @@ object AbilityCoroutineManager {
 }
 
 @OptIn(DelicateSilkApi::class)
-inline fun AbilityScope.abilityCoroutineTask(
+inline fun abilityCoroutineTask(
+    executingPlayer: PlayerEntity,
     sync: Boolean = true,
     client: Boolean = false,
-    scope: CoroutineScope = if (sync) { if (client) mcClientCoroutineScope else mcCoroutineScope } else silkCoroutineScope,
+    scope: CoroutineScope = if (sync) {
+        if (client) mcClientCoroutineScope else mcCoroutineScope
+    } else silkCoroutineScope,
     howOften: Long = 1,
     period: Duration = 1.ticks,
     delay: Duration = Duration.ZERO,

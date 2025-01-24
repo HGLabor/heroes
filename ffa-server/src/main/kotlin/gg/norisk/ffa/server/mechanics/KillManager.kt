@@ -14,6 +14,7 @@ import gg.norisk.heroes.common.hero.getHero
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
+import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.commands.PermissionLevel
 import net.silkmc.silk.commands.command
@@ -27,6 +28,24 @@ import java.awt.Color
 object KillManager {
     fun init() {
         killCommand()
+
+        ServerLivingEntityEvents.ALLOW_DEATH.register { entity, source, _ ->
+            val chicken = entity as? ChickenEntity ?: return@register true
+
+            val attacker =
+                source.attacker as? ServerPlayerEntity? ?: (chicken.damageTracker as IDamageTrackerExt).ffa_lastPlayer
+            if (attacker != null) {
+                FFAEvents.entityKilledOtherEntityEvent.invoke(
+                    FFAEvents.EntityKilledOtherEntityEvent(
+                        attacker,
+                        chicken,
+                        source
+                    )
+                )
+            }
+
+            return@register true
+        }
 
         ServerLivingEntityEvents.ALLOW_DEATH.register { entity, source, _ ->
             val player = entity as? ServerPlayerEntity ?: return@register true

@@ -1,0 +1,137 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"air_scooter": {
+			"animation_length": 0.84,
+			"bones": {
+				"bipedRig": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.8": {
+							"vector": [0, 360, 0],
+							"easing": "easeInExpo"
+						},
+						"0.84": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"bipedRightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-78.99034, 24.59477, 4.62934]
+						},
+						"0.28": {
+							"vector": [73.84641, 51.3798, 167.24859]
+						},
+						"0.56": {
+							"vector": [31.34641, 51.3798, 167.24859]
+						},
+						"0.8": {
+							"vector": [-81.56011, -42.11662, 4.58533]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.56": {
+							"vector": [0, 3, 0]
+						},
+						"0.8": {
+							"vector": [0, -1, -3]
+						}
+					}
+				},
+				"bipedLeftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [86.44785, -33.16347, -168.10969]
+						},
+						"0.28": {
+							"vector": [-82.49399, -66.60691, 3.05019]
+						},
+						"0.56": {
+							"vector": [-42.49399, -66.60691, 3.05019]
+						},
+						"0.8": {
+							"vector": [-72.50228, 13.17432, 52.2119]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.56": {
+							"vector": [0, 0, -2]
+						},
+						"0.8": {
+							"vector": [-1, 0, -2]
+						}
+					}
+				}
+			},
+			"particle_effects": {
+				"0.0": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.08": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.12": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.16": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.2": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.28": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.32": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.44": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.48": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.56": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.6": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.68": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				},
+				"0.72": {
+					"effect": "bending_air_1",
+					"locator": "airlocator"
+				},
+				"0.8": {
+					"effect": "bending_air_1",
+					"locator": "airlocatorrightarm"
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

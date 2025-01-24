@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "gg.norisk.heroes.aang.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "EntityMixin",
+    "LivingEntityMixin",
+    "PlayerEntityMixin"
+  ],
+  "client": [
+    "accessor.CameraAccessor",
+    "client.AbstractClientPlayerEntityMixin",
+    "client.CameraMixin",
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.GameOptionsMixin",
+    "client.GameRendererMixin",
+    "client.HeldItemRendererMixin",
+    "client.LivingEntityRendererMixin",
+    "client.PlayerEntityRendererMixin"
+  ]
+}
