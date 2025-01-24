@@ -16,5 +16,6 @@ include(":datatracker")
 include(":hero-api")
 include(":katara")
 include(":aang")
+include(":toph")
 include(":ffa-server")
 

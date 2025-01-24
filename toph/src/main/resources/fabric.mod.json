@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "Toph",
+  "id": "toph",
+  "version": "${version}",
+  "description": "Toph",
+  "authors": [
+    "NoRiskk"
+  ],
+  "icon": "assets/toph/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.toph.TophManager"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.toph.TophManager"
+      }
+    ],
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.toph.TophManager"
+      }
+    ]
+  },
+  "mixins": [
+    "toph.mixins.json"
+  ],
+  "accessWidener": "toph.accesswidener",
+  "depends": {
+    "java": ">=17",
+    "minecraft": "*",
+    "fabric": "*",
+    "fabric-language-kotlin": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "hero-api"
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "earth_armor": {
+    "sounds": [
+      "toph:earth_armor"
+    ]
+  },
+  "seismic_sense_start": {
+    "sounds": [
+      "toph:seismic_sense_start"
+    ]
+  },
+  "seismic_sense_wave": {
+    "sounds": [
+      "toph:seismic_sense_wave"
+    ]
+  },
+  "earth_column_1": {
+    "sounds": [
+      "toph:earth_column_1"
+    ]
+  },
+  "arm_whoosh": {
+    "sounds": [
+      "toph:arm_whoosh"
+    ]
+  },
+  "stone_smash": {
+    "sounds": [
+      "toph:stone_smash"
+    ]
+  },
+  "stone_slide": {
+    "sounds": [
+      "toph:stone_slide"
+    ]
+  }
+}

@@ -15,6 +15,7 @@ import net.silkmc.silk.core.event.Event
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.nbt.toNbt
 import net.silkmc.silk.network.packet.s2cPacket
+import org.joml.Vector3f
 import java.util.*
 
 interface ISyncedEntity {
@@ -78,6 +79,7 @@ val registeredTypes = buildMap {
     put(Int::class, IntSerializer)
     put(Long::class, LongSerializer)
     put(BlockPos::class, BlockPosSerializer)
+    put(Vector3f::class, Vector3fSerializer)
 }.toMutableMap()
 
 val addSyncedData = s2cPacket<Pair<EntityWrapper, DataWrapper>>("add-sync".toId())

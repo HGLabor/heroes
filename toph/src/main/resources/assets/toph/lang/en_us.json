@@ -1,0 +1,9 @@
+{
+  "text.hero.toph.description": "Toph description",
+  "text.hero.toph.ability.earth_surf.description": "Earth Surf description",
+  "text.hero.toph.ability.earth_column.description": "Earth Column description",
+  "text.hero.toph.ability.earth_push.description": "Earth Push description",
+  "text.hero.toph.ability.earth_armor.description": "Earth Armor description",
+  "text.hero.toph.ability.earth_trap.description": "Earth Trap description",
+  "text.hero.toph.ability.seismic_sense.description": "Seismic Sense description"
+}

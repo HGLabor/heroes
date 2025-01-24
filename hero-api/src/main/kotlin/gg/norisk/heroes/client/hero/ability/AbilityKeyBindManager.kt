@@ -19,14 +19,14 @@ object AbilityKeyBindManager {
             if (MinecraftClient.getInstance().currentScreen != null) return@listen
             val player = MinecraftClient.getInstance().player ?: return@listen
             val hero = MinecraftClient.getInstance().player?.getHero() ?: return@listen
-            hero.abilities.values
-                .filter { it.keyBind?.matchesMouse(event.key.code) ?: false }
-                //.sortedByDescending { it.keyBind?.condition != null }
-                .forEach { ability ->
-                    if (handleAbility(player, hero, ability, event.pressed, event.pressed)) {
+            hero.abilities.values.filter { it.keyBind?.matchesMouse(event.key.code) ?: false }
+                .sortedByDescending { it.condition != null }.forEach { ability ->
+                    val isConditionMet =
+                        if (ability.condition == null) true else ability.condition?.invoke(player) == true
+                    if (handleAbility(player, hero, ability, event.pressed, event.pressed) && isConditionMet) {
                         event.isCancelled.set(true)
+                        return@listen
                     }
-                    return@listen
                 }
         }
 
@@ -34,14 +34,21 @@ object AbilityKeyBindManager {
             if (MinecraftClient.getInstance().currentScreen != null) return@listen
             val player = MinecraftClient.getInstance().player ?: return@listen
             val hero = MinecraftClient.getInstance().player?.getHero() ?: return@listen
-            hero.abilities.values
-                .filter { it.keyBind?.matchesKey(event.key, event.scanCode) ?: false }
-                //.sortedByDescending { it.keyBind?.condition != null }
-                .forEach { ability ->
-                    if (handleAbility(player, hero, ability, event.isClicked(), event.isHold())) {
+            hero.abilities.values.filter { it.keyBind?.matchesKey(event.key, event.scanCode) ?: false }
+                .sortedByDescending { it.condition != null }.forEach { ability ->
+                    val isConditionMet =
+                        if (ability.condition == null) true else ability.condition?.invoke(player) == true
+                    if (handleAbility(
+                            player,
+                            hero,
+                            ability,
+                            event.isClicked(),
+                            event.isHold() && isConditionMet
+                        )
+                    ) {
                         event.isCancelled.set(true)
+                        return@listen
                     }
-                    return@listen
                 }
         }
     }

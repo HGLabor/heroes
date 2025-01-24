@@ -1,5 +1,6 @@
 package gg.norisk.heroes.client.hero.ability
 
+import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literal
 import java.util.*
+import kotlin.math.log
 
 object AbilityManagerClient : IAbilityManager {
     private val abilitiesInUse = hashMapOf<UUID, AbstractAbility<*>>()
@@ -34,15 +36,20 @@ object AbilityManagerClient : IAbilityManager {
 
         s2cAbilityPacket.receiveOnClient { packet, context ->
             kotlin.runCatching {
+                logger.info("Received ability packet: $packet")
                 val player = context.client.player ?: return@receiveOnClient
-                val heroPlayer = context.client.world?.players?.firstOrNull { it.uuid == packet.playerUuid }
-                    ?: return@receiveOnClient
+                logger.info("1. Received ability packet: $packet")
+                val heroPlayer = context.client.world?.players?.firstOrNull { it.uuid == packet.playerUuid } ?: return@receiveOnClient
+                logger.info("2. Received ability packet: $packet")
                 val ability = getAbilityFromAbilityPacket(packet) ?: return@receiveOnClient
+                logger.info("Ability packet: $ability $player $heroPlayer")
                 val description = packet.description
                 val isOwnPacket = heroPlayer.uuid == player.uuid
+                logger.info("Hier Rein")
                 when (ability) {
                     is Ability,
                     is PressAbility -> {
+                        ability.onStart(player)
                         /*val callbacks = ability.internalCallbacks as AbstractAbility.ReceiveCallbacks
                         callbacks.handleAllClients?.invoke(heroPlayer, player, description)
                         if (isOwnPacket) {
@@ -56,6 +63,7 @@ object AbilityManagerClient : IAbilityManager {
                         val callbacks = when (description) {
                             is AbilityPacketDescription.Start -> {
                                 abilitiesInUse[packet.playerUuid] = ability
+                                logger.info("Start")
                                 ability.onStart(player)
                                 //ability.internalCallbacks.START
                             }
@@ -141,6 +149,10 @@ object AbilityManagerClient : IAbilityManager {
 
     private fun getAbilityFromAbilityPacket(packet: AbilityPacket<out AbilityPacketDescription>): AbstractAbility<*>? {
         val hero = HeroManager.getHero(packet.heroKey) ?: return null
-        return hero.abilities[packet.abilityKey]
+        logger.info("Ability packet: ${hero.abilities}")
+        logger.info("Ability packet: $packet")
+        val ability = hero.abilities[packet.abilityKey]
+        logger.info("Ability $ability")
+        return ability
     }
 }
