@@ -16,4 +16,5 @@ include(":api")
 include(":client")
 include(":datatracker")
 include(":hero-api")
+include(":katara")
 

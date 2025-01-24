@@ -1,0 +1,61 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"tpose": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 0.2917,
+			"lockVanillaBones": {
+				"bipedRig": false,
+				"bipedHead": false,
+				"bipedBody": false,
+				"bipedLeftArm": true,
+				"bipedRightArm": true,
+				"bipedLeftLeg": true,
+				"bipedRightLeg": true
+			},
+			"bones": {
+				"bipedRightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2917": {
+							"vector": [0, 0, "90 + Math.cos(query.anim_time * 100 +25) * 3"],
+							"easing": "easeOutCubic"
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2917": {
+							"vector": [-1, -1, 0],
+							"easing": "easeOutCubic"
+						}
+					}
+				},
+				"bipedLeftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2917": {
+							"vector": [0, 0, "-90 - Math.cos(query.anim_time * 100 +25) * 3"],
+							"easing": "easeOutCubic"
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2917": {
+							"vector": [1, -1, 0],
+							"easing": "easeOutCubic"
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

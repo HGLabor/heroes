@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "Katara",
+  "id": "katara",
+  "version": "${version}",
+  "description": "Katara",
+  "authors": [
+    "NoRiskk"
+  ],
+  "icon": "assets/katara/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.katara.KataraManager"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.katara.KataraManager"
+      }
+    ],
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.katara.KataraManager"
+      }
+    ]
+  },
+  "mixins": [
+    "katara.mixins.json"
+  ],
+  "accessWidener": "katara.accesswidener",
+  "depends": {
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "hero-api"
+      }
+    }
+  }
+}

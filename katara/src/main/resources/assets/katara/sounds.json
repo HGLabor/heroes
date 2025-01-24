@@ -1,0 +1,12 @@
+{
+  "ice_place": {
+    "sounds": [
+      "katara:ice_place"
+    ]
+  },
+  "water_circle_add": {
+    "sounds": [
+      "katara:water_circle_add"
+    ]
+  }
+}

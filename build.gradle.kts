@@ -12,8 +12,8 @@ plugins {
 defaultTasks("clean", "build")
 
 allprojects {
-  group = "com.example"
-  description = "Template Project"
+  group = "gg.norisk"
+  description = "Heroes Project"
 
   apply(plugin = "fabric-loom")
 
@@ -92,6 +92,7 @@ subprojects {
     "template-api" -> "1.0.0"
     "template-client" -> "1.0.0"
     "hero-api" -> "1.2.40"
+    "katara" -> "1.0.13"
     else -> version
   }
 
