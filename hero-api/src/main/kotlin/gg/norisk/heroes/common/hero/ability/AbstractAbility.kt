@@ -6,7 +6,6 @@ import gg.norisk.heroes.common.ability.*
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.ability.operation.MultiplyBase
 import gg.norisk.heroes.common.ability.operation.Operation
-import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
 import gg.norisk.heroes.common.cooldown.CooldownInfo
 import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
 import gg.norisk.heroes.common.hero.Hero
@@ -23,8 +22,6 @@ import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.silkmc.silk.core.text.literal
-import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.nanoseconds
@@ -58,6 +55,14 @@ abstract class AbstractAbility<T : Any>(val name: String) {
             addAll(extraProperties)
             addAll(properties)
         }
+    }
+
+    open fun hasUnlocked(player: PlayerEntity): Boolean {
+        return true
+    }
+
+    open fun getUnlockCondition(): Text {
+        return Text.empty()
     }
 
     open fun getIconComponent(): Component {

@@ -116,6 +116,9 @@ object AbilityManagerServer : IAbilityManager {
             val ability = getAbilityFromAbilityUsePacket(packet) ?: return@runCatching
             val description = packet.description
             val abilityScope = AbilityScope(player)
+            if (!ability.hasUnlocked(player)) {
+                return@runCatching
+            }
             val condition = ability.condition
             if (condition != null && ability !is ToggleAbility) {
                 if (!condition.invoke(player)) {

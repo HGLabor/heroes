@@ -27,7 +27,7 @@ object KeyBindHud {
         drawContext.matrices.scale(scale, scale, scale)
 
 
-        hero.abilities.values.filter { it.keyBind != null }.map { ability ->
+        hero.getUsableAbilities(player).filter { it.keyBind != null }.map { ability ->
             val keyBind = ability.keyBind!!
             var text = literalText {
                 text {

@@ -5,6 +5,7 @@ import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.ability.PlayerProperty.Companion.JSON
 import gg.norisk.heroes.common.db.JsonProvider
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
+import gg.norisk.heroes.common.hero.ability.implementation.Ability
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.jsonObject
@@ -45,6 +46,10 @@ open class Hero(val name: String) {
         ability.hero = this
         // REMOVED AbilityKeyBindManager.initializeKeyBind(ability)
         abilities[ability.internalKey] = ability
+    }
+
+    fun getUsableAbilities(player: PlayerEntity): List<AbstractAbility<*>> {
+        return abilities.values.filter { it.hasUnlocked(player) }
     }
 
     @Serializable

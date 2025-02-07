@@ -1,15 +1,21 @@
 package gg.norisk.heroes.client.ui.skilltree
 
+import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.component.TextureComponent
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*
 import io.wispforest.owo.ui.util.UISounds
-import net.minecraft.item.Items
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.sound.PositionedSoundInstance
+import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Colors
 import net.minecraft.util.Identifier
 import net.silkmc.silk.core.text.literal
+import net.silkmc.silk.core.text.literalText
 
 class SkillTreeWrapper(
     val hero: Hero,
@@ -34,7 +40,7 @@ class SkillTreeWrapper(
         })
         child(skillTreeWrapper)
 
-        tabs.first().apply {
+        tabs.first { it.ability.hasUnlocked(MinecraftClient.getInstance().player!!) }.apply {
             this.isSelected = true
             this.onClick()
         }
@@ -64,14 +70,24 @@ class SkillTreeWrapper(
     }
 
     inner class TabButton(
-        ability: AbstractAbility<*>,
+        val ability: AbstractAbility<*>,
         index: Int,
         horizontalSizing: Sizing = Sizing.fixed(28),
         verticalSizing: Sizing = Sizing.fixed(28)
     ) : FlowLayout(horizontalSizing, verticalSizing, Algorithm.VERTICAL) {
         var page = AbilitySkillTreeComponent(ability)
         var isSelected = false
-        var item = ability.getIconComponent()
+        var item = ability.getIconComponent().id("unlocked")
+        var lockIcon = Components.texture("textures/gui/lock_icon.png".toId(), 0, 0, 20, 20, 20, 20).apply {
+            id("locked")
+            tooltip(literalText {
+                text(ability.name)
+                newLine()
+                text(ability.getUnlockCondition()) {
+                    color = Colors.LIGHT_GRAY
+                }
+            })
+        }
 
         init {
             surface { context, container ->
@@ -104,6 +120,15 @@ class SkillTreeWrapper(
                 context.matrices.pop()
             }
             mouseDown().subscribe { _, _, _ ->
+                if (!ability.hasUnlocked(MinecraftClient.getInstance().player!!)) {
+                    MinecraftClient.getInstance().soundManager.play(
+                        PositionedSoundInstance.master(
+                            SoundEvents.ENTITY_VILLAGER_NO,
+                            1.0f
+                        )
+                    )
+                    return@subscribe true
+                }
                 if (!isSelected) {
                     UISounds.playInteractionSound()
                     isSelected = !isSelected
@@ -115,7 +140,7 @@ class SkillTreeWrapper(
             tooltip(ability.name.literal)
             alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
             //positioning(Positioning.absolute(0, 0))
-            child(item)
+            child(lockIcon)
             //zIndex(-5000)
             allowOverflow(true)
         }
@@ -128,10 +153,32 @@ class SkillTreeWrapper(
         }
 
         override fun draw(context: OwoUIDrawContext, mouseX: Int, mouseY: Int, partialTicks: Float, delta: Float) {
-            if (isSelected) {
-                item.margins(Insets.none())
+            val hasUnlocked = ability.hasUnlocked(MinecraftClient.getInstance().player!!)
+            val locked = childById(TextureComponent::class.java, "locked")
+            val unlocked = childById(Component::class.java, "unlocked")
+            val component = if (hasUnlocked) {
+                if (unlocked == null) {
+                    child(item)
+                }
+                if (locked != null) {
+                    removeChild(locked)
+                }
+                item
             } else {
-                item.margins(Insets.top(8))
+                if (locked == null) {
+                    child(lockIcon)
+                }
+                if (unlocked != null) {
+                    removeChild(item)
+                }
+                lockIcon
+            }
+
+
+            if (isSelected) {
+                component.margins(Insets.none())
+            } else {
+                component.margins(Insets.top(8))
             }
             super.draw(context, mouseX, mouseY, partialTicks, delta)
         }

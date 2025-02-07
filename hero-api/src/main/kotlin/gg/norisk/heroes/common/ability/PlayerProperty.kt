@@ -55,6 +55,10 @@ sealed class PlayerProperty<T> {
         }
     }
 
+    fun isMaxed(uuid: UUID): Boolean {
+        return getLevelInfo(uuid).currentLevel >= maxLevel
+    }
+
     fun getLevelInfo(uuid: UUID, level: Int? = null): LevelInformation {
         val player = getOrLoadPlayer(uuid)
         val currentLevel = Math.min(maxLevel, level ?: calculateLevel(player.experiencePoints))

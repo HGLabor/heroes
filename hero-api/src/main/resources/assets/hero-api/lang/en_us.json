@@ -7,5 +7,6 @@
   "category.heroes.abilities": "Abilities",
   "heroes.announce_kill_streak": "%s is on a %s killstreak",
   "heroes.end_kill_streak": "§4%s has been killed on a %s killstreak.",
-  "heroes.property.cooldown": "Cooldown"
+  "heroes.property.cooldown": "Cooldown",
+  "heroes.ability.healing.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it."
 }

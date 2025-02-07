@@ -19,7 +19,7 @@ object AbilityKeyBindManager {
             if (MinecraftClient.getInstance().currentScreen != null) return@listen
             val player = MinecraftClient.getInstance().player ?: return@listen
             val hero = MinecraftClient.getInstance().player?.getHero() ?: return@listen
-            hero.abilities.values.filter { it.keyBind?.matchesMouse(event.key.code) ?: false }
+            hero.getUsableAbilities(player).filter { it.keyBind?.matchesMouse(event.key.code) ?: false }
                 .sortedByDescending { it.condition != null }.forEach { ability ->
                     val isConditionMet =
                         if (ability.condition == null) true else ability.condition?.invoke(player) == true
@@ -34,7 +34,7 @@ object AbilityKeyBindManager {
             if (MinecraftClient.getInstance().currentScreen != null) return@listen
             val player = MinecraftClient.getInstance().player ?: return@listen
             val hero = MinecraftClient.getInstance().player?.getHero() ?: return@listen
-            hero.abilities.values.filter { it.keyBind?.matchesKey(event.key, event.scanCode) ?: false }
+            hero.getUsableAbilities(player).filter { it.keyBind?.matchesKey(event.key, event.scanCode) ?: false }
                 .sortedByDescending { it.condition != null }.forEach { ability ->
                     val isConditionMet =
                         if (ability.condition == null) true else ability.condition?.invoke(player) == true
