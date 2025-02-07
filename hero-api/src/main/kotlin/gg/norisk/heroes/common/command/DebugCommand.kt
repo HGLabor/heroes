@@ -13,6 +13,7 @@ import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.command.argument.EntityArgumentType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.silkmc.silk.commands.PermissionLevel
@@ -39,13 +40,17 @@ object DebugCommand {
             }
             literal("xp") {
                 literal("set") {
-                    argument<Int>("xp") { xp ->
-                        runsAsync {
-                            val player = this.source.playerOrThrow
-                            val cachedPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
-                            cachedPlayer.xp = xp()
-                            player.dbPlayer = cachedPlayer
-                            DatabaseManager.provider.save(player.uuid)
+                    argument("players", EntityArgumentType.players()) {
+                        argument<Int>("xp") { xp ->
+                            runsAsync {
+                                val players = EntityArgumentType.getPlayers(this, "players")
+                                for (player in players) {
+                                    val cachedPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+                                    cachedPlayer.xp = xp()
+                                    player.dbPlayer = cachedPlayer
+                                    DatabaseManager.provider.save(player.uuid)
+                                }
+                            }
                         }
                     }
                 }

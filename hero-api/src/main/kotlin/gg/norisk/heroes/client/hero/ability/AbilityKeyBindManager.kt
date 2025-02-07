@@ -43,8 +43,8 @@ object AbilityKeyBindManager {
                             hero,
                             ability,
                             event.isClicked(),
-                            event.isHold() && isConditionMet
-                        )
+                            event.isHold()
+                        ) && isConditionMet
                     ) {
                         event.isCancelled.set(true)
                         return@listen

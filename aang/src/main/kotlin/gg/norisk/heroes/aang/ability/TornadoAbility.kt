@@ -10,17 +10,23 @@ import gg.norisk.heroes.aang.registry.EntityRegistry
 import gg.norisk.heroes.aang.utils.PlayerRotationTracker
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.CooldownProperty
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.Camera
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RotationAxis
@@ -29,6 +35,7 @@ import net.minecraft.world.BlockView
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literal
+import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.network.packet.s2cPacket
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.seconds
@@ -77,9 +84,16 @@ object TornadoAbility {
         tornadoEntity.isGrowingMode = true
         mcCoroutineTask(sync = true, client = false, delay = 5.seconds) {
             tornadoEntity.isGrowingMode = false
+            tornadoEntity.rotationTracker?.movementIncreaseRate =
+                tornadoIncreaseRateProperty.getValue(this@summonTornado.uuid).toFloat()
             tornadoEntity.rotationTracker?.onlyDecay = true
-            tornadoEntity.rotationTracker?.movementDecayRate = 0.2f
-            mcCoroutineTask(sync = true, client = false, delay = 20.seconds) {
+            tornadoEntity.rotationTracker?.movementDecayRate =
+                tornadoDecreaseRateProperty.getValue(this@summonTornado.uuid).toFloat()
+            mcCoroutineTask(
+                sync = true,
+                client = false,
+                delay = tornadoMaxDurationProperty.getValue(this@summonTornado.uuid).seconds
+            ) {
                 tornadoEntity.disappear(tornadoEntity.controllingPassenger)
             }
         }
@@ -137,7 +151,28 @@ object TornadoAbility {
         }
     }
 
+    val tornadoMaxDurationProperty = CooldownProperty(
+        10.0, 3,
+        "Max Duration",
+        AddValueTotal(5.0, 5.0, 5.0)
+    )
+    val tornadoIncreaseRateProperty = NumberProperty(
+        0.005, 3,
+        "Increase Rate",
+        AddValueTotal(0.0025, 0.0025, 0.005), icon = {
+            Components.item(Items.GLOWSTONE_DUST.defaultStack)
+        }
+    )
+    val tornadoDecreaseRateProperty = NumberProperty(
+        0.2, 3,
+        "Increase Rate",
+        AddValueTotal(-0.0025, -0.0025, -0.005), icon = {
+            Components.item(Items.REDSTONE.defaultStack)
+        }
+    )
+
     val Ability = object : PressAbility("Tornado") {
+
         init {
             client {
                 this.keyBind = HeroKeyBindings.fourthKeyBinding
@@ -145,6 +180,25 @@ object TornadoAbility {
 
             this.cooldownProperty =
                 buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+
+            this.properties =
+                listOf(tornadoMaxDurationProperty, tornadoIncreaseRateProperty, tornadoDecreaseRateProperty)
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.WIND_CHARGE.defaultStack)
+        }
+
+        override fun hasUnlocked(player: PlayerEntity): Boolean {
+            return player.isCreative || (AirBallAbility.Ability.cooldownProperty.isMaxed(player.uuid) && AirBallAbility.airBallMaxSize.isMaxed(
+                player.uuid
+            ))
+        }
+
+        override fun getUnlockCondition(): Text {
+            return literalText {
+                text(Text.translatable("heroes.ability.$internalKey.unlock_condition"))
+            }
         }
 
         override fun getBackgroundTexture(): Identifier {

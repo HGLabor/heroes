@@ -5,8 +5,8 @@ import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
-import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
@@ -16,6 +16,8 @@ import gg.norisk.heroes.katara.client.sound.WaterHealingSoundInstance
 import gg.norisk.heroes.katara.entity.IKataraEntity
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import gg.norisk.utils.OldAnimation
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
@@ -24,12 +26,17 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
+import net.minecraft.potion.Potions
+import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.entity.directionVector
+import net.silkmc.silk.core.item.itemStack
+import net.silkmc.silk.core.item.setPotion
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literalText
 import kotlin.time.Duration.Companion.seconds
@@ -106,14 +113,18 @@ object HealingAbility {
         get() = this.getSyncedData<Boolean>(WATER_HEALING_EFFECT) ?: false
         set(value) = this.setSyncedData(WATER_HEALING_EFFECT, value)
 
-    fun Entity.handleWaterHealing() {
+    fun Entity.handleWaterHealing(owner: PlayerEntity) {
         (this as IKataraEntity).katara_waterHealingJob?.cancel()
         isReceivingWaterHealing = true
-        val duration = 5.seconds
+        val duration = waterHealingMaxDuration.getValue(owner.uuid).seconds
         if (this is LivingEntity) {
             addStatusEffect(
                 StatusEffectInstance(
-                    StatusEffects.REGENERATION, duration.inWholeMilliseconds.toInt() / 50, 4, false, false
+                    StatusEffects.REGENERATION,
+                    duration.inWholeMilliseconds.toInt() / 50,
+                    waterHealingRegeneration.getValue(owner.uuid).toInt(),
+                    false,
+                    false
                 )
             )
         }
@@ -122,6 +133,26 @@ object HealingAbility {
             //  sendMessage("Stopped WaterHealing".literal)
         }
     }
+
+    val waterHealingRegeneration = NumberProperty(
+        3.0, 3,
+        "Regeneration",
+        AddValueTotal(1.0, 1.0, 3.0), icon = {
+            Components.item(itemStack(Items.POTION) {
+                setPotion(
+                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                        .getEntry(Potions.REGENERATION.value())
+                )
+            })
+        }
+    )
+    val waterHealingMaxDuration = NumberProperty(
+        5.0, 3,
+        "Max Duration",
+        AddValueTotal(2.0, 2.0, 5.0), icon = {
+            Components.item(itemStack(Items.CLOCK) {})
+        }
+    )
 
     val ability = object : PressAbility("Healing") {
         init {
@@ -132,6 +163,17 @@ object HealingAbility {
                 it.getCurrentBendingEntity() != null
             }
             this.usageProperty = buildMultipleUses(3.0, 3, AddValueTotal(1.0, 1.0, 1.0))
+
+            this.properties = listOf(waterHealingRegeneration, waterHealingMaxDuration)
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(itemStack(Items.POTION) {
+                setPotion(
+                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                        .getEntry(Potions.REGENERATION.value())
+                )
+            })
         }
 
         override fun hasUnlocked(player: PlayerEntity): Boolean {

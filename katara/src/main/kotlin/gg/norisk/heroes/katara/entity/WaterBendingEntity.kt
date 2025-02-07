@@ -100,7 +100,9 @@ class WaterBendingEntity(entityType: EntityType<out PathAwareEntity>, world: Wor
                         this,
                         boundingBox.expand(2.0)
                     ) { it.isAlive && !it.isSpectator }) {
-                        otherEntity.handleWaterHealing()
+                        if (owner != null) {
+                            otherEntity.handleWaterHealing(owner)
+                        }
                     }
                 } else {
                     for (otherEntity in world.getOtherEntities(

@@ -113,6 +113,7 @@ object AbilityManagerServer : IAbilityManager {
 
     private fun handleIncomingAbility(packet: AbilityPacket<*>, player: ServerPlayerEntity) {
         runCatching {
+            println("$packet $player")
             var ignoreCooldown = false
             if (packet.playerUuid != player.uuid) return@runCatching
             val ability = getAbilityFromAbilityUsePacket(packet) ?: return@runCatching

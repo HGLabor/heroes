@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mixin;
 
+import gg.norisk.ffa.server.mechanics.KitEditor;
 import gg.norisk.ffa.server.mechanics.SoupHealing;
 import gg.norisk.ffa.server.mechanics.Tracker;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +22,9 @@ public abstract class ItemStackMixin {
     )
     public void onUse(World world, PlayerEntity playerEntity, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         ItemStack itemStack = (ItemStack) (Object) this;
-        SoupHealing.INSTANCE.onPotentialSoupUse(playerEntity, itemStack.getItem(), cir, world, hand);
+        if (!KitEditor.INSTANCE.isUHC()) {
+            SoupHealing.INSTANCE.onPotentialSoupUse(playerEntity, itemStack.getItem(), cir, world, hand);
+        }
         Tracker.INSTANCE.onTrackerUse(playerEntity, itemStack, cir, world, hand);
     }
 }

@@ -41,7 +41,9 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     private val cooldowns = ConcurrentHashMap<UUID, CooldownInfo>()
     private val cooldownCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) + SupervisorJob() }
     var cooldownProperty: CooldownProperty = buildCooldown(5.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
-    var usageProperty: AbstractUsageProperty = SingleUseProperty(0.0, 0, "Use", MultiplyBase(listOf(0.0)))
+    var usageProperty: AbstractUsageProperty = SingleUseProperty(0.0, 0, "Use", MultiplyBase(listOf(0.0)), icon = {
+        Components.item(Items.STONE_PICKAXE.defaultStack)
+    })
 
     //atm used for holdcooldown
     open val extraProperties: List<PlayerProperty<*>> = emptyList()

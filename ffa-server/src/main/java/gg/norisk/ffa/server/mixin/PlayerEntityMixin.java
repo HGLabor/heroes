@@ -1,6 +1,7 @@
 package gg.norisk.ffa.server.mixin;
 
 import gg.norisk.ffa.server.mechanics.CombatTag;
+import gg.norisk.ffa.server.mechanics.KitEditor;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +22,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements CombatTa
 
     @ModifyConstant(method = "attack", constant = @Constant(floatValue = 1.5f))
     private float injected(float constant) {
-        return 1.15f;
+        if (KitEditor.INSTANCE.isUHC()) {
+            return constant;
+        }
+        return 1.18f;
     }
 
     @Override

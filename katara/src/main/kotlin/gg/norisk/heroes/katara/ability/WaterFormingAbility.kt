@@ -5,6 +5,8 @@ import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.RenderUtils
 import gg.norisk.heroes.common.HeroesManager
+import gg.norisk.heroes.common.ability.NumberProperty
+import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.utils.sound
@@ -13,6 +15,8 @@ import gg.norisk.heroes.katara.KataraManager
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
 import gg.norisk.heroes.katara.client.render.IFluidRendererExt
 import gg.norisk.heroes.katara.registry.SoundRegistry
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
@@ -24,6 +28,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayers
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.server.network.ServerPlayerEntity
@@ -34,6 +39,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.random.Random
 import net.minecraft.world.World
+import net.silkmc.silk.core.item.itemStack
 import net.silkmc.silk.core.math.geometry.filledSpherePositionSet
 import net.silkmc.silk.core.server.players
 import kotlin.math.abs
@@ -41,6 +47,15 @@ import kotlin.math.sign
 import kotlin.time.Duration.Companion.seconds
 
 object WaterFormingAbility {
+
+    val waterFormingMaxDistance = NumberProperty(
+        10.0, 3,
+        "Max Blocks",
+        AddValueTotal(5.0, 5.0, 5.0), icon = {
+            Components.item(itemStack(Items.ICE) {})
+        }
+    )
+
     val ability = object : HoldAbility("Water Forming") {
         init {
             HeroesManager.client {
@@ -50,6 +65,13 @@ object WaterFormingAbility {
                 val pos = (it.raycast(20.0, 0.0f, false) as? BlockHitResult?)?.blockPos?.toImmutable()
                 checkForEnoughWater(pos, it.world) || it.getCurrentBendingEntity() != null
             }
+
+            this.cooldownProperty =
+                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+            this.maxDurationProperty =
+                buildMaxDuration(10.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
+
+            this.properties = listOf(waterFormingMaxDistance)
         }
 
         override fun onStart(player: PlayerEntity) {
@@ -59,6 +81,10 @@ object WaterFormingAbility {
                 player.isWaterForming = true
                 player.firstWaterFormingPos = pos
             }
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.BLUE_ICE.defaultStack)
         }
 
         override fun getBackgroundTexture(): Identifier {
@@ -96,7 +122,7 @@ object WaterFormingAbility {
                     val pos = (player.raycast(20.0, 0.0f, false) as? BlockHitResult?)?.blockPos?.toImmutable()
                     if (pos != player.firstWaterFormingPos && pos?.isWithinDistance(
                             player.firstWaterFormingPos,
-                            25.0
+                            waterFormingMaxDistance.getValue(player.uuid)
                         ) == true
                     ) {
                         player.secondWaterFormingPos = pos

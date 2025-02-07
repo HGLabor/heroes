@@ -8,6 +8,7 @@ import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.aang.AangManager.Aang
 import gg.norisk.heroes.aang.AangManager.toId
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.cancelSpiritMode
 import gg.norisk.heroes.aang.client.sound.AirBendingLevitationSoundInstance
 import gg.norisk.heroes.aang.client.sound.VelocityBasedFlyingSoundInstance
 import gg.norisk.heroes.aang.entity.DummyPlayer
@@ -16,11 +17,15 @@ import gg.norisk.heroes.aang.registry.EmoteRegistry.toEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.RenderUtils
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.HeroesManager.isClient
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.hero.ability.task.abilityCoroutineTask
 import gg.norisk.heroes.common.hero.setHero
 import gg.norisk.heroes.common.utils.sound
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
@@ -36,9 +41,11 @@ import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
+import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Identifier
 import net.minecraft.util.TypedActionResult
@@ -48,6 +55,7 @@ import net.silkmc.silk.core.entity.modifyVelocity
 import net.silkmc.silk.core.kotlin.ticks
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literal
+import net.silkmc.silk.core.text.literalText
 import org.apache.commons.lang3.RandomStringUtils
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args
 import java.util.*
@@ -196,6 +204,21 @@ object SpiritualProjectionAbility {
     fun PlayerEntity.handleTick() {
         if (isSpiritualTransparent) {
             noClip = isSpiritualTransparent
+
+            if (!world.isClient) {
+                val body = (this as ServerPlayerEntity).serverWorld
+                    .iterateEntities()
+                    .filterIsInstance<DummyPlayer>()
+                    .filter { it.spiritualOwner == this.id }
+                    .randomOrNull()
+                if (body != null) {
+                    val distance = body.distanceTo(this)
+                    if (distance > projectionMaxDistance.getValue(this.uuid)) {
+                        sendMessage(Text.translatable("heroes.katara.ability.spiritual_projection.too_far_away"))
+                        body.cancelProjection(null)
+                    }
+                }
+            }
         }
         if (isSpiritualTransparent) {
             world.addParticle(
@@ -236,6 +259,14 @@ object SpiritualProjectionAbility {
         get() = this.getSyncedData<Boolean>(LEVITATION_KEY) ?: false
         set(value) = this.setSyncedData(LEVITATION_KEY, value)
 
+    val projectionMaxDistance = NumberProperty(
+        30.0, 3,
+        "Max Distance",
+        AddValueTotal(10.0, 10.0, 30.0), icon = {
+            Components.item(Items.SPYGLASS.defaultStack)
+        }
+    )
+
     val Ability = object : PressAbility("Spiritual Projection") {
         init {
             client {
@@ -244,6 +275,24 @@ object SpiritualProjectionAbility {
 
             this.cooldownProperty =
                 buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+
+            this.properties = listOf(projectionMaxDistance)
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.BLUE_STAINED_GLASS.defaultStack)
+        }
+
+        override fun getUnlockCondition(): Text {
+            return literalText {
+                text(Text.translatable("heroes.ability.$internalKey.unlock_condition"))
+            }
+        }
+
+        override fun hasUnlocked(player: PlayerEntity): Boolean {
+            return player.isCreative || (LevitationAbility.Ability.cooldownProperty.isMaxed(player.uuid) && LevitationAbility.Ability.maxDurationProperty.isMaxed(
+                player.uuid
+            ))
         }
 
         override fun getBackgroundTexture(): Identifier {

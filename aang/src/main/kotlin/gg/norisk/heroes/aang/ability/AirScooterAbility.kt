@@ -14,12 +14,15 @@ import gg.norisk.heroes.aang.registry.ParticleRegistry
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.ability.task.abilityCoroutineTask
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.utils.Easing
 import gg.norisk.utils.OldAnimation
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import kotlinx.coroutines.cancel
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
@@ -28,6 +31,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
@@ -45,6 +49,13 @@ import kotlin.time.toJavaDuration
 object AirScooterAbility {
     val airScooterSoundPacketS2C = s2cPacket<Int>("air-scooter-sound".toId())
     val AIR_SCOOTING_KEY = "AangIsAirScooting"
+
+    val airScooterSpeed = NumberProperty(0.2, 3, "Speed", AddValueTotal(0.1, 0.1, 0.1), icon = {
+        Components.item(Items.WIND_CHARGE.defaultStack)
+    })
+    val airScooterStepHeight = NumberProperty(2.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0), icon = {
+        Components.item(Items.QUARTZ_STAIRS.defaultStack)
+    })
 
     fun initClient() {
         airScooterSoundPacketS2C.receiveOnClient { packet, context ->
@@ -143,6 +154,11 @@ object AirScooterAbility {
             this.maxDurationProperty =
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
+            this.properties = listOf(
+                airScooterSpeed,
+                airScooterStepHeight
+            )
+
             syncedValueChangeEvent.listen {
                 val player = it.entity as? PlayerEntity ?: return@listen
                 if (it.key == AIR_SCOOTING_KEY) {
@@ -151,6 +167,10 @@ object AirScooterAbility {
                     }
                 }
             }
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.WIND_CHARGE.defaultStack)
         }
 
         override fun getBackgroundTexture(): Identifier {
@@ -169,9 +189,14 @@ object AirScooterAbility {
                     //player.modifyVelocity(0.0,1.0,0.0)
                     airScooterSoundPacketS2C.sendToAll(player.id)
                     player.isAirScooting = true
-                    player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 2.0
+                    player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = airScooterStepHeight.getValue(player.uuid)
                     val speedAnimation =
-                        OldAnimation(0.1f, 0.5f, 1.seconds.toJavaDuration(), Easing.CUBIC_IN)
+                        OldAnimation(
+                            0.1f,
+                            airScooterSpeed.getValue(player.uuid).toFloat(),
+                            1.seconds.toJavaDuration(),
+                            Easing.CUBIC_IN
+                        )
                     infiniteMcCoroutineTask(sync = true, client = false) {
                         if (speedAnimation.isDone) cancel()
                         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =

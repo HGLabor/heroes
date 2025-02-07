@@ -21,6 +21,7 @@ import gg.norisk.heroes.common.ffa.KitEditorManager.onReset
 import gg.norisk.heroes.common.ffa.KitEditorManager.world
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AllowDamage
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
@@ -32,7 +33,7 @@ object KitEditor {
     val mode
         get() = System.getProperty(
             "ffa_mode",
-            "SOUP"
+            "UHC"
         )
 
     val platform by lazy { FabricPlatform.minestomNpcPlatformBuilder().extension(this).actionController({}).build() }
@@ -66,6 +67,10 @@ object KitEditor {
         }
     }
 
+    fun isUHC(): Boolean {
+        return mode == "UHC"
+    }
+
     fun handleKit(player: PlayerEntity, mode: String = this.mode) {
         when (KitEditor.mode) {
             "SOUP" -> handleSoupKit(player)
@@ -73,14 +78,16 @@ object KitEditor {
         }
     }
 
-    private fun handleSoupKit(player: PlayerEntity) {
+    fun handleSoupKit(player: PlayerEntity) {
         player.inventory.clear()
         player.setSoupItems()
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
     }
 
-    private fun handleUHCKit(player: PlayerEntity) {
+    fun handleUHCKit(player: PlayerEntity) {
         player.inventory.clear()
         player.setUHCItems()
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 4.0
     }
 
 

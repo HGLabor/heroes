@@ -23,6 +23,7 @@ import gg.norisk.heroes.katara.entity.IWaterBendingPlayer
 import gg.norisk.heroes.katara.event.FluidEvents
 import gg.norisk.utils.OldAnimation
 import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
@@ -276,7 +277,7 @@ object WaterPillarAbility {
         return positions.toList()
     }
 
-    val waterPillarDistance = NumberProperty(10.0, 5, "Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3), icon = {
+    val waterPillarDistance = NumberProperty(15.0, 5, "Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3), icon = {
         Components.item(Items.SPYGLASS.defaultStack)
     })
     val waterPillarVelocityBoost = NumberProperty(1.0, 5, "Start Boost", MultiplyBase(1.0, 1.2, 1.4, 1.5, 1.8, 1.9), icon = {
@@ -301,6 +302,10 @@ object WaterPillarAbility {
 
         override fun getBackgroundTexture(): Identifier {
             return Identifier.of("textures/block/packed_ice.png")
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.WATER_BUCKET.defaultStack)
         }
 
         override fun onStart(player: PlayerEntity) {

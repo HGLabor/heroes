@@ -14,6 +14,7 @@ import gg.norisk.heroes.aang.registry.EntityRegistry
 import gg.norisk.heroes.aang.utils.CircleDetector3D
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.isHero
@@ -21,12 +22,15 @@ import gg.norisk.heroes.common.networking.Networking.mousePacket
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
 import gg.norisk.heroes.common.networking.dto.MousePacket
 import gg.norisk.heroes.common.utils.sound
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
@@ -41,6 +45,10 @@ import kotlin.time.Duration.Companion.seconds
 object AirBallAbility {
     val AIR_BENDING_KEY = "AangIsAirBending"
     val CURRENT_AIR_BENDING_KEY = "AangCurrentBendingId"
+
+    val airBallMaxSize = NumberProperty(3.0, 3, "Max Size", AddValueTotal(1.0, 1.0, 3.0), icon = {
+        Components.item(Items.WIND_CHARGE.defaultStack)
+    })
 
     fun initClient() {
         WorldRenderEvents.END.register(WorldRenderEvents.End { event ->
@@ -145,8 +153,8 @@ object AirBallAbility {
                 scaleAttribute.baseValue = 0.5
                 soundFlag = false
             }
-            if (scaleAttribute.baseValue > 6) {
-                scaleAttribute.baseValue = 6.0
+            if (scaleAttribute.baseValue > airBallMaxSize.getValue(this.uuid)) {
+                scaleAttribute.baseValue = airBallMaxSize.getValue(this.uuid)
                 soundFlag = false
             }
         }
@@ -182,6 +190,8 @@ object AirBallAbility {
             this.maxDurationProperty =
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
+            this.properties = listOf(airBallMaxSize)
+
             syncedValueChangeEvent.listen {
                 val player = it.entity as? PlayerEntity ?: return@listen
                 if (it.key == AIR_BENDING_KEY && player.world.isClient) {
@@ -202,6 +212,10 @@ object AirBallAbility {
                     context.player.launchAnyAirBall(packet)
                 }
             }
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.WIND_CHARGE.defaultStack)
         }
 
         override fun getBackgroundTexture(): Identifier {

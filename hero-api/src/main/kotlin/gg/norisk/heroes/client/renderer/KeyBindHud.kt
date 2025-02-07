@@ -2,15 +2,18 @@ package gg.norisk.heroes.client.renderer
 
 import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.hero.utils.ColorUtils
+import gg.norisk.ui.api.value.key
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.text.Text
+import net.minecraft.util.Colors
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.core.world.pos.Pos2i
+import java.awt.Color
 
 object KeyBindHud {
     fun init() {
@@ -32,11 +35,27 @@ object KeyBindHud {
             var text = literalText {
                 text {
                     //if (keyBind.condition != null) text("${keyBind.condition.hudText} + ")
+                    val deactivatedColor = 0x4A4A4A
                     text(
                         keyBind?.boundKeyLocalizedText ?: keyBind?.defaultKey?.localizedText
                         ?: ability.getCustomActivation()
-                    )
-                    color = 0x4A4A4A
+                    ) {
+                        color = if (ability.hasCooldown(player)) {
+                            deactivatedColor
+                        } else {
+                            hero.color
+                        }
+                    }
+                    if (ability.condition != null) {
+                        text(" + ")
+                        text(Text.translatable("heroes.ability.condition.short.${ability.internalKey}")) {
+                            color = if (ability.condition?.invoke(player) == true || ability.condition == null) {
+                                hero.color
+                            } else {
+                                deactivatedColor
+                            }
+                        }
+                    }
                 }
 
                 text(" - ") { color = 0x919191 }
@@ -67,9 +86,12 @@ object KeyBindHud {
                 )
                 drawContext.drawText(
                     MinecraftClient.getInstance().textRenderer, literalText {
-                        text(text)
                         if (!ability.hasUnlocked(player)) {
+                            text(text.string)
                             strikethrough = true
+                            color = Colors.LIGHT_GRAY
+                        } else {
+                            text(text)
                         }
                     }, pos.x, pos.z, 14737632, true
                 )

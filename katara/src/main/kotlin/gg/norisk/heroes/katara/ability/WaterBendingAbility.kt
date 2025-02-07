@@ -23,6 +23,8 @@ import gg.norisk.heroes.katara.client.sound.WaterSelectingSoundInstance
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import gg.norisk.heroes.katara.registry.EntityRegistry
 import gg.norisk.heroes.katara.registry.SoundRegistry
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
@@ -37,6 +39,7 @@ import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
+import net.minecraft.item.Items
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -73,6 +76,10 @@ object WaterBendingAbility {
             if (!player.world.isClient) {
                 player.isWaterSelecting = true
             }
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.WATER_BUCKET.defaultStack)
         }
 
 

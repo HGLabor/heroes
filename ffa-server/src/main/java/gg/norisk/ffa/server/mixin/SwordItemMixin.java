@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mixin;
 
+import gg.norisk.ffa.server.mechanics.KitEditor;
 import kotlin.random.Random;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SwordItemMixin {
     @Inject(method = "postDamageEntity", at = @At("HEAD"), cancellable = true)
     public void breakReduction(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
+        if (KitEditor.INSTANCE.isUHC()) {
+            return;
+        }
         if (Random.Default.nextBoolean()) {
             ci.cancel();
         }

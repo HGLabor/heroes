@@ -11,5 +11,9 @@
   "heroes.ability.locked": "You must unlock this ability first.",
   "heroes.ability.healing.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
   "heroes.ability.water_circle.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
-  "heroes.ability.water_circle.custom_activation": "Spin 360°"
+  "heroes.ability.water_circle.custom_activation": "Spin 360°",
+  "heroes.ability.condition.short.water_forming": "Water",
+  "heroes.ability.condition.short.water_pillar": "In Water",
+  "heroes.ability.condition.short.healing": "Water",
+  "heroes.ability.condition.short.eart_trap": "Sneak"
 }
