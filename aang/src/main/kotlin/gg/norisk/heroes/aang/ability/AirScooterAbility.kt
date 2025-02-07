@@ -30,6 +30,7 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.entity.modifyVelocity
@@ -150,6 +151,10 @@ object AirScooterAbility {
                     }
                 }
             }
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
         override fun onStart(player: PlayerEntity) {

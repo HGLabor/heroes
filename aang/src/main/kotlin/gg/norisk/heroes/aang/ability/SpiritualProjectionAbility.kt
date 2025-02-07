@@ -40,6 +40,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.ActionResult
+import net.minecraft.util.Identifier
 import net.minecraft.util.TypedActionResult
 import net.minecraft.world.TeleportTarget
 import net.silkmc.silk.commands.command
@@ -243,6 +244,10 @@ object SpiritualProjectionAbility {
 
             this.cooldownProperty =
                 buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
         override fun onStart(player: PlayerEntity) {

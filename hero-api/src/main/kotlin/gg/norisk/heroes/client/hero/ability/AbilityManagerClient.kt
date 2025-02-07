@@ -123,7 +123,7 @@ object AbilityManagerClient : IAbilityManager {
         description: AbilityPacketDescription.Use
     ) {
         val hero = player.getHero() ?: return
-        player.sendDebugMessage("Sending Start Use $ability".literal)
+        //player.sendDebugMessage("Sending Start Use $ability".literal)
         val packet = AbilityPacket(player.uuid, hero.internalKey, ability.internalKey, description)
         Networking.c2sAbilityPacket.send(packet)
     }
@@ -132,7 +132,7 @@ object AbilityManagerClient : IAbilityManager {
         if (ability.hasCooldown(player)) {
             return false
         } else {
-            player.sendDebugMessage("Sending Start Ability $ability".literal)
+            //player.sendDebugMessage("Sending Start Ability $ability".literal)
             val packet =
                 AbilityPacket(player.uuid, hero.internalKey, ability.internalKey, AbilityPacketDescription.Start)
             Networking.c2sAbilityPacket.send(packet)
@@ -141,7 +141,7 @@ object AbilityManagerClient : IAbilityManager {
     }
 
     fun endAbility(player: PlayerEntity, hero: Hero, ability: ToggleAbility): Boolean {
-        player.sendDebugMessage("Sending End Ability $ability".literal)
+        //player.sendDebugMessage("Sending End Ability $ability".literal)
         val packet = AbilityPacket(player.uuid, hero.internalKey, ability.internalKey, AbilityPacketDescription.End)
         Networking.c2sAbilityPacket.send(packet)
         return true

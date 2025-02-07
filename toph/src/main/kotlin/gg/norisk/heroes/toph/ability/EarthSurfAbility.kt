@@ -33,6 +33,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.annotations.ExperimentalSilkApi
 import net.silkmc.silk.core.entity.modifyVelocity
@@ -80,6 +81,10 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
                 player.spawnEarthCircle()
             }
         }
+    }
+
+    override fun getBackgroundTexture(): Identifier {
+        return Identifier.of("textures/block/packed_mud.png")
     }
 
     val EARTH_SURF_SPEED_BOOST = EntityAttributeModifier(

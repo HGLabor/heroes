@@ -58,7 +58,7 @@ object SelectorServerManager {
         } else {
             KitEditor.handleKit(this)
         }
-        scoreboards.computeIfAbsent(this.uuid) { Scoreboard.getScoreboardForPlayer(this) }.displayToPlayer(this)
+        //scoreboards.computeIfAbsent(this.uuid) { Scoreboard.getScoreboardForPlayer(this) }.displayToPlayer(this)
         (this as LivingEntityAccessor).lastAttackTime = -10000
     }
 

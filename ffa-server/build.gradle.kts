@@ -9,6 +9,7 @@ dependencies {
 
     modApi(libs.bundles.fabric)
     modApi(libs.bundles.silk)
+    modApi(libs.bundles.nrc)
     modApi(libs.bundles.performance)
     modApi(libs.owolib)
     modApi(libs.npcLibApi)

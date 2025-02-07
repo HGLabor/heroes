@@ -26,6 +26,7 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.entity.directionVector
 import net.silkmc.silk.core.task.mcCoroutineTask
@@ -129,6 +130,10 @@ object HealingAbility {
                 it.getCurrentBendingEntity() != null
             }
             this.usageProperty = buildMultipleUses(3.0, 3, AddValueTotal(1.0, 1.0, 1.0))
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
         }
 
         override fun onStart(player: PlayerEntity) {

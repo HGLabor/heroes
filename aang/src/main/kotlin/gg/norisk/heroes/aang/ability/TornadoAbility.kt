@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RotationAxis
 import net.minecraft.util.math.Vec3d
@@ -144,6 +145,10 @@ object TornadoAbility {
 
             this.cooldownProperty =
                 buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
         override fun onStart(player: PlayerEntity) {

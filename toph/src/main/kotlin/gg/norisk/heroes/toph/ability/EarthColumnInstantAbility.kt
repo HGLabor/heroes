@@ -33,6 +33,7 @@ import net.minecraft.network.packet.s2c.play.PositionFlag
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
+import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.BlockPos
@@ -115,6 +116,10 @@ val EarthColumnInstantAbility = object : HoldAbility(
                 earthColumn.move(world, it.round.toInt(), it.counterDownToZero == 0L)
             }
         }
+    }
+
+    override fun getBackgroundTexture(): Identifier {
+        return Identifier.of("textures/block/packed_mud.png")
     }
 
     val maxDistance = 45.0

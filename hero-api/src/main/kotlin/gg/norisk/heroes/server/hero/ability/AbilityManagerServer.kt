@@ -22,6 +22,8 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
@@ -81,9 +83,23 @@ object AbilityManagerServer : IAbilityManager {
         val property = ability.getAllProperties().find { it.internalKey == packet.propertyKey } ?: return
         val cachedPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
 
+        val oldLevel = property.getLevelInfo(player.uuid)
+
         val experienceToSpend = Math.min(500, cachedPlayer.xp)
         val spentExperience = property.addExperience(player.uuid, experienceToSpend)
         cachedPlayer.xp -= spentExperience
+
+        val newLevel = property.getLevelInfo(player.uuid)
+
+        logger.info("OldLevel $oldLevel CurrentLevel: $newLevel")
+        if (oldLevel.currentLevel != newLevel.currentLevel) {
+            //upgrade
+            if (newLevel.currentLevel == newLevel.maxLevel) {
+                player.playSoundToPlayer(SoundEvents.BLOCK_TRIAL_SPAWNER_OPEN_SHUTTER, SoundCategory.MASTER, 1f, 1f)
+            } else {
+                player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.5f, 1f)
+            }
+        }
 
         logger.info("Spent Experience $spentExperience $experienceToSpend ${cachedPlayer.xp}")
         player.dbPlayer = cachedPlayer

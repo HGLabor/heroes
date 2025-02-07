@@ -94,6 +94,10 @@ geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", 
 emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
 
 # nrc
+nrcZoom = { group = "gg.norisk", name = "noriskclient-zoom", version = "1.21-2.0.2" }
+nrcFullbright = { group = "gg.norisk", name = "fullbright", version = "1.21-2.0.0" }
+nrcFreelook = { group = "gg.norisk", name = "freelook", version = "1.21-2.0.4" }
+
 
 # misc
 worldedit = { group = "com.sk89q.worldedit", name = "worldedit-fabric-mc1.21", version = "7.3.4" }
@@ -106,6 +110,7 @@ checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version
 silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
 performance = ["sodium", "lithium", "modmenu", "ferrite-core", "nvidium"]
 fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
+nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom"]
 
 [plugins]
 

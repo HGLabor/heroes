@@ -22,6 +22,7 @@ import gg.norisk.heroes.katara.client.sound.VelocityBasedFlyingSoundInstance
 import gg.norisk.heroes.katara.entity.IWaterBendingPlayer
 import gg.norisk.heroes.katara.event.FluidEvents
 import gg.norisk.utils.OldAnimation
+import io.wispforest.owo.ui.component.Components
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
@@ -31,11 +32,13 @@ import net.minecraft.client.render.RenderLayers
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
+import net.minecraft.item.Items
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RotationAxis
 import net.minecraft.util.math.Vec3d
@@ -273,8 +276,12 @@ object WaterPillarAbility {
         return positions.toList()
     }
 
-    val waterPillarDistance = NumberProperty(10.0, 5, "Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3))
-    val waterPillarVelocityBoost = NumberProperty(1.0, 5, "Start Boost", MultiplyBase(1.0, 1.2, 1.4, 1.5, 1.8, 1.9))
+    val waterPillarDistance = NumberProperty(10.0, 5, "Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3), icon = {
+        Components.item(Items.SPYGLASS.defaultStack)
+    })
+    val waterPillarVelocityBoost = NumberProperty(1.0, 5, "Start Boost", MultiplyBase(1.0, 1.2, 1.4, 1.5, 1.8, 1.9), icon = {
+        Components.item(Items.FIREWORK_ROCKET.defaultStack)
+    })
 
     val ability = object : ToggleAbility("Water Pillar") {
         init {
@@ -290,6 +297,10 @@ object WaterPillarAbility {
             )
             this.cooldownProperty =
                 CooldownProperty(10.0, 5, "Cooldown", AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
         }
 
         override fun onStart(player: PlayerEntity) {

@@ -61,6 +61,10 @@ object WaterFormingAbility {
             }
         }
 
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
+        }
+
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             super.onEnd(player, abilityEndInformation)
             if (player is ServerPlayerEntity) {

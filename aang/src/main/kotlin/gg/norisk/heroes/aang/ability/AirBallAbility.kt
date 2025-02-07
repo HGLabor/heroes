@@ -30,6 +30,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.entity.directionVector
@@ -201,6 +202,10 @@ object AirBallAbility {
                     context.player.launchAnyAirBall(packet)
                 }
             }
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
         override fun onStart(player: PlayerEntity) {

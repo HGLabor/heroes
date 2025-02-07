@@ -3,6 +3,7 @@ package gg.norisk.heroes.common.ability
 import gg.norisk.heroes.common.db.DatabaseManager
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
+import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
@@ -16,6 +17,7 @@ sealed class PlayerProperty<T> {
     abstract var maxLevel: Int
     abstract var name: String
     abstract var levelScale: Int
+    abstract var icon: () -> Component
 
     @Transient
     lateinit var hero: Hero
@@ -53,9 +55,9 @@ sealed class PlayerProperty<T> {
         }
     }
 
-    fun getLevelInfo(uuid: UUID): LevelInformation {
+    fun getLevelInfo(uuid: UUID, level: Int? = null): LevelInformation {
         val player = getOrLoadPlayer(uuid)
-        val currentLevel = Math.min(maxLevel, calculateLevel(player.experiencePoints))
+        val currentLevel = Math.min(maxLevel, level ?: calculateLevel(player.experiencePoints))
         val nextLevel = Math.min(maxLevel, currentLevel + 1)
 
         val xpCurrentLevel = getXpForLevel(currentLevel)
@@ -73,7 +75,12 @@ sealed class PlayerProperty<T> {
         }
 
         val percentageTillNextLevel = if (currentLevel < maxLevel) {
-            ((player.experiencePoints - xpCurrentLevel).toDouble() / (xpNextLevel - xpCurrentLevel).toDouble()) * 100.0
+            Math.max(
+                0.0, Math.min(
+                    100.0,
+                    ((player.experiencePoints - xpCurrentLevel).toDouble() / (xpNextLevel - xpCurrentLevel).toDouble()) * 100.0
+                )
+            )
         } else {
             100.0 // Max-Level erreicht
         }
@@ -132,6 +139,7 @@ sealed class PlayerProperty<T> {
 
     val internalKey get() = name.lowercase().replace(" ", "_")
     val translationKey get() = "heroes.property.${internalKey}"
+    val descriptionKey get() = "heroes.property.${internalKey}.description"
 
     fun getOrLoadPlayer(uuid: UUID): PropertyPlayer {
         val player = DatabaseManager.provider.getCachedPlayer(uuid)

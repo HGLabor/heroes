@@ -9,7 +9,6 @@ accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntit
 accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setLineWidth (I)V
 
 accessible method net/minecraft/server/network/SpawnLocating findOverworldSpawn (Lnet/minecraft/server/world/ServerWorld;II)Lnet/minecraft/util/math/BlockPos;
-accessible method net/minecraft/server/network/ServerPlayerEntity moveToSpawn (Lnet/minecraft/server/world/ServerWorld;)V
 accessible field net/minecraft/entity/damage/DamageTracker ageOnLastDamage I
 accessible field net/minecraft/entity/damage/DamageTracker recentlyAttacked Z
 accessible field net/minecraft/entity/damage/DamageTracker hasDamage Z

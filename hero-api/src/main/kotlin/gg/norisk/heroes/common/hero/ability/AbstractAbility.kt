@@ -2,7 +2,6 @@ package gg.norisk.heroes.common.hero.ability
 
 
 import gg.norisk.heroes.common.HeroesManager.logger
-import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.ability.*
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.ability.operation.MultiplyBase
@@ -13,11 +12,14 @@ import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import kotlinx.coroutines.*
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
@@ -31,8 +33,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class AbstractAbility<T : Any>(val name: String) {
     lateinit var hero: Hero
     val internalKey = name.lowercase().replace(' ', '_')
-    val description by lazy { Text.translatable("text.hero.${hero.internalKey}.ability.$internalKey.description") }
-    val icon: Identifier by lazy { "textures/hero/${hero.internalKey}/abilities/$internalKey.png".toId() }
+    val description by lazy { Text.translatable("hero.${hero.internalKey}.ability.$internalKey.description") }
     var condition: ((PlayerEntity) -> Boolean)? = null
 
     var showInKeybindHud: Boolean = true
@@ -59,11 +60,19 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         }
     }
 
+    open fun getIconComponent(): Component {
+        return Components.item(Items.DIAMOND_SWORD.defaultStack)
+    }
+
+    open fun getBackgroundTexture(): Identifier {
+        return Identifier.of("textures/block/stone.png")
+    }
+
     fun handleCooldown(player: ServerPlayerEntity): Boolean {
         if (hasCooldown(player)) {
             // Client an den cooldown erinnern!
             getCooldown(player)?.let { cooldownInfo ->
-                player.sendDebugMessage("Cooldown: ${cooldownInfo.remaining}".literal)
+                //player.sendDebugMessage("Cooldown: ${cooldownInfo.remaining}".literal)
                 Networking.s2cCooldownPacket.send(cooldownInfo, player)
                 return true
             }
@@ -103,8 +112,8 @@ abstract class AbstractAbility<T : Any>(val name: String) {
 
         val value = cooldownProperty.getValue(player.uuid)
         logger.info("Sending Cooldown $value to ${player.gameProfile.name}")
-        player.sendDebugMessage("Value: $value Level: ${cooldownProperty.getLevelInfo(player.uuid)}".literal)
-        player.sendDebugMessage("Property: $cooldownProperty".literal)
+        //player.sendDebugMessage("Value: $value Level: ${cooldownProperty.getLevelInfo(player.uuid)}".literal)
+        //player.sendDebugMessage("Property: $cooldownProperty".literal)
         val duration = value.seconds.inWholeNanoseconds
         val cooldownInfo = CooldownInfo(
             player.id,
@@ -131,19 +140,19 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         cooldowns[uuid] = cooldownInfo
         Networking.s2cCooldownPacket.send(cooldownInfo, player)
 
-        player.sendDebugMessage("Sending Cooldown: $cooldownInfo".literal)
+        //player.sendDebugMessage("Sending Cooldown: $cooldownInfo".literal)
         println(JSON.encodeToString(cooldownInfo))
 
         if (cooldownInfo.remaining > 0) {
             cooldownCoroutineScope.launch {
                 //NO DELAY IN CREATIVE MODE FOR TESTING?
-                player.sendMessage("START".literal.withColor(Color.red.rgb))
-                player.sendMessage(getCooldownText(cooldownInfo)?.literal)
+                //player.sendMessage("START".literal.withColor(Color.red.rgb))
+                //player.sendMessage(getCooldownText(cooldownInfo)?.literal)
                 if (!player.isCreative) {
                     delay(value.seconds.inWholeMilliseconds)
                 }
-                player.sendMessage("END".literal.withColor(Color.red.rgb))
-                player.sendMessage(getCooldownText(cooldownInfo)?.literal)
+                //player.sendMessage("END".literal.withColor(Color.red.rgb))
+                //player.sendMessage(getCooldownText(cooldownInfo)?.literal)
                 cooldowns -= uuid
                 Networking.s2cCooldownPacket.send(
                     CooldownInfo(
@@ -167,7 +176,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
 
     fun hasCooldown(player: PlayerEntity): Boolean {
         val cooldownInfo = getCooldown(player) ?: return false
-        player.sendDebugMessage("Cooldown: $cooldownInfo".literal)
+        //player.sendDebugMessage("Cooldown: $cooldownInfo".literal)
         return cooldownInfo.remaining > 0
     }
 

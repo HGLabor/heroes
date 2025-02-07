@@ -1,6 +1,7 @@
 package gg.norisk.heroes.common.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import gg.norisk.heroes.client.ui.OrthoCamera;
 import gg.norisk.heroes.client.ui.screen.HeroSelectorScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class GameOptionsMixin {
     @ModifyReturnValue(method = "getPerspective", at = @At("RETURN"))
     private Perspective heroapi$GetPerspective(Perspective original) {
-        if (MinecraftClient.getInstance().currentScreen instanceof HeroSelectorScreen) {
+        if (OrthoCamera.INSTANCE.isEnabled()) {
             return Perspective.THIRD_PERSON_FRONT;
         }
         return original;

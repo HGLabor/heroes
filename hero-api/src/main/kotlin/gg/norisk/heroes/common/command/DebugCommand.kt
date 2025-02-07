@@ -191,7 +191,6 @@ object DebugCommand {
     ): Text {
         val percent = current.toFloat() / max
         val progressBars = (totalBars * percent).toInt()
-        println("ProgressBars: $progressBars $totalBars $percent")
 
         return literalText {
             repeat(progressBars) {

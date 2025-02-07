@@ -1,6 +1,7 @@
 package gg.norisk.heroes.common.mixin.client.compat;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import gg.norisk.heroes.client.ui.OrthoCamera;
 import gg.norisk.heroes.client.ui.screen.HeroSelectorScreen;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.render.chunk.DefaultChunkRenderer;
@@ -22,6 +23,6 @@ public abstract class DefaultChunkRendererMixin extends ShaderChunkRenderer {
             at = @At(value = "FIELD", target = "Lme/jellysquid/mods/sodium/client/gui/SodiumGameOptions$PerformanceSettings;useBlockFaceCulling:Z", remap = false)
     )
     private boolean ffa$blockFaceCulling(boolean original) {
-        return original && !(MinecraftClient.getInstance().currentScreen instanceof HeroSelectorScreen);
+        return original && !(OrthoCamera.INSTANCE.isEnabled());
     }
 }

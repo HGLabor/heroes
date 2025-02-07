@@ -41,6 +41,7 @@ import net.minecraft.registry.tag.BlockTags
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Hand
+import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.silkmc.silk.core.server.players
@@ -72,6 +73,11 @@ object WaterBendingAbility {
             if (!player.world.isClient) {
                 player.isWaterSelecting = true
             }
+        }
+
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
         }
 
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {

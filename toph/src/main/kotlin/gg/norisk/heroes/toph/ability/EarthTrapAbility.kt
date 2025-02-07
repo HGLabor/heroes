@@ -75,6 +75,10 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
         }
     }
 
+    override fun getBackgroundTexture(): Identifier {
+        return Identifier.of("textures/block/packed_mud.png")
+    }
+
     val EARTH_TRAP_SLOW_BOOST = EntityAttributeModifier(
         Identifier.of("earth_trap"),
         -0.7,

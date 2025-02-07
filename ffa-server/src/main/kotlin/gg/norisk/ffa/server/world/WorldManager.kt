@@ -117,8 +117,8 @@ object WorldManager {
         ServerLifecycleEvents.SERVER_STARTED.register { server ->
             logger.info("Init Map Reset Cycle...")
             usedMaps.clear()
-            mapResetCycle(server)
-            setWorldBorder(server.overworld)
+            //mapResetCycle(server)
+            //setWorldBorder(server.overworld)
         }
     }
 
