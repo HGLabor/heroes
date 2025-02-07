@@ -8,6 +8,8 @@
   "heroes.announce_kill_streak": "%s is on a %s killstreak",
   "heroes.end_kill_streak": "§4%s has been killed on a %s killstreak.",
   "heroes.property.cooldown": "Cooldown",
+  "heroes.ability.locked": "You must unlock this ability first.",
   "heroes.ability.healing.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
-  "heroes.ability.locked": "You must unlock this ability first."
+  "heroes.ability.water_circle.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
+  "heroes.ability.water_circle.custom_activation": "Spin 360°"
 }

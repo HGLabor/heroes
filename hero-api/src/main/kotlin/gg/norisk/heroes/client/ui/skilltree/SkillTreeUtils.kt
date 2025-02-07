@@ -52,6 +52,9 @@ object SkillTreeUtils {
         })
         for (property in ability.getAllProperties()) {
             if (property is SingleUseProperty) continue
+            if (property is CooldownProperty) {
+                if (property.name == "NoCooldown") continue
+            }
             var lastChild: TreeNode<ISkill>? = root
 
             repeat(property.maxLevel) { level ->

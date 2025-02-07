@@ -12,6 +12,7 @@ import gg.norisk.heroes.common.db.ExperienceManager
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.hero.getHero
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
 import net.minecraft.entity.passive.ChickenEntity
@@ -30,7 +31,7 @@ object KillManager {
         killCommand()
 
         ServerLivingEntityEvents.ALLOW_DEATH.register { entity, source, _ ->
-            val chicken = entity as? ChickenEntity ?: return@register true
+            val chicken = entity as? LivingEntity ?: return@register true
 
             val attacker =
                 source.attacker as? ServerPlayerEntity? ?: (chicken.damageTracker as IDamageTrackerExt).ffa_lastPlayer

@@ -8,7 +8,7 @@ import kotlinx.serialization.Transient
 import net.minecraft.item.Items
 
 @Serializable
-class CooldownProperty(
+open class CooldownProperty(
     override var baseValue: Double,
     override var maxLevel: Int,
     override var name: String,

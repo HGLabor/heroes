@@ -57,6 +57,7 @@ object KataraManager : ModInitializer, ClientModInitializer, DedicatedServerModI
 
     val Katara: Hero by Hero("Katara") {
         ability(WaterBendingAbility.ability)
+        ability(WaterCircleAbilityV2.ability)
         ability(WaterPillarAbility.ability)
         ability(WaterFormingAbility.ability)
         ability(HealingAbility.ability)

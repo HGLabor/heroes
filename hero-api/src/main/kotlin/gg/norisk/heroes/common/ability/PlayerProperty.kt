@@ -39,6 +39,9 @@ sealed class PlayerProperty<T> {
     abstract fun fromJson(text: String)
     abstract fun toJson(): String
     abstract fun toJsonElement(): JsonElement
+    open fun getMaxValue(): T {
+        return getValue(maxLevel)
+    }
 
     fun addExperience(uuid: UUID, experienceToAdd: Int): Int {
         val player = getOrLoadPlayer(uuid)

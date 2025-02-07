@@ -3,6 +3,10 @@ package gg.norisk.heroes.katara.ability
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
+import gg.norisk.heroes.common.ability.NumberProperty
+import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.events.EntityEvents
+import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
 import gg.norisk.heroes.katara.client.render.IFluidRendererExt
@@ -11,12 +15,13 @@ import gg.norisk.heroes.katara.entity.IKataraEntity
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import gg.norisk.heroes.katara.registry.SoundRegistry
 import gg.norisk.utils.OldAnimation
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AllowDamage
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.block.BlockState
 import net.minecraft.client.MinecraftClient
@@ -26,12 +31,17 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageTypes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
+import net.minecraft.item.Items
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
+import net.minecraft.text.Text
+import net.minecraft.util.Colors
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.commands.command
-import net.silkmc.silk.core.server.players
+import net.silkmc.silk.core.text.literalText
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import kotlin.math.*
@@ -40,6 +50,63 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 object WaterCircleAbilityV2 {
+    val waterCircleMaxBalls = NumberProperty(1.0, 5, "Sphere", AddValueTotal(1.0, 1.0, 1.0, 1.0, 1.0, 3.0), icon = {
+        Components.item(Items.HEART_OF_THE_SEA.defaultStack)
+    })
+    val waterCircleMaxFallDamage = NumberProperty(10.0, 3, "Fall Distance", AddValueTotal(20.0, 30.0, 40.0), icon = {
+        Components.item(Items.WATER_BUCKET.defaultStack)
+    })
+
+    val ability = object : AbstractAbility<Any>("Water Circle") {
+
+        init {
+            this.cooldownProperty = buildNoCooldown()
+            this.properties = listOf(
+                waterCircleMaxBalls,
+                waterCircleMaxFallDamage
+            )
+        }
+
+        override fun onTick(player: PlayerEntity) {
+            super.onTick(player)
+            if (player is ServerPlayerEntity) {
+                val currentEntity = player.getCurrentBendingEntity()
+                if (currentEntity != null) {
+                    (player as IKataraEntity).katara_entitySpinTracker.update(player)
+                    if (player.katara_entitySpinTracker.hasSpunWildly()) {
+                        if (hasUnlocked(player)) {
+                            (player as IKataraEntity).katara_entitySpinTracker.clear()
+                            addToCircle(currentEntity, player)
+                        } else {
+                            player.katara_entitySpinTracker.clear()
+                            player.sendMessage(Text.translatable("heroes.ability.locked").withColor(Colors.RED))
+                        }
+                    }
+                } else {
+                    (player as IKataraEntity).katara_entitySpinTracker.clear()
+                }
+            }
+        }
+
+        override fun hasUnlocked(player: PlayerEntity): Boolean {
+            return WaterBendingAbility.ability.cooldownProperty.isMaxed(player.uuid) || player.isCreative
+        }
+
+        override fun getUnlockCondition(): Text {
+            return literalText {
+                text(Text.translatable("heroes.ability.$internalKey.unlock_condition"))
+            }
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.HEART_OF_THE_SEA.defaultStack)
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
+        }
+    }
+
     fun initServer() {
         if (FabricLoader.getInstance().isDevelopmentEnvironment) {
             command("waterbending") {
@@ -63,11 +130,20 @@ object WaterCircleAbilityV2 {
                 }
             }
         }
+
+        EntityEvents.computeFallDamageEvent.listen { event ->
+            if (event.livingEntity is ServerPlayerEntity) {
+                if (event.originalFallDamage > 0 && event.fallDistance <= waterCircleMaxFallDamage.getValue(event.livingEntity.uuid)) {
+                    if (event.livingEntity.breakWaterCirclePiece()) {
+                        event.fallDamage = 0
+                    }
+                }
+            }
+        }
+
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(AllowDamage { entity, source, amount ->
             if (entity is PlayerEntity) {
-                if (source.isOf(DamageTypes.FALL) && entity.breakWaterCirclePiece()) {
-                    return@AllowDamage false
-                } else if ((source.isOf(DamageTypes.ON_FIRE)) && entity.breakWaterCirclePiece()) {
+                if ((source.isOf(DamageTypes.ON_FIRE)) && entity.breakWaterCirclePiece()) {
                     entity.extinguishWithSound()
                     return@AllowDamage false
                 } else if ((source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.LAVA)) && entity.breakWaterCirclePiece()) {
@@ -77,32 +153,18 @@ object WaterCircleAbilityV2 {
             }
             return@AllowDamage true
         })
-        ServerTickEvents.END_SERVER_TICK.register(ServerTickEvents.EndTick {
-            for (player in it.players) {
-                val currentEntity = player.getCurrentBendingEntity()
-                if (currentEntity != null) {
-                    (player as IKataraEntity).katara_entitySpinTracker.update(player)
-                    if (player.katara_entitySpinTracker.hasSpunWildly()) {
-                        (player as IKataraEntity).katara_entitySpinTracker.clear()
-                        addToCircle(currentEntity, player)
-                    }
-                } else {
-                    (player as IKataraEntity).katara_entitySpinTracker.clear()
-                }
-            }
-        })
     }
 
     private fun addToCircle(entity: WaterBendingEntity?, player: PlayerEntity) {
-        if (player.waterCircleAmount <= 0) {
-            player.sound(SoundRegistry.WATER_CIRCLE_ADD,0.7f,Random.nextDouble(1.2,1.5))
+        if (player.waterCircleAmount < waterCircleMaxBalls.getValue(player.uuid)) {
+            player.sound(SoundRegistry.WATER_CIRCLE_ADD, 0.7f, Random.nextDouble(1.2, 1.5))
             entity?.discard()
             player.waterCircleAmount += 1
         }
     }
 
     fun LivingEntity.breakWaterCirclePiece(): Boolean {
-        if (waterCircleAmount == 1) {
+        if (waterCircleAmount > 0) {
             waterCircleAmount -= 1
             sound(SoundEvents.ENTITY_GENERIC_SPLASH, 1f, 1f)
             repeat(40) {
@@ -131,7 +193,7 @@ object WaterCircleAbilityV2 {
             for (player in it.world().players) {
                 val amount = player.waterCircleAmount
                 if (amount > 0) {
-                    repeat(10) { index ->
+                    repeat(amount) { index ->
                         renderWaterCircle(
                             player,
                             matrixStack,
@@ -139,7 +201,7 @@ object WaterCircleAbilityV2 {
                             Fluids.FLOWING_WATER.defaultState.blockState,
                             OldAnimation(0.5f, 0.5f, 1.seconds.toJavaDuration()),
                             index,
-                            10, // Pass the total amount for even distribution
+                            waterCircleMaxBalls.getMaxValue().toInt(), // Pass the total amount for even distribution
                             System.currentTimeMillis() // Use current time in milliseconds for rotation
                         )
                     }

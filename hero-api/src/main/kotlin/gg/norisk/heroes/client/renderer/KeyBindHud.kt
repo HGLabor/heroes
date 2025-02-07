@@ -27,14 +27,14 @@ object KeyBindHud {
         drawContext.matrices.scale(scale, scale, scale)
 
 
-        hero.getUsableAbilities(player).filter { it.keyBind != null }.map { ability ->
-            val keyBind = ability.keyBind!!
+        hero.getUsableAbilities(player).map { ability ->
+            val keyBind = ability.keyBind
             var text = literalText {
                 text {
                     //if (keyBind.condition != null) text("${keyBind.condition.hudText} + ")
                     text(
-                        keyBind.boundKeyLocalizedText ?: keyBind.defaultKey?.localizedText
-                        ?: "".literal
+                        keyBind?.boundKeyLocalizedText ?: keyBind?.defaultKey?.localizedText
+                        ?: ability.getCustomActivation()
                     )
                     color = 0x4A4A4A
                 }

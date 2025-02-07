@@ -3,6 +3,7 @@ package gg.norisk.heroes.server.hero.ability
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.db.DatabaseManager
 import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
+import gg.norisk.heroes.common.db.ExperienceManager
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.*
@@ -132,6 +133,7 @@ object AbilityManagerServer : IAbilityManager {
                 is PressAbility,
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
+                    ExperienceManager.addXp(player, ExperienceManager.SMALL_ABILITY_USE, true)
                     ability.onStart(player)
                 }
 
@@ -147,6 +149,7 @@ object AbilityManagerServer : IAbilityManager {
                             if (ability.handleCooldown(player)) return@runCatching
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
+                            ExperienceManager.addXp(player, ExperienceManager.SMALL_ABILITY_USE, true)
                             ability.onStart(player)
                             //ability.internalCallbacks.START
                         }

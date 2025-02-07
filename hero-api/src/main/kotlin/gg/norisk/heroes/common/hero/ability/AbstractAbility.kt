@@ -57,6 +57,10 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         }
     }
 
+    open fun getCustomActivation(): Text {
+        return Text.translatable("heroes.ability.$internalKey.custom_activation")
+    }
+
     open fun hasUnlocked(player: PlayerEntity): Boolean {
         return true
     }
@@ -95,6 +99,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
 
     fun addCooldown(player: PlayerEntity) {
         if (player !is ServerPlayerEntity) return
+        if (cooldownProperty.name == "NoCooldown") return
         //has cooldown
         if (handleCooldown(player)) return
         val uuid = player.uuid
@@ -204,6 +209,10 @@ abstract class AbstractAbility<T : Any>(val name: String) {
 
     protected fun buildCooldown(baseValue: Double, maxLevel: Int, operation: Operation): CooldownProperty {
         return CooldownProperty(baseValue, maxLevel, "Cooldown", operation)
+    }
+
+    protected fun buildNoCooldown(): CooldownProperty {
+        return CooldownProperty(0.0, 0, "NoCooldown", MultiplyBase())
     }
 
     fun getCooldownText(cooldown: CooldownInfo): String? {
