@@ -25,6 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
+import net.minecraft.util.Colors
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
@@ -117,6 +118,7 @@ object AbilityManagerServer : IAbilityManager {
             val description = packet.description
             val abilityScope = AbilityScope(player)
             if (!ability.hasUnlocked(player)) {
+                player.sendMessage(Text.translatable("heroes.ability.locked").withColor(Colors.RED))
                 return@runCatching
             }
             val condition = ability.condition

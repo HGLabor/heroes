@@ -53,9 +53,9 @@ object KeyBindHud {
                 }
             }
 
-            text
-        }.sortedByDescending { MinecraftClient.getInstance().textRenderer.getWidth(it) }
-            .forEachIndexed { index, text ->
+            text to ability
+        }.sortedByDescending { MinecraftClient.getInstance().textRenderer.getWidth(it.first) }
+            .forEachIndexed { index, (text, ability) ->
                 val pos = Pos2i(5, 5 + (text.height + offset * 2) * index)
                 drawContext.fill(
                     RenderLayer.getGuiOverlay(),
@@ -66,7 +66,12 @@ object KeyBindHud {
                     -1873784752
                 )
                 drawContext.drawText(
-                    MinecraftClient.getInstance().textRenderer, text, pos.x, pos.z, 14737632, true
+                    MinecraftClient.getInstance().textRenderer, literalText {
+                        text(text)
+                        if (!ability.hasUnlocked(player)) {
+                            strikethrough = true
+                        }
+                    }, pos.x, pos.z, 14737632, true
                 )
             }
 

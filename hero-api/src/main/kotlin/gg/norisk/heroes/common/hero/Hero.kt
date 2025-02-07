@@ -49,7 +49,7 @@ open class Hero(val name: String) {
     }
 
     fun getUsableAbilities(player: PlayerEntity): List<AbstractAbility<*>> {
-        return abilities.values.filter { it.hasUnlocked(player) }
+        return abilities.values.toList()
     }
 
     @Serializable

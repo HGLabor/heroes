@@ -135,7 +135,7 @@ object HealingAbility {
         }
 
         override fun hasUnlocked(player: PlayerEntity): Boolean {
-            return WaterBendingAbility.ability.cooldownProperty.isMaxed(player.uuid)
+            return WaterBendingAbility.ability.cooldownProperty.isMaxed(player.uuid) || player.isCreative
         }
 
         override fun getUnlockCondition(): Text {
