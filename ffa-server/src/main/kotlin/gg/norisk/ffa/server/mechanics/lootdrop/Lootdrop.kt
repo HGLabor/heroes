@@ -1,7 +1,10 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
 import gg.norisk.ffa.server.mechanics.KitEditor
-import gg.norisk.ffa.server.mechanics.lootdrop.loottable.*
+import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ExperienceLootdropItem
+import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ItemStackLootdropItem
+import gg.norisk.ffa.server.mechanics.lootdrop.loottable.SoupLootdropLoottable
+import gg.norisk.ffa.server.mechanics.lootdrop.loottable.UHCLootdropLoottable
 import gg.norisk.heroes.common.db.ExperienceManager
 import kotlinx.coroutines.*
 import net.minecraft.block.BarrelBlock
@@ -110,6 +113,20 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                     it.velocity = Vec3d(swayX, a, swayZ)
                     it.velocityDirty = true
                 }
+
+                val particleLocation = barrelEntity.blockPos.toCenterPos()
+                world.spawnParticles(
+                    ParticleTypes.CLOUD,
+                    particleLocation.x,
+                    particleLocation.y,
+                    particleLocation.z,
+                    1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.05
+                )
+
                 delay(50.milliseconds)
             }
         }
@@ -209,6 +226,24 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 0.9f,
                 1.2f
             )
+        }
+
+        lootdropCoroutine.launch {
+            while (state == LootdropState.LANDED) {
+                val particleLocation = landingPos.toCenterPos()
+                world.spawnParticles(
+                    ParticleTypes.ELECTRIC_SPARK,
+                    particleLocation.x,
+                    particleLocation.y,
+                    particleLocation.z,
+                    10,
+                    0.25,
+                    0.25,
+                    0.25,
+                    0.005
+                )
+                delay(50.milliseconds)
+            }
         }
     }
 
