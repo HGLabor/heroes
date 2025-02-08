@@ -8,6 +8,7 @@ import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
 import net.fabricmc.api.EnvType
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient

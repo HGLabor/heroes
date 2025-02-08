@@ -7,6 +7,7 @@ import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import gg.norisk.heroes.server.database.player.PlayerProvider
+import kotlinx.serialization.encodeToString
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.core.task.mcCoroutineTask
