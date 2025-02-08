@@ -3,11 +3,13 @@ package gg.norisk.heroes.common.ability
 import gg.norisk.heroes.common.db.DatabaseManager
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
+import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import net.minecraft.item.Items
 import java.util.*
 import kotlin.math.sqrt
 
@@ -17,8 +19,11 @@ sealed class PlayerProperty<T> {
     abstract var maxLevel: Int
     abstract var name: String
     abstract var levelScale: Int
+
     @Transient
-    abstract val icon: () -> Component
+    var icon: () -> Component = {
+        Components.item(Items.CLOCK.defaultStack)
+    }
 
     @Transient
     lateinit var hero: Hero

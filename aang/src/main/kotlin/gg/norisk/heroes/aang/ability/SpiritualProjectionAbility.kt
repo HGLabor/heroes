@@ -213,7 +213,7 @@ object SpiritualProjectionAbility {
                     .randomOrNull()
                 if (body != null) {
                     val distance = body.distanceTo(this)
-                    if (distance > projectionMaxDistance.getValue(this.uuid)) {
+                    if (distance > projectionMaxDistance.getValue(this.uuid).toFloat()) {
                         sendMessage(Text.translatable("heroes.katara.ability.spiritual_projection.too_far_away"))
                         body.cancelProjection(null)
                     }
@@ -262,10 +262,12 @@ object SpiritualProjectionAbility {
     val projectionMaxDistance = NumberProperty(
         30.0, 3,
         "Spiritual Projection Max Distance",
-        AddValueTotal(10.0, 10.0, 30.0), icon = {
+        AddValueTotal(10.0, 10.0, 30.0)
+    ).apply {
+        icon = {
             Components.item(Items.SPYGLASS.defaultStack)
         }
-    )
+    }
 
     val Ability = object : PressAbility("Spiritual Projection") {
         init {

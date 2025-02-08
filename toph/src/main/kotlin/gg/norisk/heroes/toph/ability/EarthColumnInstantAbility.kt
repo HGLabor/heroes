@@ -61,17 +61,21 @@ data class EarthColumnDescription(
     val center: @Serializable(with = BlockPosSerializer::class) BlockPos,
 )
 
-val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0), icon = {
-    Components.item(Items.STONE_SHOVEL.defaultStack)
-})
+val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0), ).apply {
+    icon = {
+        Components.item(Items.STONE_SHOVEL.defaultStack)
+    }
+}
 
 val EarthColumnInstantAbility = object : HoldAbility(
     "Earth Column"
 ) {
 
-    val earthColumnHeight = NumberProperty(3.0, 5, "Height", AddValueTotal(1.0, 1.0, 1.0, 3.0, 2.0), icon = {
-        Components.item(Items.STONE.defaultStack)
-    })
+    val earthColumnHeight = NumberProperty(3.0, 5, "Height", AddValueTotal(1.0, 1.0, 1.0, 3.0, 2.0), ).apply {
+        icon = {
+            Components.item(Items.STONE.defaultStack)
+        }
+    }
 
     init {
         client {

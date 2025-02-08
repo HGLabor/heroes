@@ -137,7 +137,9 @@ object HealingAbility {
     val waterHealingRegeneration = NumberProperty(
         3.0, 3,
         "Regeneration",
-        AddValueTotal(1.0, 1.0, 3.0), icon = {
+        AddValueTotal(1.0, 1.0, 3.0)
+    ).apply {
+        icon = {
             Components.item(itemStack(Items.POTION) {
                 setPotion(
                     MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
@@ -145,14 +147,16 @@ object HealingAbility {
                 )
             })
         }
-    )
+    }
     val waterHealingMaxDuration = NumberProperty(
         5.0, 3,
         "Max Duration Lasts",
-        AddValueTotal(2.0, 2.0, 5.0), icon = {
+        AddValueTotal(2.0, 2.0, 5.0)
+    ).apply {
+        icon = {
             Components.item(itemStack(Items.CLOCK) {})
         }
-    )
+    }
 
     val ability = object : PressAbility("Healing") {
         init {

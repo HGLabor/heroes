@@ -7,6 +7,7 @@ import gg.norisk.heroes.common.db.JsonProvider
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.hero.ability.implementation.Ability
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -60,14 +61,19 @@ open class Hero(val name: String) {
 
     fun load(heroJson: HeroJson? = null) {
         if (baseFile.exists()) {
-            val loaded = heroJson ?: JSON.decodeFromString<HeroJson>(baseFile.readText())
-            for ((key, element) in loaded.properties) {
-                val ability = abilities[key]
-                for (jsonElement in element) {
-                    val name = jsonElement.jsonObject["name"] ?: continue
-                    val property = ability?.getAllProperties()?.find { it.name == name.jsonPrimitive.content }
-                    property?.fromJson(jsonElement.toString())
+            runCatching {
+                val loaded = heroJson ?: JSON.decodeFromString<HeroJson>(baseFile.readText())
+                for ((key, element) in loaded.properties) {
+                    val ability = abilities[key]
+                    for (jsonElement in element) {
+                        val name = jsonElement.jsonObject["name"] ?: continue
+                        val property = ability?.getAllProperties()?.find { it.name == name.jsonPrimitive.content }
+                        property?.fromJson(jsonElement.toString())
+                    }
                 }
+            }.onFailure {
+                logger.error("Error Loading Hero $internalKey ${it.message}")
+                it.printStackTrace()
             }
         }
     }

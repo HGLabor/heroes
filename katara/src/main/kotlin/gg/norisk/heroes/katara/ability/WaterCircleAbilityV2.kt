@@ -50,12 +50,16 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 object WaterCircleAbilityV2 {
-    val waterCircleMaxBalls = NumberProperty(1.0, 5, "Water Circle Sphere", AddValueTotal(1.0, 1.0, 1.0, 1.0, 1.0, 3.0), icon = {
-        Components.item(Items.HEART_OF_THE_SEA.defaultStack)
-    })
-    val waterCircleMaxFallDamage = NumberProperty(10.0, 3, "Water Circle Fall Distance", AddValueTotal(20.0, 30.0, 40.0), icon = {
-        Components.item(Items.WATER_BUCKET.defaultStack)
-    })
+    val waterCircleMaxBalls = NumberProperty(1.0, 5, "Water Circle Sphere", AddValueTotal(1.0, 1.0, 1.0, 1.0, 1.0, 3.0)).apply {
+        icon = {
+            Components.item(Items.HEART_OF_THE_SEA.defaultStack)
+        }
+    }
+    val waterCircleMaxFallDamage = NumberProperty(10.0, 3, "Water Circle Fall Distance", AddValueTotal(20.0, 30.0, 40.0)).apply {
+        icon = {
+            Components.item(Items.WATER_BUCKET.defaultStack)
+        }
+    }
 
     val ability = object : AbstractAbility<Any>("Water Circle") {
 

@@ -159,17 +159,21 @@ object TornadoAbility {
     val tornadoIncreaseRateProperty = NumberProperty(
         0.005, 3,
         "Tornado Increase Rate",
-        AddValueTotal(0.0025, 0.0025, 0.005), icon = {
+        AddValueTotal(0.0025, 0.0025, 0.005)
+    ).apply {
+        icon = {
             Components.item(Items.GLOWSTONE_DUST.defaultStack)
         }
-    )
+    }
     val tornadoDecreaseRateProperty = NumberProperty(
         0.2, 3,
         "Tornado Decrease Rate",
-        AddValueTotal(-0.0025, -0.0025, -0.005), icon = {
+        AddValueTotal(-0.0025, -0.0025, -0.005)
+    ).apply {
+        icon = {
             Components.item(Items.REDSTONE.defaultStack)
         }
-    )
+    }
 
     val Ability = object : PressAbility("Tornado") {
 

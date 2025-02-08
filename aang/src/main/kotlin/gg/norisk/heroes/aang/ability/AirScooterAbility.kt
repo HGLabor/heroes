@@ -50,12 +50,16 @@ object AirScooterAbility {
     val airScooterSoundPacketS2C = s2cPacket<Int>("air-scooter-sound".toId())
     val AIR_SCOOTING_KEY = "AangIsAirScooting"
 
-    val airScooterSpeed = NumberProperty(0.2, 3, "Speed", AddValueTotal(0.1, 0.1, 0.1), icon = {
-        Components.item(Items.WIND_CHARGE.defaultStack)
-    })
-    val airScooterStepHeight = NumberProperty(2.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0), icon = {
-        Components.item(Items.QUARTZ_STAIRS.defaultStack)
-    })
+    val airScooterSpeed = NumberProperty(0.2, 3, "Speed", AddValueTotal(0.1, 0.1, 0.1)).apply {
+        icon = {
+            Components.item(Items.WIND_CHARGE.defaultStack)
+        }
+    }
+    val airScooterStepHeight = NumberProperty(2.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0)).apply {
+        icon = {
+            Components.item(Items.QUARTZ_STAIRS.defaultStack)
+        }
+    }
 
     fun initClient() {
         airScooterSoundPacketS2C.receiveOnClient { packet, context ->
@@ -189,7 +193,8 @@ object AirScooterAbility {
                     //player.modifyVelocity(0.0,1.0,0.0)
                     airScooterSoundPacketS2C.sendToAll(player.id)
                     player.isAirScooting = true
-                    player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = airScooterStepHeight.getValue(player.uuid)
+                    player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue =
+                        airScooterStepHeight.getValue(player.uuid)
                     val speedAnimation =
                         OldAnimation(
                             0.1f,

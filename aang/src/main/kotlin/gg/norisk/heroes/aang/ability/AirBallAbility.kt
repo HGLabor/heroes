@@ -46,9 +46,11 @@ object AirBallAbility {
     val AIR_BENDING_KEY = "AangIsAirBending"
     val CURRENT_AIR_BENDING_KEY = "AangCurrentBendingId"
 
-    val airBallMaxSize = NumberProperty(3.0, 3, "Max Size", AddValueTotal(1.0, 1.0, 3.0), icon = {
-        Components.item(Items.WIND_CHARGE.defaultStack)
-    })
+    val airBallMaxSize = NumberProperty(3.0, 3, "Max Size", AddValueTotal(1.0, 1.0, 3.0)).apply {
+        icon = {
+            Components.item(Items.WIND_CHARGE.defaultStack)
+        }
+    }
 
     fun initClient() {
         WorldRenderEvents.END.register(WorldRenderEvents.End { event ->
