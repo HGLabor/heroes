@@ -49,19 +49,25 @@ import kotlin.math.sin
 
 val EarthSurfKey = "isEarthSurfing"
 
-val earthSurfRadius = NumberProperty(1.0, 3, "Radius", AddValueTotal(1.0,1.0,1.0), icon = {
-    Components.item(Items.STONE_SHOVEL.defaultStack)
-})
+val earthSurfRadius = NumberProperty(1.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0)).apply {
+    icon = {
+        Components.item(Items.STONE_SHOVEL.defaultStack)
+    }
+}
 
 @OptIn(ExperimentalSilkApi::class)
 val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
 
-    val earthSurfStepHeight = NumberProperty(3.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0), icon = {
-        Components.item(Items.MUD_BRICK_STAIRS.defaultStack)
-    })
-    val earthSurfSpeedBoost = NumberProperty(1.1, 4, "Speed", AddValueTotal(0.1, 0.1, 0.1,0.3), icon = {
-        Components.item(Items.SUGAR.defaultStack)
-    })
+    val earthSurfStepHeight = NumberProperty(3.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0)).apply {
+        icon = {
+            Components.item(Items.MUD_BRICK_STAIRS.defaultStack)
+        }
+    }
+    val earthSurfSpeedBoost = NumberProperty(1.1, 4, "Speed", AddValueTotal(0.1, 0.1, 0.1, 0.3)).apply {
+        icon = {
+            Components.item(Items.SUGAR.defaultStack)
+        }
+    }
 
     init {
         client {
@@ -85,7 +91,8 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             val player = it.entity as? PlayerEntity ?: return@listen
             if (it.key == EarthSurfKey) {
                 if (player.isEarthSurfing()) {
-                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = earthSurfStepHeight.getValue(player.uuid)
+                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue =
+                        earthSurfStepHeight.getValue(player.uuid)
                     if (player.world.isClient) {
                         MinecraftClient.getInstance().soundManager.play(StoneSlideSoundInstance(player))
                     }
@@ -123,11 +130,13 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             player.setSyncedData(EarthSurfKey, true)
             kotlin.runCatching {
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-                    ?.addTemporaryModifier(EntityAttributeModifier(
-                        "earth_surf".toId(),
-                        earthSurfSpeedBoost.getValue(player.uuid),
-                        EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
-                    ))
+                    ?.addTemporaryModifier(
+                        EntityAttributeModifier(
+                            "earth_surf".toId(),
+                            earthSurfSpeedBoost.getValue(player.uuid),
+                            EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                        )
+                    )
             }
             player.sound(SoundRegistry.EARTH_ARMOR)
             cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player as ServerPlayerEntity)

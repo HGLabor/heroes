@@ -54,24 +54,30 @@ object EarthArmorAttributeModifiers {
     val earthArmorArmorProperty = NumberProperty(
         2.0, 3,
         "Armor",
-        AddValueTotal(1.0, 1.0, 1.0), {
+        AddValueTotal(1.0, 1.0, 1.0),
+    ).apply {
+        icon = {
             Components.item(Items.IRON_CHESTPLATE.defaultStack)
         }
-    )
+    }
     val earthArmorKnockbackProperty = NumberProperty(
         0.05, 3,
         "Knockback",
-        AddValueTotal(-0.01, -0.02, -0.03), {
+        AddValueTotal(-0.01, -0.02, -0.03)
+    ).apply {
+        icon = {
             Components.item(Items.ANVIL.defaultStack)
         }
-    )
+    }
     val earthArmorSpeedProperty = NumberProperty(
         -0.005, 3,
         "Speed",
-        AddValueTotal(0.002, 0.002, 0.002), {
+        AddValueTotal(0.002, 0.002, 0.002),
+    ).apply {
+        icon = {
             Components.item(Items.SUGAR.defaultStack)
         }
-    )
+    }
 
     fun addTo(stack: ItemStack, player: PlayerEntity) {
         val ARMOR_ENTRY = AttributeModifiersComponent.Entry(

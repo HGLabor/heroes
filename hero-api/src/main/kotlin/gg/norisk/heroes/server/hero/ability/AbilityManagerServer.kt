@@ -238,7 +238,9 @@ object AbilityManagerServer : IAbilityManager {
         val hero = player.getHero() ?: return
         if (hero != ability.hero) return
         val packet = AbilityPacket(player.uuid, hero.internalKey, ability.internalKey, description)
-        handleIncomingAbility(packet, player as? ServerPlayerEntity ?: return)
+        mcCoroutineTask(sync = true, client = false) {
+            handleIncomingAbility(packet, player as? ServerPlayerEntity ?: return@mcCoroutineTask)
+        }
     }
 
     override fun registerAbility(ability: AbstractAbility<*>) {}

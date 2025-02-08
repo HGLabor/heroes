@@ -56,10 +56,12 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
     val earthTrapSlownessProperty = NumberProperty(
         -0.7, 3,
         "Slowness",
-        AddValueTotal(-0.1, -0.2, -0.3), icon = {
+        AddValueTotal(-0.1, -0.2, -0.3),
+    ).apply {
+        icon = {
             Components.item(Items.COBWEB.defaultStack)
         }
-    )
+    }
 
     init {
         client {
