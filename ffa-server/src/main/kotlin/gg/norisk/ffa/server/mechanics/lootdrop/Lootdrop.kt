@@ -1,5 +1,7 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
+import gg.norisk.ffa.server.mechanics.KitEditor
+import gg.norisk.ffa.server.mechanics.lootdrop.loottable.*
 import gg.norisk.heroes.common.db.ExperienceManager
 import kotlinx.coroutines.*
 import net.minecraft.block.BarrelBlock
@@ -26,7 +28,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.Silk
-import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import org.joml.Vector3f
@@ -47,6 +48,8 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
 
         private val entityIdLootdropMap = HashMap<Int, Lootdrop>()
         private val posLootdropMap = HashMap<BlockPos, Lootdrop>()
+
+        private val lootTable = if (KitEditor.isUHC()) UHCLootdropLoottable().init() else SoupLootdropLoottable().init()
 
         fun fallingBlockLanded(fallingBlock: FallingBlockEntity) {
             val lootdrop = entityIdLootdropMap[fallingBlock.id] ?: return
@@ -212,8 +215,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     private fun setBarrelAndContents() {
         world.setBlockState(landingPos, Blocks.BARREL.defaultState.with(BarrelBlock.FACING, Direction.UP))
         val barrel = world.getBlockEntity(landingPos) as? BarrelBlockEntity
-        val loot = LootdropContent.generateLoot(ITEMS_PER_AIR_DROP.random())
-        Silk.serverOrThrow.broadcastText("Loot: ${loot}")
+        val loot = lootTable.generateLoot(ITEMS_PER_AIR_DROP.random())
 
         loot.forEach { item ->
             val amount = item.amountRange.random()

@@ -1,31 +1,24 @@
-package gg.norisk.ffa.server.mechanics.lootdrop
+package gg.norisk.ffa.server.mechanics.lootdrop.loottable
 
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
 import kotlin.random.Random
 
-object LootdropContent {
+abstract class LootdropLoottable {
     private val lootTable = mutableListOf<LootdropItem>()
     private var totalWeight = 0.0
 
-    init {
-        item(Items.GOLDEN_APPLE, 0.2, 2..6)
-        item(Items.POTATO, 0.3, 16..32)
-        item(Items.DIAMOND_SWORD, 0.1)
-        item(Items.COBBLESTONE, 0.5, 32..64)
-        exp(0.2, 50..100)
-    }
+    abstract fun init(): LootdropLoottable
 
-    private fun item(itemStack: ItemStack, weight: Double, amountRange: IntRange = 1..1) {
+    fun item(itemStack: ItemStack, weight: Double, amountRange: IntRange = 1..1) {
         register(ItemStackLootdropItem(itemStack, weight, amountRange))
     }
 
-    private fun item(item: Item, weight: Double, amountRange: IntRange = 1..1) {
+    fun item(item: Item, weight: Double, amountRange: IntRange = 1..1) {
         register(ItemStackLootdropItem(item.defaultStack, weight, amountRange))
     }
 
-    private fun exp(weight: Double, amountRange: IntRange) {
+    fun exp(weight: Double, amountRange: IntRange) {
         register(ExperienceLootdropItem(weight, amountRange))
     }
 
