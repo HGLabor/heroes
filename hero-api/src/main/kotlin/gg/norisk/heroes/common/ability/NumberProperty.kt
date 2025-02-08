@@ -15,7 +15,7 @@ class NumberProperty(
     override var name: String,
     override var modifier: Operation,
     @Transient
-    override var icon:  () -> Component = { Components.item(Items.CLOCK.defaultStack) },
+    override var icon: () -> Component = { Components.item(Items.CLOCK.defaultStack) },
     override var levelScale: Int = 10,
 ) : AbstractNumberProperty() {
 

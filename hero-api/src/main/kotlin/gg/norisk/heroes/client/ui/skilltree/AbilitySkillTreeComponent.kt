@@ -378,7 +378,7 @@ class AbilitySkillTreeComponent(
                     ?: return super.draw(context, mouseX, mouseX, partialTicks, delta)
             val midY = parentY + (lowestChildY - parentY) / 2
             val whiteLineThickness = 2.0
-            val grayedColor = Color.ofDye(DyeColor.GRAY)
+            val grayedColor = Color.ofRgb(Colors.GRAY)
             val progressColor = Color.GREEN// Farbe für die Fortschrittslinie
 
             // Zeichne die graue Linie und die grüne Linie

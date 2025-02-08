@@ -97,6 +97,7 @@ emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
 nrcZoom = { group = "gg.norisk", name = "noriskclient-zoom", version = "1.21-2.0.2" }
 nrcFullbright = { group = "gg.norisk", name = "fullbright", version = "1.21-2.0.0" }
 nrcFreelook = { group = "gg.norisk", name = "freelook", version = "1.21-2.0.4" }
+nrcNametag = { group = "gg.norisk", name = "nametags", version = "1.21-2.0.0" }
 
 
 # misc
@@ -110,7 +111,7 @@ checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version
 silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
 performance = ["sodium", "lithium", "modmenu", "ferrite-core", "nvidium"]
 fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
-nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom"]
+nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom", "nrcNametag"]
 
 [plugins]
 

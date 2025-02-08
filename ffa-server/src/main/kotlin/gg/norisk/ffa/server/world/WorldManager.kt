@@ -7,6 +7,7 @@ import gg.norisk.ffa.server.world.MapPlacer.mapSize
 import kotlinx.coroutines.Job
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PositionFlag
 import net.minecraft.server.MinecraftServer
@@ -94,7 +95,7 @@ object WorldManager {
         )
 
         //TODO bypass für volle map sollte aber eig nicht passieren da große map
-        if (usedMaps.size == maxCount) {
+        if (usedMaps.size >= maxCount) {
             return pair
         }
 
@@ -117,8 +118,10 @@ object WorldManager {
         ServerLifecycleEvents.SERVER_STARTED.register { server ->
             logger.info("Init Map Reset Cycle...")
             usedMaps.clear()
-            //mapResetCycle(server)
-            //setWorldBorder(server.overworld)
+            if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
+                mapResetCycle(server)
+                setWorldBorder(server.overworld)
+            }
         }
     }
 
