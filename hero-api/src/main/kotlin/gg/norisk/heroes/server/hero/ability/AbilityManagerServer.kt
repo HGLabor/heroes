@@ -1,9 +1,8 @@
 package gg.norisk.heroes.server.hero.ability
 
 import gg.norisk.heroes.common.HeroesManager.logger
-import gg.norisk.heroes.common.db.DatabaseManager
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
-import gg.norisk.heroes.common.db.ExperienceManager
+import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
+import gg.norisk.heroes.common.ffa.experience.addXp
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.*
@@ -15,6 +14,8 @@ import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.Networking.c2sAbilityPacket
 import gg.norisk.heroes.common.networking.Networking.c2sSkillProperty
 import gg.norisk.heroes.common.networking.Networking.s2cAbilityPacket
+import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import kotlinx.coroutines.*
 import net.fabricmc.api.EnvType
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -79,11 +80,11 @@ object AbilityManagerServer : IAbilityManager {
         }
     }
 
-    private fun skillProperty(packet: SkillPropertyPacket, player: ServerPlayerEntity) {
+    private suspend fun skillProperty(packet: SkillPropertyPacket, player: ServerPlayerEntity) {
         val hero = HeroManager.getHero(packet.heroKey) ?: return
         val ability = hero.abilities[packet.abilityKey] ?: return
         val property = ability.getAllProperties().find { it.internalKey == packet.propertyKey } ?: return
-        val cachedPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+        val cachedPlayer = PlayerProvider.get(player.uuid)
 
         val oldLevel = property.getLevelInfo(player.uuid)
 
@@ -105,10 +106,7 @@ object AbilityManagerServer : IAbilityManager {
 
         logger.info("Spent Experience $spentExperience $experienceToSpend ${cachedPlayer.xp}")
         player.dbPlayer = cachedPlayer
-
-        mcCoroutineTask(sync = false, client = false) {
-            DatabaseManager.provider.save(cachedPlayer)
-        }
+        PlayerProvider.save(cachedPlayer)
     }
 
     private fun handleIncomingAbility(packet: AbilityPacket<*>, player: ServerPlayerEntity) {
@@ -134,7 +132,7 @@ object AbilityManagerServer : IAbilityManager {
                 is PressAbility,
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
-                    ExperienceManager.addXp(player, ExperienceManager.SMALL_ABILITY_USE, true)
+                    player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                     ability.onStart(player)
                 }
 
@@ -150,7 +148,7 @@ object AbilityManagerServer : IAbilityManager {
                             if (ability.handleCooldown(player)) return@runCatching
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
-                            ExperienceManager.addXp(player, ExperienceManager.SMALL_ABILITY_USE, true)
+                            player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                             ability.onStart(player)
                             //ability.internalCallbacks.START
                         }

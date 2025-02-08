@@ -4,15 +4,16 @@ import gg.norisk.heroes.common.HeroesManager.MOD_ID
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.command.DebugCommand
-import gg.norisk.heroes.common.db.DatabaseManager
-import gg.norisk.heroes.common.db.ExperienceManager
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.ffa.KitEditorManager
+import gg.norisk.heroes.common.ffa.experience.Experience
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.setHero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.server.config.ConfigManagerServer
+import gg.norisk.heroes.server.database.MongoManager
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import gg.norisk.heroes.server.hero.ability.AbilityManagerServer
 import net.fabricmc.api.EnvType
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
@@ -27,8 +28,13 @@ object HeroesManagerServer {
         ConfigManagerServer.init()
         AbilityManagerServer.init()
         DebugCommand.initServer()
-        DatabaseManager.init()
-        ExperienceManager.init()
+        kotlin.runCatching {
+            MongoManager.connect()
+        }.onFailure {
+            MongoManager.isConnected = false
+        }
+        PlayerProvider.init()
+        Experience.init()
         KitEditorManager.init()
 
         handleHeroSelectorPacket()

@@ -1,11 +1,10 @@
 package gg.norisk.heroes.common.hero
 
+import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.ability.PlayerProperty.Companion.JSON
-import gg.norisk.heroes.common.db.JsonProvider
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
-import gg.norisk.heroes.common.hero.ability.implementation.Ability
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.jsonObject
@@ -72,7 +71,7 @@ open class Hero(val name: String) {
         }
     }
 
-    private val baseFolder get() = File(JsonProvider.baseFolder, "heroes/hero").apply { mkdirs() }
+    private val baseFolder get() = File(HeroesManager.baseDirectory, "heroes/hero").apply { mkdirs() }
     private val baseFile get() = File(baseFolder, "$internalKey.json")
 
     fun save() {

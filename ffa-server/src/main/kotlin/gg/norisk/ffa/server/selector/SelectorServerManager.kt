@@ -3,14 +3,12 @@ package gg.norisk.ffa.server.selector
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.mechanics.KitEditor
-import gg.norisk.ffa.server.mechanics.Scoreboard
 import gg.norisk.ffa.server.mechanics.Tracker
 import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
 import gg.norisk.ffa.server.world.WorldManager.findSpawnLocation
 import gg.norisk.ffa.server.world.WorldManager.getCenter
 import gg.norisk.heroes.common.HeroesManager.logger
-import gg.norisk.heroes.common.db.DatabaseInventory.Companion.loadInventory
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
+import gg.norisk.heroes.common.player.DatabaseInventory.Companion.loadInventory
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.setHero

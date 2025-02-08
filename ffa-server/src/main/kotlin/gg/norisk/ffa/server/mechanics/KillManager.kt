@@ -5,17 +5,18 @@ import gg.norisk.ffa.server.ext.IDamageTrackerExt
 import gg.norisk.ffa.server.mechanics.CombatTag.isInCombat
 import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
-import gg.norisk.heroes.common.db.DatabaseManager.provider
-import gg.norisk.heroes.common.db.DatabasePlayer
-import gg.norisk.heroes.common.db.ExperienceManager
+import gg.norisk.heroes.common.player.DatabasePlayer
 import gg.norisk.heroes.common.events.HeroEvents
+import gg.norisk.heroes.common.ffa.experience.ExperienceReason
+import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
+import gg.norisk.heroes.common.ffa.experience.addXp
 import gg.norisk.heroes.common.hero.getHero
+import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
-import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.commands.PermissionLevel
 import net.silkmc.silk.commands.command
@@ -25,6 +26,7 @@ import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import java.awt.Color
+import kotlin.math.min
 
 object KillManager {
     fun init() {
@@ -94,23 +96,25 @@ object KillManager {
                 }
             })
 
-            if (killer != null) {
-                increaseKillsForPlayer(killer)
-            }
-            if (killed != null) {
-                increaseDeathForPlayer(killed, event.source)
-            }
+            mcCoroutineTask(false, false) {
+                if (killer != null) {
+                    increaseKillsForPlayer(killer)
+                }
+                if (killed != null) {
+                    increaseDeathForPlayer(killed, event.source)
+                }
 
-            if (killer != killed && killer != null && killed != null) {
-                Bounty.receiveBounty(killer, killed)
+                if (killer != killed && killer != null && killed != null) {
+                    Bounty.receiveBounty(killer, killed)
+                }
             }
         }
     }
 
     private fun provideExtraXpForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
         val currentKillStreak = dbPlayer.currentKillStreak
-        val killStreakXp = Math.min(3000, ExperienceManager.KILLED_PLAYER.value * currentKillStreak * 10)
-        ExperienceManager.addXp(player, ExperienceManager.Reason("kill_streak", killStreakXp))
+        val killStreakXp = min(3000, ExperienceRegistry.KILLED_PLAYER.value * currentKillStreak * 10)
+        player.addXp(ExperienceReason("kill_streak", killStreakXp))
     }
 
     private fun provideExtraBountyForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
@@ -124,9 +128,9 @@ object KillManager {
         dbPlayer.bounty += bountyXp
     }
 
-    private fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
+    private suspend fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
         if (attacker.getHero() != null) {
-            val cachedAttacker = provider.getCachedPlayer(attacker.uuid)
+            val cachedAttacker = PlayerProvider.get(attacker.uuid)
             cachedAttacker.kills++
             cachedAttacker.currentKillStreak++
             attacker.dbPlayer = cachedAttacker
@@ -143,22 +147,19 @@ object KillManager {
                 provideExtraXpForKillStreak(attacker, cachedAttacker)
                 provideExtraBountyForKillStreak(attacker, cachedAttacker)
             }
-            mcCoroutineTask(sync = false, client = false) {
-                provider.save(cachedAttacker)
-            }
-
-            ExperienceManager.addXp(attacker, ExperienceManager.KILLED_PLAYER, true)
+            PlayerProvider.save(cachedAttacker)
+            attacker.addXp(ExperienceRegistry.KILLED_PLAYER, true)
         }
     }
 
-    private fun increaseDeathForPlayer(player: ServerPlayerEntity, source: DamageSource) {
+    private suspend fun increaseDeathForPlayer(player: ServerPlayerEntity, source: DamageSource) {
         if (player.getHero() != null) {
             val heroDeathEvent = HeroEvents.HeroDeathEvent(player, true)
             player.sendMessage(literalText {
                 text("Du bist gestorben".literal)
             })
             HeroEvents.heroDeathEvent.invoke(heroDeathEvent)
-            val cachedEntity = provider.getCachedPlayer(player.uuid)
+            val cachedEntity = PlayerProvider.get(player.uuid)
             if (heroDeathEvent.isValidDeath) {
                 cachedEntity.deaths++
                 if (cachedEntity.currentKillStreak > cachedEntity.highestKillStreak) {
@@ -182,12 +183,12 @@ object KillManager {
 
                 player.dbPlayer = cachedEntity
                 mcCoroutineTask(sync = false, client = false) {
-                    provider.save(cachedEntity)
+                    PlayerProvider.save(cachedEntity)
                 }
             }
 
             if (!source.isOf(DamageTypes.GENERIC_KILL)) {
-                ExperienceManager.addXp(player, ExperienceManager.PLAYER_DEATH, true)
+                player.addXp(ExperienceRegistry.PLAYER_DEATH, true)
             }
         }
     }

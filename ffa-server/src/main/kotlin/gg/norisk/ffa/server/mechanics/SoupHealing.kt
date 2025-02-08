@@ -1,6 +1,7 @@
 package gg.norisk.ffa.server.mechanics
 
-import gg.norisk.heroes.common.db.ExperienceManager
+import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
+import gg.norisk.heroes.common.ffa.experience.addXp
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -40,7 +41,7 @@ object SoupHealing {
 
         if (consumedSoup) {
             (player as? ServerPlayerEntity?)?.apply {
-                ExperienceManager.addXp(this, ExperienceManager.SOUP_EATEN)
+                this.addXp(ExperienceRegistry.SOUP_EATEN)
             }
             cir.returnValue = TypedActionResult.pass(ItemStack(Items.BOWL))
         }

@@ -48,6 +48,10 @@ allprojects {
       url = uri("https://maven.norisk.gg/repository/norisk-production/")
     }
 
+    maven {
+      url = uri("https://maven.norisk.gg/repository/maven-releases/")
+    }
+
     // more stable replacement for jitpack
     maven("https://repository.derklaro.dev/releases/") {
       mavenContent {

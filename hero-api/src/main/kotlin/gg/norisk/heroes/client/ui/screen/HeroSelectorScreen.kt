@@ -4,8 +4,8 @@ package gg.norisk.heroes.client.ui.screen
 //import me.cortex.nvidium.Nvidium
 import gg.norisk.heroes.client.ui.components.AbilitiesComponent
 import gg.norisk.heroes.client.ui.components.HeroListComponent
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.hero.Hero
+import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.Containers

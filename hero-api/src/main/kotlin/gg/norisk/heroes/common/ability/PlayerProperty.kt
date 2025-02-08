@@ -1,8 +1,8 @@
 package gg.norisk.heroes.common.ability
 
-import gg.norisk.heroes.common.db.DatabaseManager
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -149,7 +149,7 @@ sealed class PlayerProperty<T> {
     val descriptionKey get() = "heroes.property.${internalKey}.description"
 
     fun getOrLoadPlayer(uuid: UUID): PropertyPlayer {
-        val player = DatabaseManager.provider.getCachedPlayer(uuid)
+        val player = PlayerProvider.getCachedPlayerOrDummy(uuid)
         val heroMap = player.heroes.computeIfAbsent(hero.internalKey) { mutableMapOf() }
         val abilityMap = heroMap.computeIfAbsent(ability.internalKey) { mutableMapOf() }
         val property = abilityMap.computeIfAbsent(internalKey) { PropertyPlayer() }
