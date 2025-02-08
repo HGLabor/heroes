@@ -9,6 +9,7 @@ import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.networking.BoomShake
@@ -22,6 +23,8 @@ import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
 import gg.norisk.heroes.toph.sound.StoneSlideSoundInstance
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
@@ -30,6 +33,7 @@ import net.minecraft.entity.FallingBlockEntity
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -37,6 +41,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.annotations.ExperimentalSilkApi
 import net.silkmc.silk.core.entity.modifyVelocity
+import net.silkmc.silk.core.item.itemStack
 import net.silkmc.silk.core.math.geometry.filledSpherePositionSet
 import net.silkmc.silk.core.server.players
 import kotlin.math.cos
@@ -44,8 +49,20 @@ import kotlin.math.sin
 
 val EarthSurfKey = "isEarthSurfing"
 
+val earthSurfRadius = NumberProperty(1.0, 3, "Radius", AddValueTotal(1.0,1.0,1.0), icon = {
+    Components.item(Items.STONE_SHOVEL.defaultStack)
+})
+
 @OptIn(ExperimentalSilkApi::class)
 val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
+
+    val earthSurfStepHeight = NumberProperty(3.0, 3, "Step Height", AddValueTotal(1.0, 1.0, 1.0), icon = {
+        Components.item(Items.MUD_BRICK_STAIRS.defaultStack)
+    })
+    val earthSurfSpeedBoost = NumberProperty(1.1, 4, "Speed", AddValueTotal(0.1, 0.1, 0.1,0.3), icon = {
+        Components.item(Items.SUGAR.defaultStack)
+    })
+
     init {
         client {
             this.keyBind = HeroKeyBindings.secondKeyBind
@@ -57,6 +74,8 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             }
         }
 
+        this.properties = listOf(earthSurfStepHeight, earthSurfSpeedBoost, earthSurfRadius)
+
         this.cooldownProperty =
             buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
         this.maxDurationProperty =
@@ -66,7 +85,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             val player = it.entity as? PlayerEntity ?: return@listen
             if (it.key == EarthSurfKey) {
                 if (player.isEarthSurfing()) {
-                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 6.0
+                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = earthSurfStepHeight.getValue(player.uuid)
                     if (player.world.isClient) {
                         MinecraftClient.getInstance().soundManager.play(StoneSlideSoundInstance(player))
                     }
@@ -81,6 +100,10 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
                 player.spawnEarthCircle()
             }
         }
+    }
+
+    override fun getIconComponent(): Component {
+        return Components.item(itemStack(Items.IRON_BOOTS) {})
     }
 
     override fun getBackgroundTexture(): Identifier {
@@ -100,7 +123,11 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             player.setSyncedData(EarthSurfKey, true)
             kotlin.runCatching {
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-                    ?.addTemporaryModifier(EARTH_SURF_SPEED_BOOST)
+                    ?.addTemporaryModifier(EntityAttributeModifier(
+                        "earth_surf".toId(),
+                        earthSurfSpeedBoost.getValue(player.uuid),
+                        EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                    ))
             }
             player.sound(SoundRegistry.EARTH_ARMOR)
             cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player as ServerPlayerEntity)
@@ -134,7 +161,7 @@ val Entity.bodyDirectionVector: Vec3d
     }
 
 fun PlayerEntity.spawnEarthCircle() {
-    val radius = 4
+    val radius = earthSurfRadius.getValue(uuid).toInt()
     this.pos.add(0.0, 0.0, 0.0).add(
         this.bodyDirectionVector.normalize().multiply(-(radius.toDouble() + 2))
     ).toBlockPos()

@@ -3,6 +3,7 @@ package gg.norisk.heroes.toph.ability
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.networking.BoomShake
@@ -13,6 +14,8 @@ import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.entity.IBendingItemEntity
 import gg.norisk.heroes.toph.registry.SoundRegistry
 import gg.norisk.heroes.toph.render.ChestItemFeatureRenderer
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
@@ -27,10 +30,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.BlockItem
-import net.minecraft.item.Item.BASE_ATTACK_DAMAGE_MODIFIER_ID
-import net.minecraft.item.Item.BASE_ATTACK_SPEED_MODIFIER_ID
 import net.minecraft.item.ItemStack
-import net.minecraft.item.ToolMaterial
+import net.minecraft.item.Items
 import net.minecraft.particle.BlockStateParticleEffect
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.registry.tag.BlockTags
@@ -49,42 +50,57 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import kotlin.random.Random
 
 object EarthArmorAttributeModifiers {
-    private val ARMOR_MODIFIER =
-        EntityAttributeModifier("armor_modifier".toId(), 2.0, EntityAttributeModifier.Operation.ADD_VALUE)
-    private val KNOCKBACK_MODIFIER =
-        EntityAttributeModifier("knockback_modifier".toId(), 0.05, EntityAttributeModifier.Operation.ADD_VALUE)
-    private val SPEED_MODIFIER =
-        EntityAttributeModifier("speed_modifier".toId(), -0.005, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
 
-    private val ARMOR_ENTRY = AttributeModifiersComponent.Entry(
-        EntityAttributes.GENERIC_ARMOR, ARMOR_MODIFIER, AttributeModifierSlot.ARMOR
+    val earthArmorArmorProperty = NumberProperty(
+        2.0, 3,
+        "Armor",
+        AddValueTotal(1.0, 1.0, 1.0), {
+            Components.item(Items.IRON_CHESTPLATE.defaultStack)
+        }
+    )
+    val earthArmorKnockbackProperty = NumberProperty(
+        0.05, 3,
+        "Knockback",
+        AddValueTotal(-0.01, -0.02, -0.03), {
+            Components.item(Items.ANVIL.defaultStack)
+        }
+    )
+    val earthArmorSpeedProperty = NumberProperty(
+        -0.005, 3,
+        "Speed",
+        AddValueTotal(0.002, 0.002, 0.002), {
+            Components.item(Items.SUGAR.defaultStack)
+        }
     )
 
-    private val KNOCKBACK_ENTRY = AttributeModifiersComponent.Entry(
-        EntityAttributes.GENERIC_ATTACK_KNOCKBACK, KNOCKBACK_MODIFIER, AttributeModifierSlot.ARMOR
-    )
-
-    private val SPEED_ENTRY = AttributeModifiersComponent.Entry(
-        EntityAttributes.GENERIC_MOVEMENT_SPEED, SPEED_MODIFIER, AttributeModifierSlot.ARMOR
-    )
-
-
-    fun addTo(stack: ItemStack) {
+    fun addTo(stack: ItemStack, player: PlayerEntity) {
         val ARMOR_ENTRY = AttributeModifiersComponent.Entry(
             EntityAttributes.GENERIC_ARMOR,
-            ARMOR_MODIFIER,
+            EntityAttributeModifier(
+                "armor_modifier".toId(),
+                earthArmorArmorProperty.getValue(player.uuid),
+                EntityAttributeModifier.Operation.ADD_VALUE
+            ),
             AttributeModifierSlot.ARMOR
         )
 
         val KNOCKBACK_ENTRY = AttributeModifiersComponent.Entry(
             EntityAttributes.GENERIC_ATTACK_KNOCKBACK,
-            KNOCKBACK_MODIFIER,
+            EntityAttributeModifier(
+                "knockback_modifier".toId(),
+                earthArmorKnockbackProperty.getValue(player.uuid),
+                EntityAttributeModifier.Operation.ADD_VALUE
+            ),
             AttributeModifierSlot.ARMOR
         )
 
         val SPEED_ENTRY = AttributeModifiersComponent.Entry(
             EntityAttributes.GENERIC_MOVEMENT_SPEED,
-            SPEED_MODIFIER,
+            EntityAttributeModifier(
+                "speed_modifier".toId(),
+                earthArmorSpeedProperty.getValue(player.uuid),
+                EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+            ),
             AttributeModifierSlot.ARMOR
         )
 
@@ -120,8 +136,14 @@ object EarthArmorAttributeModifiers {
                 }
             }
 
+            this.properties = listOf(earthArmorArmorProperty, earthArmorSpeedProperty, earthArmorKnockbackProperty)
+
             this.cooldownProperty =
                 buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+        }
+
+        override fun getIconComponent(): Component {
+            return Components.item(Items.IRON_CHESTPLATE.defaultStack)
         }
 
         override fun getBackgroundTexture(): Identifier {
@@ -192,7 +214,7 @@ fun ItemEntity.handlePlayerCollision(player: PlayerEntity, ci: CallbackInfo) {
             .firstOrNull { player.getEquippedStack(it).isEmpty }
             ?: return
 
-        EarthArmorAttributeModifiers.addTo(stack)
+        EarthArmorAttributeModifiers.addTo(stack, player)
         player.equipStack(slot, this.stack)
     }
 }
@@ -239,31 +261,4 @@ fun ItemEntity.moveToBender() {
             0.05
         )
     }
-}
-
-fun createAttributeModifiers(
-    material: ToolMaterial,
-    baseAttackDamage: Int,
-    attackSpeed: Float
-): AttributeModifiersComponent {
-    return AttributeModifiersComponent.builder()
-        .add(
-            EntityAttributes.GENERIC_ATTACK_DAMAGE,
-            EntityAttributeModifier(
-                BASE_ATTACK_DAMAGE_MODIFIER_ID,
-                (baseAttackDamage.toFloat() + material.attackDamage).toDouble(),
-                EntityAttributeModifier.Operation.ADD_VALUE
-            ),
-            AttributeModifierSlot.MAINHAND
-        )
-        .add(
-            EntityAttributes.GENERIC_ATTACK_SPEED,
-            EntityAttributeModifier(
-                BASE_ATTACK_SPEED_MODIFIER_ID,
-                attackSpeed.toDouble(),
-                EntityAttributeModifier.Operation.ADD_VALUE
-            ),
-            AttributeModifierSlot.MAINHAND
-        )
-        .build()
 }

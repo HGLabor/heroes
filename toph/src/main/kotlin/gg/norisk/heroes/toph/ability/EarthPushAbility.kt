@@ -3,6 +3,7 @@ package gg.norisk.heroes.toph.ability
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.networking.BoomShake
@@ -17,8 +18,11 @@ import gg.norisk.heroes.toph.entity.BendingBlockEntity
 import gg.norisk.heroes.toph.entity.BendingBlockEntity.Companion.owner
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.minecraft.entity.FallingBlockEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -27,12 +31,17 @@ import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.entity.modifyVelocity
 import kotlin.random.Random
 
+val earthPushDamage = NumberProperty(2.0, 3, "Damage", AddValueTotal(1.25, 1.25, 2.0), icon = {
+    Components.item(Items.STONE_SWORD.defaultStack)
+})
 val EarthPushAbility = object : PressAbility("Earth Push") {
 
     init {
         client {
             this.keyBind = HeroKeyBindings.pickItemKeyBinding
         }
+
+        this.properties = listOf(earthPushDamage)
 
         this.cooldownProperty =
             buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
@@ -53,6 +62,10 @@ val EarthPushAbility = object : PressAbility("Earth Push") {
                 player.playEmote("earth-kick".toEmote())
             }
         }
+    }
+
+    override fun getIconComponent(): Component {
+        return Components.item(Items.DIRT.defaultStack)
     }
 
     override fun getBackgroundTexture(): Identifier {

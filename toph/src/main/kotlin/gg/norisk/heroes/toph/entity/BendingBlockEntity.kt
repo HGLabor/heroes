@@ -4,6 +4,7 @@ import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.toVector
+import gg.norisk.heroes.toph.ability.earthPushDamage
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
 import net.minecraft.block.BlockState
@@ -120,6 +121,7 @@ class BendingBlockEntity(world: World, x: Double, y: Double, z: Double, blockSta
 
     private fun explode(force: Boolean = false) {
         var flag = force
+        val owner = world.getPlayerByUuid(owner ?: return) ?: return
         for (enemy in this.world.getEntitiesByClass(
             LivingEntity::class.java,
             this.boundingBox.expand(1.1)
@@ -127,7 +129,7 @@ class BendingBlockEntity(world: World, x: Double, y: Double, z: Double, blockSta
             it.isAlive && it.uuid != this.owner
         }) {
             flag = true
-            enemy.damage(this.damageSources.generic(), 2.0f)
+            enemy.damage(this.damageSources.playerAttack(owner), earthPushDamage.getValue(owner.uuid).toFloat())
         }
 
         if (flag) {

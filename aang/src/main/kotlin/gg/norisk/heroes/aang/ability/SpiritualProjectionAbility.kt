@@ -261,7 +261,7 @@ object SpiritualProjectionAbility {
 
     val projectionMaxDistance = NumberProperty(
         30.0, 3,
-        "Max Distance",
+        "Spiritual Projection Max Distance",
         AddValueTotal(10.0, 10.0, 30.0), icon = {
             Components.item(Items.SPYGLASS.defaultStack)
         }

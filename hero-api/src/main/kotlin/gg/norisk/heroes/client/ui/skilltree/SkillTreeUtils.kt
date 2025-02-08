@@ -72,7 +72,11 @@ object SkillTreeUtils {
                     }
 
                     override fun title(): Text {
-                        return Text.translatable(property.name + " " + intToRoman(level + 1))
+                        return literalText {
+                            text(Text.translatable(property.translationKey))
+                            text(" ")
+                            text(intToRoman(level + 1))
+                        }
                     }
 
                     override fun parent(): ISkill? {
@@ -104,7 +108,21 @@ object SkillTreeUtils {
 
                     private fun <T> getValueText(value: T): Text {
                         return literalText {
-                            text(value.toString())
+                            // Überprüfe, ob der Wert eine Zahl ist
+                            val formattedValue = when (value) {
+                                is Number -> {
+                                    val doubleValue = value.toDouble()
+                                    // Überprüfe, ob der Wert Nachkommastellen hat
+                                    if (doubleValue % 1.0 == 0.0) {
+                                        doubleValue.toInt().toString() // Keine Nachkommastellen, nur die ganze Zahl
+                                    } else {
+                                        String.format("%.3f", doubleValue) // Formatiere auf 3 Nachkommastellen
+                                    }
+                                }
+                                else -> value.toString() // Andernfalls einfach den Wert als String
+                            }
+
+                            text(formattedValue)
                             if (property is CooldownProperty) {
                                 text("s")
                             }

@@ -61,7 +61,9 @@ class AbilitySkillTreeComponent(
             child(ScalableLabelComponent(literalText {
                 text(ability.description)
                 color = Colors.GRAY
-            },0.75f))
+            },0.75f).apply {
+                maxWidth(350)
+            })
         })
         child(scroll)
         scroll.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)

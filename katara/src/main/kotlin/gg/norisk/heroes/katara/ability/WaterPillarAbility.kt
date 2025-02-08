@@ -277,10 +277,10 @@ object WaterPillarAbility {
         return positions.toList()
     }
 
-    val waterPillarDistance = NumberProperty(15.0, 5, "Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3), icon = {
+    val waterPillarDistance = NumberProperty(15.0, 5, "Water Pillar Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3), icon = {
         Components.item(Items.SPYGLASS.defaultStack)
     })
-    val waterPillarVelocityBoost = NumberProperty(1.0, 5, "Start Boost", MultiplyBase(1.0, 1.2, 1.4, 1.5, 1.8, 1.9), icon = {
+    val waterPillarVelocityBoost = NumberProperty(1.0, 5, "Water Pillar Start Boost", MultiplyBase(1.0, 1.2, 1.4, 1.5, 1.8, 1.9), icon = {
         Components.item(Items.FIREWORK_ROCKET.defaultStack)
     })
 

@@ -18,6 +18,8 @@ import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.entity.toph
 import gg.norisk.heroes.toph.mixin.render.GameRendererAccessor
 import gg.norisk.heroes.toph.registry.SoundRegistry
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.block.BlockState
 import net.minecraft.client.MinecraftClient
@@ -26,9 +28,11 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
@@ -38,6 +42,7 @@ import net.silkmc.silk.core.entity.posUnder
 import net.silkmc.silk.core.kotlin.ticks
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literal
+import net.silkmc.silk.core.text.literalText
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlin.time.Duration.Companion.seconds
@@ -76,13 +81,26 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
             buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
     }
 
+    override fun hasUnlocked(player: PlayerEntity): Boolean {
+        return player.isCreative || (EarthPushAbility.cooldownProperty.isMaxed(player.uuid))
+    }
+
+    override fun getUnlockCondition(): Text {
+        return literalText {
+            text(Text.translatable("heroes.ability.$internalKey.unlock_condition"))
+        }
+    }
+
+    override fun getIconComponent(): Component {
+        return Components.item(Items.ENDER_EYE.defaultStack)
+    }
+
     override fun getBackgroundTexture(): Identifier {
         return Identifier.of("textures/block/packed_mud.png")
     }
 
     override fun onStart(player: PlayerEntity) {
         super.onStart(player)
-        println("Seismic Sense Hallo $player")
         if (player is ServerPlayerEntity) {
             val world = player.world as ServerWorld
             player.playEmote("seismic-sense".toEmote())
@@ -114,7 +132,6 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
                 }
             }
         } else if (MinecraftClient.getInstance().player == player) {
-            player.sendMessage("HALLO?".literal)
             mcCoroutineTask(sync = true, client = true, delay = 0.32.seconds) {
                 val gameRenderer = MinecraftClient.getInstance().gameRenderer as GameRendererAccessor
                 gameRenderer.invokeLoadPostProcessor(SeismicSenseShader)

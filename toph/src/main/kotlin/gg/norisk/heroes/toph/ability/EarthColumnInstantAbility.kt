@@ -7,6 +7,7 @@ import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
+import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.networking.BoomShake
@@ -21,6 +22,8 @@ import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.network.earthColumnBlockInfos
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
+import io.wispforest.owo.ui.component.Components
+import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.block.BlockState
@@ -29,6 +32,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.network.packet.s2c.play.PositionFlag
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -57,9 +61,18 @@ data class EarthColumnDescription(
     val center: @Serializable(with = BlockPosSerializer::class) BlockPos,
 )
 
+val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0), icon = {
+    Components.item(Items.STONE_SHOVEL.defaultStack)
+})
+
 val EarthColumnInstantAbility = object : HoldAbility(
     "Earth Column"
 ) {
+
+    val earthColumnHeight = NumberProperty(3.0, 5, "Height", AddValueTotal(1.0, 1.0, 1.0, 3.0, 2.0), icon = {
+        Components.item(Items.STONE.defaultStack)
+    })
+
     init {
         client {
             this.keyBind = HeroKeyBindings.thirdKeyBind
@@ -91,6 +104,11 @@ val EarthColumnInstantAbility = object : HoldAbility(
             }
         }
 
+        this.properties = listOf(
+            earthColumnRadius,
+            earthColumnHeight,
+        )
+
         this.cooldownProperty =
             buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
         this.maxDurationProperty =
@@ -103,8 +121,8 @@ val EarthColumnInstantAbility = object : HoldAbility(
             if (radius <= 0) {
                 radius = 1
             }
-            if (radius >= 5) {
-                radius = 5
+            if (radius >= earthColumnRadius.getValue(player.uuid)) {
+                radius = earthColumnRadius.getValue(player.uuid).toInt()
             }
             player.setSyncedData(EarthColumnRadiusKey, radius)
         }
@@ -112,10 +130,14 @@ val EarthColumnInstantAbility = object : HoldAbility(
         earthColumnBlockInfos.receiveOnServer { earthColumn, context ->
             val world = context.player.serverWorld
             val player = context.player
-            mcCoroutineTask(sync = true, client = false, howOften = 5, period = 0.ticks) {
+            mcCoroutineTask(sync = true, client = false, howOften = earthColumnHeight.getValue(player.uuid).toLong(), period = 0.ticks) {
                 earthColumn.move(world, it.round.toInt(), it.counterDownToZero == 0L)
             }
         }
+    }
+
+    override fun getIconComponent(): Component {
+        return Components.item(Items.STONE.defaultStack)
     }
 
     override fun getBackgroundTexture(): Identifier {

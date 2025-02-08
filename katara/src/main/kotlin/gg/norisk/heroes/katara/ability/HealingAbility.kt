@@ -148,7 +148,7 @@ object HealingAbility {
     )
     val waterHealingMaxDuration = NumberProperty(
         5.0, 3,
-        "Max Duration",
+        "Max Duration Lasts",
         AddValueTotal(2.0, 2.0, 5.0), icon = {
             Components.item(itemStack(Items.CLOCK) {})
         }

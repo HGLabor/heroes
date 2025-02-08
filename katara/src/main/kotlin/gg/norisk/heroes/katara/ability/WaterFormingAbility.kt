@@ -50,7 +50,7 @@ object WaterFormingAbility {
 
     val waterFormingMaxDistance = NumberProperty(
         10.0, 3,
-        "Max Blocks",
+        "Water Forming Max Blocks",
         AddValueTotal(5.0, 5.0, 5.0), icon = {
             Components.item(itemStack(Items.ICE) {})
         }
