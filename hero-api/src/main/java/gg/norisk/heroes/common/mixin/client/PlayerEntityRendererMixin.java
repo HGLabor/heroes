@@ -3,11 +3,10 @@ package gg.norisk.heroes.common.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
 import gg.norisk.heroes.client.renderer.SkinUtils;
-import gg.norisk.heroes.common.db.DatabaseManager;
 import gg.norisk.heroes.common.hero.IHeroManagerKt;
+import gg.norisk.heroes.common.player.DatabasePlayer;
+import gg.norisk.heroes.common.player.DatabasePlayerKt;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -60,7 +59,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Unique
     private void renderBounty(double d, AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f) {
         if (d < (double) 2000.0F) {
-            int bounty = DatabaseManager.INSTANCE.getFfaBounty(abstractClientPlayerEntity);
+            int bounty = DatabasePlayerKt.getFfaBounty(abstractClientPlayerEntity);
             if (bounty > 0) {
                 Vec3d vec3d = abstractClientPlayerEntity.getAttachments().getPointNullable(EntityAttachmentType.NAME_TAG, 0, abstractClientPlayerEntity.getYaw(f));
                 if (vec3d != null) {

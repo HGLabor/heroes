@@ -4,13 +4,13 @@ import gg.norisk.heroes.common.HeroesManager.isServer
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.db.DatabaseInventory.Companion.loadInventory
-import gg.norisk.heroes.common.db.DatabaseInventory.Companion.toDatabaseInventory
-import gg.norisk.heroes.common.db.DatabaseManager
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
+import gg.norisk.heroes.common.player.DatabaseInventory.Companion.loadInventory
+import gg.norisk.heroes.common.player.DatabaseInventory.Companion.toDatabaseInventory
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
+import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -93,7 +93,7 @@ object KitEditorManager {
             val player = entity as? ServerPlayerEntity? ?: return@Load
             if (world == this.world) {
                 player.changeGameMode(GameMode.ADVENTURE)
-                val dbPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+                val dbPlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
                 println("Loaded ${dbPlayer}")
                 if (dbPlayer.inventory == null) {
                     resetInventory.invoke(player)
@@ -108,11 +108,11 @@ object KitEditorManager {
             val player = entity as? ServerPlayerEntity? ?: return@Unload
             if (world == this.world) {
                 val inventory = player.toDatabaseInventory()
-                val dbPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+                val dbPlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
                 dbPlayer.inventory = inventory
                 player.dbPlayer = dbPlayer
                 mcCoroutineTask(sync = false, client = false) {
-                    DatabaseManager.provider.save(dbPlayer)
+                    PlayerProvider.save(dbPlayer)
                     println("Saved ${dbPlayer}")
                     entity.sendMessage("Saved Kit Editor".literal)
                 }

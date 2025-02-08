@@ -1,7 +1,6 @@
 package gg.norisk.ffa.server.mechanics
 
 import gg.norisk.ffa.server.mechanics.CombatTag.isInCombat
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.game.sideboard.Sideboard

@@ -2,8 +2,7 @@ package gg.norisk.heroes.client.command
 
 import gg.norisk.heroes.client.config.ConfigManagerClient
 import gg.norisk.heroes.common.HeroesManager
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
-import kotlinx.serialization.encodeToString
+import gg.norisk.heroes.common.player.dbPlayer
 import net.silkmc.silk.commands.clientCommand
 import net.silkmc.silk.commands.player
 import net.silkmc.silk.core.text.literalText

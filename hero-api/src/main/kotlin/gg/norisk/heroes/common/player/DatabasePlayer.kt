@@ -1,11 +1,14 @@
-package gg.norisk.heroes.common.db
+package gg.norisk.heroes.common.player
 
+import gg.norisk.datatracker.entity.getSyncedData
+import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.ability.PropertyPlayer
 import gg.norisk.heroes.common.serialization.ItemStackSerializer
 import gg.norisk.heroes.common.serialization.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 import java.util.*
@@ -58,3 +61,14 @@ data class DatabaseInventory(
         }
     }
 }
+
+private const val DATABASE_PLAYER = "HeroApi:DataBasePlayer"
+var PlayerEntity.dbPlayer: DatabasePlayer
+    get() = this.getSyncedData<DatabasePlayer>(DATABASE_PLAYER) ?: DatabasePlayer(this.uuid)
+    set(value) = this.setSyncedData(DATABASE_PLAYER, value, (this as? ServerPlayerEntity?))
+
+private const val FFA_BOUNTY = "HeroApi:Bounty"
+var PlayerEntity.ffaBounty: Int
+    get() = this.getSyncedData<Int>(FFA_BOUNTY) ?: 0
+    set(value) = this.setSyncedData(FFA_BOUNTY, value)
+

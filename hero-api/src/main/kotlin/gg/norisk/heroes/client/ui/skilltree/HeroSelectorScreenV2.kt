@@ -3,12 +3,11 @@ package gg.norisk.heroes.client.ui.skilltree
 
 //import me.cortex.nvidium.Nvidium
 import gg.norisk.heroes.client.ui.components.HeroListComponentV2
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.hero.Hero
+import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.ui.components.LabelButtonComponent
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.base.BaseOwoScreen
-import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*

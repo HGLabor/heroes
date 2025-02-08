@@ -2,23 +2,16 @@ package gg.norisk.ffa.server.mechanics
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import gg.norisk.ffa.server.FFAServer.isFFA
-import gg.norisk.heroes.common.db.DatabaseManager
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
-import gg.norisk.heroes.common.db.DatabaseManager.ffaBounty
+import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaBounty
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.command.argument.EntityArgumentType
-import net.minecraft.scoreboard.ScoreboardCriterion
-import net.minecraft.scoreboard.ScoreboardDisplaySlot
-import net.minecraft.scoreboard.ScoreboardObjective
-import net.minecraft.scoreboard.Team
-import net.minecraft.scoreboard.number.BlankNumberFormat
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.server.players
-import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.broadcastText
-import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import java.awt.Color
 import kotlin.random.Random
@@ -31,7 +24,7 @@ object Bounty {
                 runsAsync {
                     val player = EntityArgumentType.getPlayer(this, "player")
                     val source = this.source.playerOrThrow
-                    val dbPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+                    val dbPlayer = PlayerProvider.get(player.uuid)
                     source.sendMessage(literalText {
                         text("${player.name} hat ein Kopfgeld von ${dbPlayer.bounty}")
                     })
@@ -40,8 +33,8 @@ object Bounty {
                     runsAsync {
                         val player = EntityArgumentType.getPlayer(this, "player")
                         val source = this.source.playerOrThrow
-                        val dbPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
-                        val sourceDbPlayer = DatabaseManager.provider.getCachedPlayer(source.uuid)
+                        val dbPlayer = PlayerProvider.get(player.uuid)
+                        val sourceDbPlayer = PlayerProvider.get(source.uuid)
 
                         println("Player: $sourceDbPlayer")
 
@@ -58,8 +51,8 @@ object Bounty {
                         dbPlayer.bounty += bountyToGive()
                         player.dbPlayer = dbPlayer
 
-                        DatabaseManager.provider.save(sourceDbPlayer)
-                        DatabaseManager.provider.save(dbPlayer)
+                        PlayerProvider.save(sourceDbPlayer)
+                        PlayerProvider.save(dbPlayer)
 
                         this.source.server.broadcastText {
                             text(source.name)
@@ -90,9 +83,9 @@ object Bounty {
         }
     }
 
-    fun receiveBounty(receiver: ServerPlayerEntity, target: ServerPlayerEntity) {
-        val targetDb = DatabaseManager.provider.getCachedPlayer(target.uuid)
-        val receiverDb = DatabaseManager.provider.getCachedPlayer(receiver.uuid)
+    suspend fun receiveBounty(receiver: ServerPlayerEntity, target: ServerPlayerEntity) {
+        val targetDb = PlayerProvider.get(target.uuid)
+        val receiverDb = PlayerProvider.get(receiver.uuid)
 
         if (targetDb.bounty > 0) {
             val bounty = targetDb.bounty
@@ -117,16 +110,13 @@ object Bounty {
 
             receiver.dbPlayer = receiverDb
             target.dbPlayer = targetDb
-
-            mcCoroutineTask(sync = false, client = false) {
-                DatabaseManager.provider.save(receiverDb)
-                DatabaseManager.provider.save(targetDb)
-            }
+            PlayerProvider.save(receiverDb)
+            PlayerProvider.save(targetDb)
         }
     }
 
     private fun updateBountyScoreboard(player: ServerPlayerEntity) {
-        val databasePlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+        val databasePlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
         val scoreboard = player.scoreboard
         val bounty = Random.nextInt(1, 3000)
         if (databasePlayer.bounty != player.ffaBounty) {

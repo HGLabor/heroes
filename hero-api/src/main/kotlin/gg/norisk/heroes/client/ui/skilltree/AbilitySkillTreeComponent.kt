@@ -2,16 +2,14 @@ package gg.norisk.heroes.client.ui.skilltree
 
 import com.mojang.blaze3d.systems.RenderSystem
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
+import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.common.ui.ScrollContainerV2
 import gg.norisk.ui.components.ScalableLabelComponent
-import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*
 import io.wispforest.owo.ui.util.NinePatchTexture
-import io.wispforest.owo.ui.util.UISounds
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.BufferRenderer
 import net.minecraft.client.render.GameRenderer
@@ -20,7 +18,6 @@ import net.minecraft.client.render.VertexFormat.DrawMode
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.Items
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.minecraft.util.Colors

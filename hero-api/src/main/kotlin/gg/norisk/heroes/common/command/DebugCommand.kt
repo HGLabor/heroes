@@ -4,14 +4,14 @@ import com.mojang.brigadier.context.CommandContext
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.ability.PlayerProperty
 import gg.norisk.heroes.common.command.EditPropertyCommand.editCommand
-import gg.norisk.heroes.common.db.DatabaseManager
-import gg.norisk.heroes.common.db.DatabaseManager.dbPlayer
 import gg.norisk.heroes.common.ffa.KitEditorManager
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
+import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.command.argument.EntityArgumentType
 import net.minecraft.entity.player.PlayerEntity
@@ -45,10 +45,10 @@ object DebugCommand {
                             runsAsync {
                                 val players = EntityArgumentType.getPlayers(this, "players")
                                 for (player in players) {
-                                    val cachedPlayer = DatabaseManager.provider.getCachedPlayer(player.uuid)
+                                    val cachedPlayer = PlayerProvider.get(player.uuid)
                                     cachedPlayer.xp = xp()
                                     player.dbPlayer = cachedPlayer
-                                    DatabaseManager.provider.save(player.uuid)
+                                    PlayerProvider.save(player.uuid)
                                 }
                             }
                         }
