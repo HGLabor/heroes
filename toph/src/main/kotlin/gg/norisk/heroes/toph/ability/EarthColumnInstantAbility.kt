@@ -9,6 +9,7 @@ import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
@@ -156,8 +157,8 @@ val EarthColumnInstantAbility = object : HoldAbility(
         EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
     )
 
-    override fun onStart(player: PlayerEntity) {
-        super.onStart(player)
+    override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+        super.onStart(player, abilityScope)
         if (player is ServerPlayerEntity) {
             player.setSyncedData(EarthColumnKey, true)
             player.playEmote("earth-column-start".toEmote())

@@ -225,7 +225,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     open fun onDisable(player: PlayerEntity) {
     }
 
-    open fun onStart(player: PlayerEntity) {
+    open fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
     }
 
     open fun onTick(player: PlayerEntity) {

@@ -16,6 +16,7 @@ import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.Networking.mousePacket
@@ -223,8 +224,8 @@ object AirBallAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 val airScooter = EntityRegistry.AIR_SCOOTER.create(player.world) ?: return
                 player.isAirBending = true

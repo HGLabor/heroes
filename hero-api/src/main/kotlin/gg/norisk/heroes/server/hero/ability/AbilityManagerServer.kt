@@ -132,7 +132,7 @@ object AbilityManagerServer : IAbilityManager {
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
                     player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
-                    ability.onStart(player)
+                    ability.onStart(player, abilityScope)
                 }
 
                 is ToggleAbility -> {
@@ -148,7 +148,7 @@ object AbilityManagerServer : IAbilityManager {
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
                             player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
-                            ability.onStart(player)
+                            ability.onStart(player, abilityScope)
                             //ability.internalCallbacks.START
                         }
 

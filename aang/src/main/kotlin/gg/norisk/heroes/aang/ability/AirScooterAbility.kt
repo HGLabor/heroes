@@ -19,6 +19,7 @@ import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.ability.task.abilityCoroutineTask
 import gg.norisk.heroes.common.utils.sound
@@ -184,8 +185,8 @@ object AirScooterAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 player.playEmote(EmoteRegistry.AIR_SCOOTER)
                 player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.5)

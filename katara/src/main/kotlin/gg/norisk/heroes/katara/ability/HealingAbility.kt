@@ -7,6 +7,7 @@ import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
@@ -194,7 +195,7 @@ object HealingAbility {
             return Identifier.of("textures/block/packed_ice.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             if (player is ServerPlayerEntity) {
                 val entity = player.getCurrentBendingEntity()
                 if (player.isSneaking) {

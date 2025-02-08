@@ -24,7 +24,7 @@ public abstract class GameRendererMixin {
     @Inject(at = @At("TAIL"), method = "onCameraEntitySet", cancellable = true)
     private void onCameraEntitySet(Entity entity, CallbackInfo ci) {
         var player = MinecraftClient.getInstance().player;
-        if (player != null && SeismicSenseAbilityKt.hasSeismicSense(player)) {
+        if (player != null && SeismicSenseAbilityKt.getHasSeismicSense(player)) {
             this.loadPostProcessor(SeismicSenseAbilityKt.getSeismicSenseShader());
         }
     }

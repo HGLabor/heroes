@@ -4,10 +4,7 @@ import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
-import gg.norisk.heroes.common.hero.ability.AbilityPacket
-import gg.norisk.heroes.common.hero.ability.AbilityPacketDescription
-import gg.norisk.heroes.common.hero.ability.AbstractAbility
-import gg.norisk.heroes.common.hero.ability.IAbilityManager
+import gg.norisk.heroes.common.hero.ability.*
 import gg.norisk.heroes.common.hero.ability.implementation.Ability
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
@@ -61,10 +58,11 @@ object AbilityManagerClient : IAbilityManager {
                 val ability = getAbilityFromAbilityPacket(packet) ?: return@receiveOnClient
                 val description = packet.description
                 val isOwnPacket = heroPlayer.uuid == player.uuid
+                val abilityScope = AbilityScope(heroPlayer)
                 when (ability) {
                     is Ability,
                     is PressAbility -> {
-                        ability.onStart(player)
+                        ability.onStart(player, abilityScope)
                         /*val callbacks = ability.internalCallbacks as AbstractAbility.ReceiveCallbacks
                         callbacks.handleAllClients?.invoke(heroPlayer, player, description)
                         if (isOwnPacket) {
@@ -79,7 +77,7 @@ object AbilityManagerClient : IAbilityManager {
                             is AbilityPacketDescription.Start -> {
                                 abilitiesInUse[packet.playerUuid] = ability
                                 logger.info("Start")
-                                ability.onStart(player)
+                                ability.onStart(player, abilityScope)
                                 //ability.internalCallbacks.START
                             }
 

@@ -8,6 +8,7 @@ import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.ability.CooldownProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.Networking.mousePacket
@@ -72,7 +73,7 @@ object WaterBendingAbility {
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
         }
 
-        override fun onStart(player: PlayerEntity) {
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             if (!player.world.isClient) {
                 player.isWaterSelecting = true
             }

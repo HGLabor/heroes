@@ -8,6 +8,7 @@ import gg.norisk.heroes.aang.ability.AirScooterAbility;
 import gg.norisk.heroes.aang.ability.LevitationAbility;
 import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility;
 import gg.norisk.heroes.aang.entity.IAangPlayer;
+import gg.norisk.heroes.aang.entity.TornadoEntity;
 import gg.norisk.heroes.aang.utils.CircleDetector3D;
 import gg.norisk.heroes.aang.utils.PlayerRotationTracker;
 import kotlinx.coroutines.Job;
@@ -44,7 +45,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     @Unique
     private PlayerRotationTracker rotationTracker;
     @Unique
-    private List<Job> airScooterTasks = new ArrayList<>();
+    private final List<Job> airScooterTasks = new ArrayList<>();
+    @Unique
+    private final List<Job> tornadoTasks = new ArrayList<>();
+    @Unique
+    private List<Job> spiritualProjectionTasks = new ArrayList<>();
+    @Unique
+    private TornadoEntity tornadoEntity;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -115,5 +122,25 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     @Override
     public @NotNull List<Job> getAang_airScooterTasks() {
         return airScooterTasks;
+    }
+
+    @Override
+    public @Nullable TornadoEntity getAang_tornadoEntity() {
+        return tornadoEntity;
+    }
+
+    @Override
+    public void setAang_tornadoEntity(@Nullable TornadoEntity tornadoEntity) {
+        this.tornadoEntity = tornadoEntity;
+    }
+
+    @Override
+    public @NotNull List<Job> getAang_tornadoTasks() {
+        return tornadoTasks;
+    }
+
+    @Override
+    public @NotNull List<Job> getAang_spiritualProjectionsTasks() {
+        return spiritualProjectionTasks;
     }
 }

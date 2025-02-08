@@ -4,11 +4,12 @@ import gg.norisk.heroes.common.ability.CooldownProperty
 import gg.norisk.heroes.common.ability.PlayerProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.ability.operation.Operation
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import net.minecraft.entity.player.PlayerEntity
 
 open class ToggleAbility(name: String) : AbstractAbility<Any>(name) {
-    override fun onStart(player: PlayerEntity) {
+    override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
 
     }
 

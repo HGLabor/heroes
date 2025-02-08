@@ -5,6 +5,7 @@ import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.aang.AangManager.toId
 import gg.norisk.heroes.aang.client.sound.TornadoSoundInstance
 import gg.norisk.heroes.aang.entity.TornadoEntity
+import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.mixin.accessor.CameraAccessor
 import gg.norisk.heroes.aang.registry.EntityRegistry
 import gg.norisk.heroes.aang.utils.PlayerRotationTracker
@@ -13,6 +14,7 @@ import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.CooldownProperty
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
@@ -78,18 +80,19 @@ object TornadoAbility {
 
     private fun ServerPlayerEntity.summonTornado() {
         val tornadoEntity = EntityRegistry.TORNADO.create(this.serverWorld) ?: return
+        aang.aang_tornadoEntity = tornadoEntity
         tornadoEntity.setPosition(this.pos)
         tornadoEntity.ownerId = this.id
         tornadoEntity.rotationTracker = PlayerRotationTracker()
         tornadoEntity.isGrowingMode = true
-        mcCoroutineTask(sync = true, client = false, delay = 5.seconds) {
+        aang.aang_tornadoTasks += mcCoroutineTask(sync = true, client = false, delay = 5.seconds) {
             tornadoEntity.isGrowingMode = false
             tornadoEntity.rotationTracker?.movementIncreaseRate =
                 tornadoIncreaseRateProperty.getValue(this@summonTornado.uuid).toFloat()
             tornadoEntity.rotationTracker?.onlyDecay = true
             tornadoEntity.rotationTracker?.movementDecayRate =
                 tornadoDecreaseRateProperty.getValue(this@summonTornado.uuid).toFloat()
-            mcCoroutineTask(
+            aang.aang_tornadoTasks += mcCoroutineTask(
                 sync = true,
                 client = false,
                 delay = tornadoMaxDurationProperty.getValue(this@summonTornado.uuid).seconds
@@ -209,10 +212,25 @@ object TornadoAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            cleanUp(player)
+        }
+
+        private fun cleanUp(player: PlayerEntity) {
+            player.aang.aang_tornadoTasks.forEach { it.cancel() }
+            player.aang.aang_tornadoEntity?.disappear(player)
+        }
+
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
-                player.summonTornado()
+                if (!player.isTornadoMode) {
+                    abilityScope.cancelCooldown()
+                    player.summonTornado()
+                } else {
+                    cleanUp(player)
+                }
             }
         }
     }

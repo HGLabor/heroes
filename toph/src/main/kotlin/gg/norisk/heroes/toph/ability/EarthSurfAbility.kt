@@ -11,6 +11,7 @@ import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.cameraShakePacket
@@ -123,8 +124,8 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
         EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
     )
 
-    override fun onStart(player: PlayerEntity) {
-        super.onStart(player)
+    override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+        super.onStart(player, abilityScope)
         if (player is ServerPlayerEntity) {
             player.playEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, true)
