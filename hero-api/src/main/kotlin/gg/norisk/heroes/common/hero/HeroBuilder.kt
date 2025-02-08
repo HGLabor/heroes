@@ -47,23 +47,11 @@ class HeroBuilder(val hero: Hero) {
         }
     }
 
-    fun onTick(callback: (player: PlayerEntity) -> Unit) {
-        hero.internalCallbacks.onTick = callback
-    }
-
     fun getSkin(callback: (player: PlayerEntity) -> Identifier) {
         hero.internalCallbacks.getSkin = callback
     }
 
     fun ability(ability: AbstractAbility<*>) {
         hero.registerAbility(ability)
-    }
-
-    fun onEnable(callback: (player: PlayerEntity) -> Unit) {
-        hero.internalCallbacks.onEnable = callback
-    }
-
-    fun onDisable(callback: (player: PlayerEntity) -> Unit) {
-        hero.internalCallbacks.onDisable = callback
     }
 }

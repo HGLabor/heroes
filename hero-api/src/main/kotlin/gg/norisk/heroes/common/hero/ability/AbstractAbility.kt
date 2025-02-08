@@ -11,6 +11,7 @@ import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
+import gg.norisk.utils.DevUtils.uniqueId
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import kotlinx.coroutines.*
@@ -94,6 +95,10 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         return false
     }
 
+    fun removeCooldown(player: PlayerEntity) {
+        cooldowns.remove(player.uuid)
+    }
+
     fun setCooldown(cooldownInfo: CooldownInfo, player: PlayerEntity) {
         if (cooldownInfo.duration == 0L && cooldownInfo.startTime == 0L && cooldownInfo.currentTime == 0L) {
             cooldowns.remove(player.uuid)
@@ -142,21 +147,10 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         ).apply {
             this.durationString = getCooldownText(this)
         }
-        logger.info(
-            "###REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime} ${
-                cooldownInfo.endTime?.minus(
-                    (cooldownInfo.startTime ?: 0L)
-                )
-            }"
-        )
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
         cooldowns[uuid] = cooldownInfo
         Networking.s2cCooldownPacket.send(cooldownInfo, player)
 
         //player.sendDebugMessage("Sending Cooldown: $cooldownInfo".literal)
-        println(JSON.encodeToString(cooldownInfo))
 
         if (cooldownInfo.remaining > 0) {
             cooldownCoroutineScope.launch {
@@ -200,6 +194,13 @@ abstract class AbstractAbility<T : Any>(val name: String) {
             property.ability = this
             property.hero = this.hero
         }
+    }
+
+    open fun onEnable(player: PlayerEntity) {
+
+    }
+
+    open fun onDisable(player: PlayerEntity) {
     }
 
     open fun onStart(player: PlayerEntity) {

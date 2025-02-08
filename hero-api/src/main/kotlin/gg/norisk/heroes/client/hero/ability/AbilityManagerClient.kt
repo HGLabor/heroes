@@ -1,7 +1,7 @@
 package gg.norisk.heroes.client.hero.ability
 
+import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.heroes.common.HeroesManager.logger
-import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.AbilityPacket
@@ -15,19 +15,38 @@ import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.Networking.s2cAbilityPacket
 import gg.norisk.heroes.common.networking.Networking.s2cCooldownPacket
+import gg.norisk.utils.DevUtils.uniqueId
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.silkmc.silk.core.task.mcCoroutineTask
-import net.silkmc.silk.core.text.literal
 import java.util.*
-import kotlin.math.log
 
 object AbilityManagerClient : IAbilityManager {
     private val abilitiesInUse = hashMapOf<UUID, AbstractAbility<*>>()
 
     override fun init() {
+        //cleanup
+        syncedValueChangeEvent.listen { event ->
+            if (event.key != HeroManager.HERO_KEY) return@listen
+            val player = event.entity as? AbstractClientPlayerEntity? ?: return@listen
+            if (player == MinecraftClient.getInstance().player) {
+                (event.oldValue as? Hero?)?.abilities?.forEach { (name, ability) -> ability.onDisable(player) }
+                abilitiesInUse.remove(player.uniqueId)
+                HeroManager.registeredHeroes.values.forEach {
+                    it.abilities.values.forEach { ability ->
+                        ability.removeCooldown(player)
+                    }
+                }
+                player.getHero()?.abilities?.forEach { (name, ability) -> ability.onEnable(player) }
+            }
+        }
+
+
         s2cCooldownPacket.receiveOnClient { packet, context ->
             mcCoroutineTask(sync = true, client = true) {
-                val player = context.client.world?.getEntityById(packet.entityId) as? PlayerEntity? ?: return@mcCoroutineTask
+                val player =
+                    context.client.world?.getEntityById(packet.entityId) as? PlayerEntity? ?: return@mcCoroutineTask
                 val hero = HeroManager.getHero(packet.heroKey) ?: return@mcCoroutineTask
                 val ability = hero.abilities[packet.abilityKey] ?: return@mcCoroutineTask
                 ability.setCooldown(packet, player)
@@ -35,17 +54,13 @@ object AbilityManagerClient : IAbilityManager {
         }
 
         s2cAbilityPacket.receiveOnClient { packet, context ->
-            kotlin.runCatching {
-                logger.info("Received ability packet: $packet")
+            runCatching {
                 val player = context.client.player ?: return@receiveOnClient
-                logger.info("1. Received ability packet: $packet")
-                val heroPlayer = context.client.world?.players?.firstOrNull { it.uuid == packet.playerUuid } ?: return@receiveOnClient
-                logger.info("2. Received ability packet: $packet")
+                val heroPlayer = context.client.world?.players?.firstOrNull { it.uuid == packet.playerUuid }
+                    ?: return@receiveOnClient
                 val ability = getAbilityFromAbilityPacket(packet) ?: return@receiveOnClient
-                logger.info("Ability packet: $ability $player $heroPlayer")
                 val description = packet.description
                 val isOwnPacket = heroPlayer.uuid == player.uuid
-                logger.info("Hier Rein")
                 when (ability) {
                     is Ability,
                     is PressAbility -> {
@@ -149,10 +164,7 @@ object AbilityManagerClient : IAbilityManager {
 
     private fun getAbilityFromAbilityPacket(packet: AbilityPacket<out AbilityPacketDescription>): AbstractAbility<*>? {
         val hero = HeroManager.getHero(packet.heroKey) ?: return null
-        logger.info("Ability packet: ${hero.abilities}")
-        logger.info("Ability packet: $packet")
         val ability = hero.abilities[packet.abilityKey]
-        logger.info("Ability $ability")
         return ability
     }
 }

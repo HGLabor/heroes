@@ -95,9 +95,6 @@ open class Hero(val name: String) {
     }
 
     inner class InternalCallbacks {
-        var onTick: ((player: PlayerEntity) -> Unit)? = null
         var getSkin: ((player: PlayerEntity) -> Identifier?)? = null
-        var onEnable: ((player: PlayerEntity) -> Unit)? = null
-        var onDisable: ((player: PlayerEntity) -> Unit)? = null
     }
 }

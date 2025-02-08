@@ -31,6 +31,7 @@ import net.minecraft.util.Colors
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.task.mcSyncLaunch
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
@@ -111,7 +112,6 @@ object AbilityManagerServer : IAbilityManager {
 
     private fun handleIncomingAbility(packet: AbilityPacket<*>, player: ServerPlayerEntity) {
         runCatching {
-            println("$packet $player")
             var ignoreCooldown = false
             if (packet.playerUuid != player.uuid) return@runCatching
             val ability = getAbilityFromAbilityUsePacket(packet) ?: return@runCatching
@@ -188,10 +188,12 @@ object AbilityManagerServer : IAbilityManager {
     ) {
         val playerJobs = abilityJobs.computeIfAbsent(player.uuid) { hashMapOf() }
         abilitiesInUse[player.uuid] = ability
-        playerJobs[ability] = coroutineScope.launch {
+        playerJobs[ability] = mcCoroutineTask(sync = false, client = false) {
             delay(ability.maxDurationProperty.getValue(player.uuid).seconds)
             yield()
-            forceEndAbility(player, ability, abilityScope)
+            mcCoroutineTask(sync = true, client = false) {
+                forceEndAbility(player, ability, abilityScope)
+            }
         }
     }
 
