@@ -2,6 +2,7 @@ package gg.norisk.ffa.server.world
 
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.FFAServer.logger
+import gg.norisk.ffa.server.mechanics.lootdrop.LootdropManager
 import gg.norisk.ffa.server.world.MapPlacer.chunkSize
 import gg.norisk.ffa.server.world.MapPlacer.mapSize
 import kotlinx.coroutines.Job
@@ -61,6 +62,7 @@ object WorldManager {
                     player.teleportToNewMap(currentPair.first, currentPair.second)
                 }
                 setWorldBorder(server.overworld)
+                LootdropManager.onArenaReset()
             }
         }
     }
@@ -121,6 +123,7 @@ object WorldManager {
             if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
                 mapResetCycle(server)
                 setWorldBorder(server.overworld)
+                LootdropManager.onArenaReset()
             }
         }
     }
