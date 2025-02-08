@@ -17,7 +17,8 @@ sealed class PlayerProperty<T> {
     abstract var maxLevel: Int
     abstract var name: String
     abstract var levelScale: Int
-    abstract var icon: () -> Component
+    @Transient
+    abstract val icon: () -> Component
 
     @Transient
     lateinit var hero: Hero

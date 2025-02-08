@@ -3,20 +3,18 @@ package gg.norisk.ffa.server.mechanics
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaBounty
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.command.argument.EntityArgumentType
-import net.minecraft.scoreboard.ScoreboardCriterion
-import net.minecraft.scoreboard.ScoreboardDisplaySlot
-import net.minecraft.scoreboard.ScoreboardObjective
-import net.minecraft.scoreboard.number.BlankNumberFormat
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.server.players
-import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literalText
 import java.awt.Color
+import kotlin.random.Random
 
 object Bounty {
     fun init() {
@@ -112,34 +110,49 @@ object Bounty {
 
             receiver.dbPlayer = receiverDb
             target.dbPlayer = targetDb
-
-            mcCoroutineTask(sync = false, client = false) {
-                PlayerProvider.save(receiverDb)
-                PlayerProvider.save(targetDb)
-            }
+            PlayerProvider.save(receiverDb)
+            PlayerProvider.save(targetDb)
         }
     }
 
     private fun updateBountyScoreboard(player: ServerPlayerEntity) {
         val databasePlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
         val scoreboard = player.scoreboard
-        if (databasePlayer.bounty > 0) {
-            player.scoreboard.setObjectiveSlot(
-                ScoreboardDisplaySlot.BELOW_NAME, ScoreboardObjective(
-                    scoreboard,
-                    "bounty",
-                    ScoreboardCriterion.create("bounty"),
-                    literalText {
-                        text("Bounty: ")
-                        text(databasePlayer.bounty.toString())
-                    },
-                    ScoreboardCriterion.RenderType.HEARTS,
-                    true,
-                    BlankNumberFormat.INSTANCE
+        val bounty = Random.nextInt(1, 3000)
+        if (databasePlayer.bounty != player.ffaBounty) {
+            player.ffaBounty = databasePlayer.bounty
+        }
+        /*if (bounty > 0) {
+            val objective = player.scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.BELOW_NAME)
+            if (objective != null) {
+                val team = Team(player.scoreboard, player.gameProfile.name)
+                objective.displayName = bountyText(bounty, player)
+            } else {
+                player.scoreboard.setObjectiveSlot(
+                    ScoreboardDisplaySlot.BELOW_NAME, scoreboard.addObjective(
+                        "bounty-${player.uuid}",
+                        ScoreboardCriterion.create("bounty-${player.uuid}"),
+                        bountyText(bounty, player),
+                        ScoreboardCriterion.RenderType.HEARTS,
+                        true,
+                        BlankNumberFormat.INSTANCE
+                    )
                 )
-            )
+            }
         } else {
             player.scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.BELOW_NAME, null)
+        }*/
+    }
+
+    private fun bountyText(bounty: Number, player: ServerPlayerEntity): Text {
+        return literalText {
+            text("Bounty ")
+            text("von")
+            text(" ")
+            text(player.name)
+            text(" ")
+            text(bounty.toString())
+            text(" ")
         }
     }
 }

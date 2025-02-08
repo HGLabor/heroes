@@ -71,14 +71,15 @@ object SelectorServerManager {
     }
 
     private fun ServerPlayerEntity.setArenaReady() {
-        setSyncedData("duels:OLD_PVP", true)
         val inventory = this.dbPlayer.inventory
         if (inventory != null) {
             this.loadInventory(inventory)
         } else {
             KitEditor.handleKit(this)
         }
-        //scoreboards.computeIfAbsent(this.uuid) { Scoreboard.getScoreboardForPlayer(this) }.displayToPlayer(this)
+        if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
+            scoreboards.computeIfAbsent(this.uuid) { Scoreboard.getScoreboardForPlayer(this) }.displayToPlayer(this)
+        }
         (this as LivingEntityAccessor).lastAttackTime = -10000
     }
 
@@ -119,7 +120,7 @@ object SelectorServerManager {
         })
         inventory.setStack(3, itemStack(Items.WATER_BUCKET) {
         })
-        inventory.setStack(29, itemStack(Items.COOKED_BEEF,16) {
+        inventory.setStack(29, itemStack(Items.COOKED_BEEF, 16) {
         })
         inventory.setStack(30, itemStack(Items.WATER_BUCKET) {
         })
@@ -127,11 +128,11 @@ object SelectorServerManager {
         })
         inventory.setStack(31, itemStack(Items.LAVA_BUCKET) {
         })
-        inventory.setStack(5, itemStack(Items.COBBLESTONE,64) {
+        inventory.setStack(5, itemStack(Items.COBBLESTONE, 64) {
         })
-        inventory.setStack(32, itemStack(Items.OAK_PLANKS,64) {
+        inventory.setStack(32, itemStack(Items.OAK_PLANKS, 64) {
         })
-        inventory.setStack(6, itemStack(Items.COBWEB,8) {
+        inventory.setStack(6, itemStack(Items.COBWEB, 8) {
         })
         inventory.setStack(7, itemStack(Items.BOW) {
             addEnchantment(Enchantments.UNBREAKING.getEntry(world), 3)
@@ -146,7 +147,7 @@ object SelectorServerManager {
             addEnchantment(Enchantments.UNBREAKING.getEntry(world), 3)
             addEnchantment(Enchantments.EFFICIENCY.getEntry(world), 1)
         })
-        inventory.setStack(9, itemStack(Items.ARROW,16) {
+        inventory.setStack(9, itemStack(Items.ARROW, 16) {
         })
     }
 

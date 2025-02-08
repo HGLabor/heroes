@@ -66,3 +66,9 @@ private const val DATABASE_PLAYER = "HeroApi:DataBasePlayer"
 var PlayerEntity.dbPlayer: DatabasePlayer
     get() = this.getSyncedData<DatabasePlayer>(DATABASE_PLAYER) ?: DatabasePlayer(this.uuid)
     set(value) = this.setSyncedData(DATABASE_PLAYER, value, (this as? ServerPlayerEntity?))
+
+private const val FFA_BOUNTY = "HeroApi:Bounty"
+var PlayerEntity.ffaBounty: Int
+    get() = this.getSyncedData<Int>(FFA_BOUNTY) ?: 0
+    set(value) = this.setSyncedData(FFA_BOUNTY, value)
+

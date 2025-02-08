@@ -9,6 +9,7 @@ import com.github.juliarn.npclib.api.profile.ProfileProperty
 import com.github.juliarn.npclib.api.protocol.meta.EntityMetadataFactory
 import com.github.juliarn.npclib.common.event.DefaultInteractNpcEvent
 import com.github.juliarn.npclib.fabric.FabricPlatform
+import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSoupItems
@@ -81,6 +82,7 @@ object KitEditor {
     fun handleSoupKit(player: PlayerEntity) {
         player.inventory.clear()
         player.setSoupItems()
+        player.setSyncedData("duels:OLD_PVP", true)
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
     }
 
