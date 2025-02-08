@@ -10,6 +10,7 @@ import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility;
 import gg.norisk.heroes.aang.entity.IAangPlayer;
 import gg.norisk.heroes.aang.utils.CircleDetector3D;
 import gg.norisk.heroes.aang.utils.PlayerRotationTracker;
+import kotlinx.coroutines.Job;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,6 +18,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +30,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements IAangPlayer {
     @Shadow
@@ -38,6 +43,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
 
     @Unique
     private PlayerRotationTracker rotationTracker;
+    @Unique
+    private List<Job> airScooterTasks = new ArrayList<>();
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -103,5 +110,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     )
     private DataTracker aang$redirectIsModelPartVisible(PlayerEntity instance, Operation<DataTracker> original) {
         return SpiritualProjectionAbility.INSTANCE.replaceDataTrackerWithOwner(instance, original);
+    }
+
+    @Override
+    public @NotNull List<Job> getAang_airScooterTasks() {
+        return airScooterTasks;
     }
 }

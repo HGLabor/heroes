@@ -37,7 +37,6 @@ import kotlin.time.Duration.Companion.seconds
 
 object AbilityManagerServer : IAbilityManager {
     private val abilitiesInUse = hashMapOf<UUID, AbstractAbility<*>>()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val abilityJobs: HashMap<UUID, HashMap<AbstractAbility<*>, Job>> = hashMapOf()
 
     override fun init() {
@@ -195,6 +194,13 @@ object AbilityManagerServer : IAbilityManager {
                 forceEndAbility(player, ability, abilityScope)
             }
         }
+    }
+
+    fun clear(player: PlayerEntity) {
+        abilityJobs[player.uuid]?.forEach { (ability, job) ->
+            job.cancel()
+        }
+        abilitiesInUse.remove(player.uuid)
     }
 
     fun forceEndAbility(

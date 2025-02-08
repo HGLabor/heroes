@@ -53,7 +53,7 @@ object KitEditorManager {
         if (!isServer) return
         ServerLifecycleEvents.SERVER_STARTED.register {
             for (world in it.worlds) {
-                println("$world ${world.registryKey.value}")
+                logger.info("Found Worlds: $world ${world.registryKey.value}")
                 if (world.registryKey.value == "kit-editor".toId()) {
                     this.world = world
                     break

@@ -8,6 +8,7 @@ import gg.norisk.heroes.common.hero.HeroManager.HERO_KEY
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.hero.ability.task.AbilityCoroutineManager
 import gg.norisk.heroes.server.config.ConfigManagerServer
+import gg.norisk.heroes.server.hero.ability.AbilityManagerServer
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.player.PlayerEntity
 import net.silkmc.silk.core.Silk.server
@@ -46,8 +47,12 @@ fun PlayerEntity.setHero(hero: Hero?) {
         AbilityCoroutineManager.cancelClientJobs()
     } else {
         AbilityCoroutineManager.cancelServerJobs(this)
+        AbilityManagerServer.clear(this)
     }
-    getHero()?.abilities?.forEach { (name, ability) -> ability.onDisable(this) }
+    getHero()?.abilities?.forEach { (name, ability) ->
+        ability.clearCooldown(this)
+        ability.onDisable(this)
+    }
     this.setSyncedData(HERO_KEY, hero?.internalKey ?: "NONE")
     getHero()?.abilities?.forEach { (name, ability) -> ability.onEnable(this) }
 }

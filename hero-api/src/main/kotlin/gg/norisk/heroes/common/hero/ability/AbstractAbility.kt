@@ -24,6 +24,7 @@ import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import net.silkmc.silk.core.task.mcCoroutineTask
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.nanoseconds
@@ -41,7 +42,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     var keyBind: KeyBinding? = null
     var properties = listOf<PlayerProperty<*>>()
     private val cooldowns = ConcurrentHashMap<UUID, CooldownInfo>()
-    private val cooldownCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) + SupervisorJob() }
+    private val cooldownTasks = ConcurrentHashMap<UUID, Job>()
     var cooldownProperty: CooldownProperty = buildCooldown(5.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
     var usageProperty: AbstractUsageProperty = SingleUseProperty(0.0, 0, "Use", MultiplyBase(listOf(0.0))).apply {
         icon = {
@@ -107,6 +108,26 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         }
     }
 
+    fun clearCooldown(player: PlayerEntity) {
+        cooldownTasks[player.uuid]?.cancel()
+        if (cooldowns.remove(player.uuid) != null) {
+            if (player is ServerPlayerEntity) {
+                Networking.s2cCooldownPacket.send(
+                    CooldownInfo(
+                        player.id,
+                        0,
+                        0,
+                        0,
+                        null,
+                        hero.internalKey,
+                        internalKey,
+                        null
+                    ), player
+                )
+            }
+        }
+    }
+
     fun addCooldown(player: PlayerEntity) {
         if (player !is ServerPlayerEntity) return
         if (cooldownProperty.name == "NoCooldown") return
@@ -153,7 +174,8 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         //player.sendDebugMessage("Sending Cooldown: $cooldownInfo".literal)
 
         if (cooldownInfo.remaining > 0) {
-            cooldownCoroutineScope.launch {
+            cooldownTasks[uuid]?.cancel()
+            cooldownTasks[uuid] = mcCoroutineTask(sync = false, client = false) {
                 //NO DELAY IN CREATIVE MODE FOR TESTING?
                 //player.sendMessage("START".literal.withColor(Color.red.rgb))
                 //player.sendMessage(getCooldownText(cooldownInfo)?.literal)
