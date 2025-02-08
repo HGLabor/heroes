@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
+import gg.norisk.heroes.common.db.ExperienceManager
 import kotlinx.coroutines.*
 import net.minecraft.block.BarrelBlock
 import net.minecraft.block.Blocks
@@ -13,8 +14,10 @@ import net.minecraft.entity.decoration.DisplayEntity.TextDisplayEntity
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.passive.ChickenEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.projectile.PersistentProjectileEntity
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
@@ -23,6 +26,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.Silk
+import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import org.joml.Vector3f
@@ -49,9 +53,9 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
             lootdrop.onFallingBlockLanding(fallingBlock)
         }
 
-        fun barrelOpened(barrelBlockEntity: BarrelBlockEntity) {
+        fun barrelOpened(barrelBlockEntity: BarrelBlockEntity, player: PlayerEntity) {
             val lootdrop = posLootdropMap[barrelBlockEntity.pos] ?: return
-            lootdrop.onBarrelOpen()
+            lootdrop.onBarrelOpen(player)
         }
 
         fun projectileHit(projectile: PersistentProjectileEntity, entity: Entity) {
@@ -142,8 +146,12 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
         }
     }
 
-    fun onBarrelOpen() {
+    fun onBarrelOpen(player: PlayerEntity) {
         state = LootdropState.OPENED
+        if (xpReward > 0) {
+            player.sendMessage("You received ${xpReward} xp".literal)
+            ExperienceManager.addXp(player as ServerPlayerEntity, ExperienceManager.Reason("lootdrop_secured", xpReward), true)
+        }
         end()
     }
 
@@ -205,6 +213,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
         world.setBlockState(landingPos, Blocks.BARREL.defaultState.with(BarrelBlock.FACING, Direction.UP))
         val barrel = world.getBlockEntity(landingPos) as? BarrelBlockEntity
         val loot = LootdropContent.generateLoot(ITEMS_PER_AIR_DROP.random())
+        Silk.serverOrThrow.broadcastText("Loot: ${loot}")
 
         loot.forEach { item ->
             val amount = item.amountRange.random()
@@ -249,8 +258,8 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 yaw = yawRotation
                 pitch = pitchRotation
 
-                text = " ".literal
-                background = mainColor
+                setText(" ".literal)
+                setBackground(mainColor)
 
                 val scale = Vector3f(8f, 3.625f, 8f)
                 setTransformation(AffineTransformation(null, null, scale, null))
@@ -357,7 +366,6 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
         return TextDisplayEntity(EntityType.TEXT_DISPLAY, world).apply {
             setBillboardMode(DisplayEntity.BillboardMode.CENTER)
             registerEntity(this)
-            lineWidth = 600
         }
     }
 
