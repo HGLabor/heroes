@@ -94,7 +94,7 @@ subprojects {
 
   //ich weiß das ist kriminell aber
   version = rootProject.libs.versions.minecraft.get() + "-" + when (name) {
-    "hero-api" -> "1.2.66"
+    "hero-api" -> "1.2.67"
     "katara" -> "1.0.17"
     "aang" -> "1.0.25"
     "toph" -> "1.0.16"
@@ -172,6 +172,12 @@ subprojects {
   val sourceJar = tasks.register<org.gradle.jvm.tasks.Jar>("sourcesJar") {
     archiveClassifier.set("sources")
     from(project.the<SourceSetContainer>()["main"].allJava)
+  }
+
+  tasks.processResources {
+    val properties = mapOf("version" to project.version)
+    inputs.properties(properties)
+    filesMatching("fabric.mod.json") { expand(properties) }
   }
 
   tasks.withType<PublishToMavenRepository>().configureEach {
