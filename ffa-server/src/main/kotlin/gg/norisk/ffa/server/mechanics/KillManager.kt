@@ -14,6 +14,9 @@ import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
+import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
 import net.minecraft.entity.passive.ChickenEntity
@@ -74,10 +77,17 @@ object KillManager {
             return@register false
         }
 
+        ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
+            val item = entity as? ItemEntity? ?: return@register
+            item.itemAge = 4800
+        }
+
         FFAEvents.entityKilledOtherEntityEvent.listen { event ->
             val wasCombatLog = event.source.isOf(DamageTypes.GENERIC_KILL)
             val killer = event.killer as? ServerPlayerEntity?
             val killed = event.killed as? ServerPlayerEntity?
+
+            killed?.inventory?.dropAll()
 
             Silk.server?.broadcastText(literalText {
                 text(event.killer.name)
