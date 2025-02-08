@@ -1,6 +1,7 @@
 package gg.norisk.ffa.server.mechanics
 
 import gg.norisk.ffa.server.mechanics.CombatTag.isInCombat
+import gg.norisk.heroes.common.player.dbPlayer
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.game.sideboard.Sideboard
@@ -67,7 +68,6 @@ object Scoreboard {
                 val lastAttackTime = CombatTag.ticks - (player.age - player.lastAttackTime)
                 if (player.isInCombat()) {
                     val inDamage = CombatTag.ticks - (player.age - player.damageTracker.ageOnLastDamage)
-                    println("LastAttack: $lastAttackTime Damage: $inDamage")
                     literalText {
                         text("Combat Tag") {
                             color = Color.RED.rgb

@@ -13,12 +13,11 @@ import net.silkmc.silk.core.text.literalText
 import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 
 
 object HeroesManager : ModInitializer {
     const val MOD_ID = "hero-api"
-    lateinit var baseDirectory: File
+    var baseDirectory: File = getBasePath(null)
     val logger = LogManager.getLogger(MOD_ID)
     fun String.toId() = Identifier.of(MOD_ID, this)
 
@@ -46,7 +45,7 @@ object HeroesManager : ModInitializer {
         }
     }
 
-    private fun setBasePath(serverPath: Path?) {
+    private fun getBasePath(serverPath: Path?): File {
         val defaultPath = if (FabricLoader.getInstance().environmentType == EnvType.SERVER) {
             FabricLoader.getInstance().configDir
         } else {
@@ -62,7 +61,11 @@ object HeroesManager : ModInitializer {
             mkdirs()
         }
 
-        this.baseDirectory = baseDirectory
+        return baseDirectory
+    }
+
+    private fun setBasePath(serverPath: Path?) {
+        this.baseDirectory = getBasePath(serverPath)
     }
 
     fun client(callBack: () -> Unit) {

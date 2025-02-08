@@ -108,10 +108,12 @@ nrcNametag = { group = "gg.norisk", name = "nametags", version = "1.21-2.0.0" }
 # mongodb
 mongodb-core = { group = "org.mongodb", name = "mongodb-driver-core", version.ref = "mongodb" }
 mongodb-kotlin = { group = "org.mongodb", name = "mongodb-driver-kotlin-coroutine", version.ref = "mongodb" }
+mongodb-driver = { group = "org.mongodb", name = "mongodb-driver-reactivestreams", version.ref = "mongodb" }
 mongodb-bson = { group = "org.mongodb", name = "bson-kotlinx", version.ref = "mongodb" }
+reactive-streams = { group = "org.reactivestreams", name = "reactive-streams", version = "1.0.4" }
+reactor-core = { group = "io.projectreactor", name = "reactor-core", version = "3.7.2" }
 
 # hglabor utils
-hglabor-database-core = { group = "de.hglabor", name = "hglabor-utils-core", version.ref = "hglaborUtils" }
 hglabor-database-utils = { group = "de.hglabor", name = "hglabor-utils-database", version.ref = "hglaborUtils" }
 
 # misc
@@ -127,7 +129,7 @@ performance = ["sodium", "lithium", "modmenu", "ferrite-core", "nvidium"]
 fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
 nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom", "nrcNametag"]
 mongodb = ["mongodb-core", "mongodb-kotlin", "mongodb-bson"]
-hglaborutils = ["hglabor-database-utils", "hglabor-database-core"]
+hglaborutils = ["hglabor-database-utils"]
 
 [plugins]
 
@@ -136,3 +138,4 @@ nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "ne
 fabricLoom = { id = "fabric-loom", version.ref = "fabricLoom" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin_serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+shadowJar = { id = "com.github.johnrengelman.shadow", version = "7.1.2" }

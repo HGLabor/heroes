@@ -16,6 +16,7 @@ import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
+import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.commands.PermissionLevel
 import net.silkmc.silk.commands.command

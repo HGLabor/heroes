@@ -1,10 +1,10 @@
 package gg.norisk.heroes.common.ffa.experience
 
-import de.hglabor.utils.core.extensions.createIfNotExists
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.utils.createIfNotExists
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import kotlinx.serialization.encodeToString
@@ -75,5 +75,5 @@ object Experience {
 }
 
 fun PlayerEntity.addXp(reason: ExperienceReason, printMessage: Boolean = false) {
-    Experience.add(this as ServerPlayerEntity, reason)
+    Experience.add(this as ServerPlayerEntity, reason, printMessage)
 }

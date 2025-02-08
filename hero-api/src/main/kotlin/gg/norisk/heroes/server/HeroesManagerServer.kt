@@ -12,7 +12,6 @@ import gg.norisk.heroes.common.hero.setHero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.server.config.ConfigManagerServer
-import gg.norisk.heroes.server.database.MongoManager
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import gg.norisk.heroes.server.hero.ability.AbilityManagerServer
 import net.fabricmc.api.EnvType
@@ -28,11 +27,6 @@ object HeroesManagerServer {
         ConfigManagerServer.init()
         AbilityManagerServer.init()
         DebugCommand.initServer()
-        kotlin.runCatching {
-            MongoManager.connect()
-        }.onFailure {
-            MongoManager.isConnected = false
-        }
         PlayerProvider.init()
         Experience.init()
         KitEditorManager.init()

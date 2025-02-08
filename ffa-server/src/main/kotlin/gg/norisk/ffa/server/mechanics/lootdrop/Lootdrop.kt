@@ -5,7 +5,8 @@ import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ExperienceLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ItemStackLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.SoupLootdropLoottable
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.UHCLootdropLoottable
-import gg.norisk.heroes.common.db.ExperienceManager
+import gg.norisk.heroes.common.ffa.experience.ExperienceReason
+import gg.norisk.heroes.common.ffa.experience.addXp
 import kotlinx.coroutines.*
 import net.minecraft.block.BarrelBlock
 import net.minecraft.block.Blocks
@@ -22,7 +23,6 @@ import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.projectile.PersistentProjectileEntity
 import net.minecraft.particle.ParticleTypes
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
@@ -170,7 +170,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
         state = LootdropState.OPENED
         if (xpReward > 0) {
             player.sendMessage("You received ${xpReward} xp".literal)
-            ExperienceManager.addXp(player as ServerPlayerEntity, ExperienceManager.Reason("lootdrop_secured", xpReward), true)
+            player.addXp(ExperienceReason("lootdrop_secured", xpReward), true)
         }
         end()
     }
@@ -258,6 +258,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 is ItemStackLootdropItem -> {
                     barrel?.setStack(BARREL_SLOTS.random(), item.itemStack.copyWithCount(amount))
                 }
+
                 is ExperienceLootdropItem -> xpReward += amount
             }
         }

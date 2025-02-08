@@ -1,10 +1,12 @@
 package gg.norisk.heroes.common.utils
 
+import gg.norisk.heroes.common.HeroesManager.logger
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import org.joml.Vector3f
+import java.io.File
 import kotlin.random.Random
 
 fun Vector3f.toVector() = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
@@ -20,6 +22,15 @@ fun World.hasFreeHorizontalSide(blockPos: BlockPos): Direction? {
         }
     }
     return null
+}
+
+fun File.createIfNotExists(): File {
+    if (this.exists()) return this
+    if (!this.parentFile.mkdirs() && !this.parentFile.exists()) {
+        logger.warn("Parent of ${this.name} does not exist and could not be created")
+    }
+    this.createNewFile()
+    return this
 }
 
 fun calculateProbability(probabilityInPercent: Double): Boolean {

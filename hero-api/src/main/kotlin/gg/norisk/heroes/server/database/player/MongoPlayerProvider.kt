@@ -1,5 +1,6 @@
 package gg.norisk.heroes.server.database.player
 
+import com.mongodb.client.model.ReplaceOptions
 import de.hglabor.utils.database.extensions.findOne
 import de.hglabor.utils.database.extensions.getOrCreateCollection
 import de.hglabor.utils.database.extensions.save
@@ -19,8 +20,7 @@ class MongoPlayerProvider : IPlayerProvider {
     private val cache = HashMap<UUID, DatabasePlayer>()
     private val collection = MongoManager.database.getOrCreateCollection<DatabasePlayer>("players")
 
-    override fun init(): IPlayerProvider {
-        return this
+    override fun init() {
     }
 
     override suspend fun findPlayer(uuid: UUID): DatabasePlayer? {
@@ -49,7 +49,7 @@ class MongoPlayerProvider : IPlayerProvider {
 
     override suspend fun save(player: DatabasePlayer) {
         cache[player.uuid] = player
-        collection.save(player)
+        collection.replaceOne(DatabasePlayer::uuid eq player.uuid, player, ReplaceOptions().upsert(true))
     }
 
     override suspend fun save(uuid: UUID) {

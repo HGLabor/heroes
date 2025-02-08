@@ -13,20 +13,25 @@ import net.silkmc.silk.core.task.mcCoroutineTask
 import java.util.*
 
 object PlayerProvider : IPlayerProvider {
-    private lateinit var provider: IPlayerProvider
+    private var provider: IPlayerProvider = JsonPlayerProvider()
 
-    override fun init(): IPlayerProvider {
+    override fun init() {
         (registeredTypes as MutableMap<Any, Any>).put(
             DatabasePlayer::class,
             DatabasePlayer.serializer()
         )
 
         ServerLifecycleEvents.SERVER_STARTING.register {
-            provider = if (MongoManager.isConnected) {
-                MongoPlayerProvider()
-            } else {
-                JsonPlayerProvider()
-            }.init()
+            runCatching {
+                MongoManager.connect()
+            }.onSuccess {
+                provider = MongoPlayerProvider()
+                logger.info("Initialized provider: ${provider::class.simpleName}")
+            }.onFailure {
+                it.printStackTrace()
+                MongoManager.isConnected = false
+                provider = JsonPlayerProvider()
+            }
             logger.info("Initialized provider: ${provider::class.simpleName}")
         }
 
@@ -41,8 +46,6 @@ object PlayerProvider : IPlayerProvider {
                 onPlayerLeave(handler.player)
             }
         })
-
-        return provider
     }
 
     override suspend fun save(player: DatabasePlayer) {

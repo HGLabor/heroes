@@ -1,10 +1,10 @@
 package gg.norisk.heroes.common.database.player
 
-import de.hglabor.utils.core.extensions.createIfNotExists
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.player.DatabasePlayer
 import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.utils.createIfNotExists
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,8 +31,7 @@ class JsonPlayerProvider : IPlayerProvider {
         return database
     }
 
-    override fun init(): IPlayerProvider {
-        return this
+    override fun init() {
     }
 
     override suspend fun findPlayer(uuid: UUID): DatabasePlayer? {

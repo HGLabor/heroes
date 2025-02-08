@@ -5,7 +5,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import java.util.UUID
 
 interface IPlayerProvider {
-    fun init(): IPlayerProvider
+    fun init()
 
     suspend fun save(player: DatabasePlayer)
     suspend fun save(uuid: UUID)
