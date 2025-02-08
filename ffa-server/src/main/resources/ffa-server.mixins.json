@@ -7,10 +7,13 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "BarrelBlockEntityMixin",
     "CommandManagerMixin",
     "DamageTrackerMixin",
+    "FallingBlockEntityMixin",
     "HungerManagerMixin",
     "ItemStackMixin",
+    "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
