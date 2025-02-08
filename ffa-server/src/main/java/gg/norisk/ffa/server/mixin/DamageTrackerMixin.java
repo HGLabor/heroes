@@ -31,7 +31,7 @@ public abstract class DamageTrackerMixin implements IDamageTrackerExt {
     )
     private void dontApplyKillDamage(DamageSource damageSource, float f, CallbackInfo ci) {
         PlayerEntity attacker = null;
-        if (damageSource.getAttacker() instanceof PlayerEntity player) {
+        if (damageSource.getAttacker() instanceof PlayerEntity player && entity != player) {
             lastPlayer = player;
             attacker = player;
         }

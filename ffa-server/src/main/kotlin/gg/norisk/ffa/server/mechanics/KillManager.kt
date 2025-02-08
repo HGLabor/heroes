@@ -61,7 +61,7 @@ object KillManager {
 
             val attacker =
                 source.attacker as? ServerPlayerEntity? ?: (player.damageTracker as IDamageTrackerExt).ffa_lastPlayer
-            if (attacker != null) {
+            if (attacker != null && attacker != player) {
                 FFAEvents.entityKilledOtherEntityEvent.invoke(
                     FFAEvents.EntityKilledOtherEntityEvent(
                         attacker,
