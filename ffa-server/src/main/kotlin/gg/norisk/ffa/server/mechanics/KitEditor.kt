@@ -60,6 +60,10 @@ object KitEditor {
             handleKit(it, mode)
         }
 
+        ServerEvents.postStop.listen { event ->
+            world = null
+        }
+
         ServerEvents.postStart.listen { event ->
             if (world != null) {
                 spawnNpcs()
