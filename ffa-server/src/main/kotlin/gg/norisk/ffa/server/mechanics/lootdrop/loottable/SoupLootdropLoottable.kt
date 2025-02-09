@@ -1,6 +1,9 @@
 package gg.norisk.ffa.server.mechanics.lootdrop.loottable
 
 import net.minecraft.item.Items
+import net.minecraft.potion.Potions
+import net.silkmc.silk.core.item.itemStack
+import net.silkmc.silk.core.item.setPotion
 
 class SoupLootdropLoottable: LootdropLoottable() {
     override fun init(): SoupLootdropLoottable {
@@ -25,6 +28,9 @@ class SoupLootdropLoottable: LootdropLoottable() {
         item(Items.LAPIS_LAZULI, 2.0, 1..12)
         item(Items.ANVIL, 0.6)
         item(Items.ENCHANTING_TABLE, 0.8)
+        item(itemStack(Items.SPLASH_POTION) {
+            setPotion(Potions.SWIFTNESS)
+        }, 0.8)
         exp(1.0, 50..100)
         return this
     }

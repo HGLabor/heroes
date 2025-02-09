@@ -49,7 +49,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
         private val secondaryColor = Color(150, 198, 207).rgb
 
         private val EXPIRATION_TIME = 3.minutes
-        private val ITEMS_PER_AIR_DROP = 6..10
+        private val ITEMS_PER_AIR_DROP = 6..12
         private val BARREL_SLOTS = 0..26
 
         private val entityIdLootdropMap = HashMap<Int, Lootdrop>()
