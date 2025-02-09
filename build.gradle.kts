@@ -97,7 +97,7 @@ subprojects {
     "hero-api" -> "1.2.82"
     "katara" -> "1.0.22"
     "aang" -> "1.0.30"
-    "toph" -> "1.0.23"
+    "toph" -> "1.0.24"
     "ffa-server" -> "1.2.70"
     "datatracker" -> "1.0.17"
     else -> version
