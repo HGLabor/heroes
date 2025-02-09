@@ -18,6 +18,7 @@ import gg.norisk.heroes.katara.KataraManager.Katara
 import gg.norisk.heroes.katara.KataraManager.MOD_ID
 import gg.norisk.heroes.katara.KataraManager.toId
 import gg.norisk.heroes.katara.ability.HealingAbility.getWaterBendingPos
+import gg.norisk.heroes.katara.ability.IceShardAbility.isIceShooting
 import gg.norisk.heroes.katara.ability.WaterCircleAbilityV2.waterCircleAmount
 import gg.norisk.heroes.katara.ability.WaterFormingAbility.isWaterForming
 import gg.norisk.heroes.katara.client.sound.WaterSelectingSoundInstance
@@ -252,6 +253,9 @@ object WaterBendingAbility {
 
     @Environment(EnvType.CLIENT)
     fun getWaterBendingPose(player: AbstractClientPlayerEntity, hand: Hand): ArmPose? {
+        if (player.isIceShooting) {
+            return ArmPose.BOW_AND_ARROW
+        }
         if (player.isWaterSelecting) {
             return ArmPose.BOW_AND_ARROW
         }

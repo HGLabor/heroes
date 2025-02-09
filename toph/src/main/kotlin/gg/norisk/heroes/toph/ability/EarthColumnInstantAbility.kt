@@ -182,7 +182,7 @@ val EarthColumnInstantAbility = object : HoldAbility(
                 1f,
                 1f
             )
-            kotlin.runCatching {
+            runCatching {
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
                     ?.addTemporaryModifier(EARTH_COLUMN_SLOW_BOOST)
             }

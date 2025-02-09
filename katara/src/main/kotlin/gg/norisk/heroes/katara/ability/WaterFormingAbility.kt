@@ -13,6 +13,7 @@ import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.common.utils.toBlockPos
 import gg.norisk.heroes.katara.KataraManager
+import gg.norisk.heroes.katara.ability.IceShardAbility.isIceShooting
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
 import gg.norisk.heroes.katara.client.render.IFluidRendererExt
 import gg.norisk.heroes.katara.registry.SoundRegistry
@@ -163,7 +164,7 @@ object WaterFormingAbility {
         HudRenderCallback.EVENT.register(HudRenderCallback { drawContext, tickCounter ->
             val player = MinecraftClient.getInstance().player
 
-            if (player?.isWaterForming == true) {
+            if (player?.isWaterForming == true || player?.isIceShooting == true) {
                 if (startTime == null) {
                     startTime = System.currentTimeMillis() // Startzeit initialisieren
                 }

@@ -60,6 +60,7 @@ object KataraManager : ModInitializer, ClientModInitializer, DedicatedServerModI
         ability(WaterCircleAbilityV2.ability)
         ability(WaterPillarAbility.ability)
         ability(WaterFormingAbility.ability)
+        ability(IceShardAbility.ability)
         ability(HealingAbility.ability)
         color = 0x416bdf
         overlaySkin = waterBenderOverlay

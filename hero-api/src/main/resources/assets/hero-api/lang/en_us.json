@@ -13,7 +13,10 @@
   "heroes.ability.water_circle.custom_activation": "Spin 360°",
   "heroes.ability.condition.short.water_forming": "Water",
   "heroes.ability.condition.short.water_pillar": "In Water",
+  "heroes.ability.condition.long.water_pillar": "You must be standing in water.",
   "heroes.ability.condition.short.healing": "Water",
+  "heroes.ability.condition.short.ice_shards": "Water",
+  "heroes.ability.condition.long.ice_shards": "You must bend water first.",
   "heroes.ability.condition.short.earth_trap": "Sneak",
 
   "heroes.property.cooldown": "Cooldown",
@@ -75,6 +78,7 @@
   "hero.katara.ability.water_pillar.description": "You must be in water to create a water pillar that you can control at will.",
   "hero.katara.ability.water_bending.description": "You can bend water by targeting water or plants.",
   "hero.katara.ability.water_forming.description": "You must target water and hold the ability to create an ice bridge.",
+  "hero.katara.ability.ice_shards.description": "You can shoot ice shards.",
   "hero.katara.ability.water_circle.description": "You must perform a 360 while bending water to create a shield that protects you from fall damage, projectiles, and fire.",
 
   "hero.toph.ability.earth_surf.description": "You can surf on the ground.",

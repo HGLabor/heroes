@@ -1,9 +1,8 @@
 package gg.norisk.heroes.katara.registry
 
 import gg.norisk.heroes.common.HeroesManager
-import gg.norisk.heroes.common.HeroesManager.isClient
-import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.katara.KataraManager.toId
+import gg.norisk.heroes.katara.entity.IceShardEntity
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.minecraft.entity.Entity
@@ -19,6 +18,9 @@ import net.minecraft.registry.Registry
 object EntityRegistry {
     val WATER_BENDING: EntityType<WaterBendingEntity> = register("water_bending", { entityType, world ->
         WaterBendingEntity(entityType, world)
+    }, 0.3125f, 0.3125f)
+    val ICE_SHARD: EntityType<IceShardEntity> = register("ice_shard", { entityType, world ->
+        IceShardEntity(entityType, world)
     }, 0.3125f, 0.3125f)
 
     fun init() {
