@@ -41,8 +41,9 @@ val syncedValueChangeEvent = Event.onlySync<SyncedValueChangeEvent>()
 fun initSyncedEntitiesClient() {
     addSyncedData.receiveOnClient { packet, context ->
         mcCoroutineTask(sync = true, client = true) {
-            logger.debug("Received Packet {}", packet)
+            //logger.info("###Received Packet {}", packet)
             val entity = context.client.world?.getEntityById(packet.first.entityId)
+            //logger.info("###Found Entity {}", entity)
 
             if (registeredTypes.none { packet.second.clazz == it.key.toString() }) {
                 throw Error("Please register a Serializer for $packet")
@@ -50,7 +51,7 @@ fun initSyncedEntitiesClient() {
 
             for ((clazz, serializer) in registeredTypes) {
                 if (packet.second.clazz == clazz.toString()) {
-                    val decodedValue = dataTrackerJson.decodeFromString(serializer as KSerializer<Any>, packet.second.value)
+                    val decodedValue = runCatching { dataTrackerJson.decodeFromString(serializer as KSerializer<Any>, packet.second.value) }.onFailure { it.printStackTrace() }.getOrNull()
                     logger.info("Setting $entity $packet")
                     entity?.setSyncedData(packet.first.key, decodedValue)
                     break
@@ -164,7 +165,9 @@ fun <T> Entity.hasSyncedData(key: String): Boolean {
 
 fun Entity.syncValues(player: ServerPlayerEntity? = null) {
     for ((key, value) in (this as ISyncedEntity).getSyncedValuesMap()) {
-        setSyncedData(key, value, player)
+        if (!world.isClient) {
+            syncValue(key, value, player)
+        }
     }
 }
 
