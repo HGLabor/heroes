@@ -21,6 +21,7 @@ import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.projectile.FireworkRocketEntity
 import net.minecraft.entity.projectile.PersistentProjectileEntity
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.world.ServerWorld
@@ -138,8 +139,17 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
 
         lootdropCoroutine.launch {
             while (state == LootdropState.GLIDING || state == LootdropState.FREE_FALL) {
-                barrelEntity.playSound(SoundEvents.ENTITY_PHANTOM_FLAP, 0.4f, 1.4f)
-                delay(0.8.seconds)
+                barrelEntity.playSound(SoundEvents.ENTITY_PHANTOM_FLAP, 1.3f, 1.4f)
+
+                if (System.currentTimeMillis().milliseconds.inWholeSeconds % 3 == 0L) {
+                    world.server.executeSync {
+                        val firework = FireworkRocketEntity(EntityType.FIREWORK_ROCKET, world)
+                        firework.setPosition(barrelEntity.pos)
+                        world.spawnEntity(firework)
+                    }
+                }
+
+                delay(1.seconds)
             }
         }
     }
@@ -386,6 +396,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
             setNoGravity(true)
             setDestroyedOnLanding()
             registerEntity(this)
+            isGlowing = true
         }
     }
 
