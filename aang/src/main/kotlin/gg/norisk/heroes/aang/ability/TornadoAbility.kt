@@ -186,7 +186,7 @@ object TornadoAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                buildCooldown(60.0, 4, AddValueTotal(-10.0, -10.0, -5.0, -5.0))
 
             this.properties =
                 listOf(tornadoMaxDurationProperty, tornadoIncreaseRateProperty, tornadoDecreaseRateProperty)

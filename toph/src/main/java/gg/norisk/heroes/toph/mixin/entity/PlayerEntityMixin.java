@@ -1,6 +1,7 @@
 package gg.norisk.heroes.toph.mixin.entity;
 
 import gg.norisk.heroes.toph.entity.ITophPlayer;
+import io.netty.util.internal.ConcurrentSet;
 import kotlin.Pair;
 import kotlinx.coroutines.Job;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,11 +11,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin implements ITophPlayer {
-    private final Set<Pair<Long, BlockPos>> seismicBlocks = new HashSet<>();
-    private final Set<Pair<Long, UUID>> seismicEntities = new HashSet<>();
+    private final Set<Pair<Long, BlockPos>> seismicBlocks = ConcurrentHashMap.newKeySet();
+    private final Set<Pair<Long, UUID>> seismicEntities = ConcurrentHashMap.newKeySet();
 
     @Unique
     private final List<Job> seismicTasks = new ArrayList<>();

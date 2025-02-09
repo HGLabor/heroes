@@ -84,7 +84,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
         this.properties = listOf(earthSurfStepHeight, earthSurfSpeedBoost, earthSurfRadius)
 
         this.cooldownProperty =
-            buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+            buildCooldown(30.0, 4, AddValueTotal(-4.0, -4.0, -4.0, -2.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
@@ -124,12 +124,28 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
         EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
     )
 
+    override fun onDisable(player: PlayerEntity) {
+        super.onDisable(player)
+        cleanUp(player)
+    }
+
+    private fun cleanUp(player: PlayerEntity) {
+        if (player is ServerPlayerEntity) {
+            player.stopEmote("earth-surfing".toEmote())
+            player.setSyncedData(EarthSurfKey, false)
+            player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
+            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.removeModifier(EARTH_SURF_SPEED_BOOST.id)
+        } else if (MinecraftClient.getInstance().player == player) {
+            player.showSpeedlines = false
+        }
+    }
+
     override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
         super.onStart(player, abilityScope)
         if (player is ServerPlayerEntity) {
             player.playEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, true)
-            kotlin.runCatching {
+            runCatching {
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
                     ?.addTemporaryModifier(
                         EntityAttributeModifier(
@@ -148,15 +164,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
 
     override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
         super.onEnd(player, abilityEndInformation)
-        if (player is ServerPlayerEntity) {
-            player.stopEmote("earth-surfing".toEmote())
-            player.setSyncedData(EarthSurfKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-                ?.removeModifier(EARTH_SURF_SPEED_BOOST.id)
-        } else if (MinecraftClient.getInstance().player == player) {
-            player.showSpeedlines = false
-        }
+        cleanUp(player)
     }
 }
 

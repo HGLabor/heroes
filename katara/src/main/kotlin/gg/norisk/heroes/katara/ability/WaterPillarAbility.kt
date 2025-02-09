@@ -278,7 +278,7 @@ object WaterPillarAbility {
         return positions.toList()
     }
 
-    val waterPillarDistance = NumberProperty(15.0, 5, "Water Pillar Distance", AddValueTotal(1.0, 2.0, 3.0, 4.0, 5.0, 0.3)).apply {
+    val waterPillarDistance = NumberProperty(15.0, 5, "Water Pillar Distance", AddValueTotal(3.0,3.0,3.0,3.0,3.0)).apply {
         icon = {
             Components.item(Items.SPYGLASS.defaultStack)
         }
@@ -302,7 +302,7 @@ object WaterPillarAbility {
                 waterPillarVelocityBoost,
             )
             this.cooldownProperty =
-                CooldownProperty(10.0, 5, "Cooldown", AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                CooldownProperty(20.0, 4, "Cooldown", AddValueTotal(-5.0, -5.0, -2.0, -3.0))
         }
 
         override fun getBackgroundTexture(): Identifier {

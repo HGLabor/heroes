@@ -172,6 +172,10 @@ object AirScooterAbility {
                 if (it.key == AIR_SCOOTING_KEY) {
                     if (player.isAirScooting) {
                         player.spawnAirScooter()
+                    } else {
+                        if (player.world.isClient) {
+
+                        }
                     }
                 }
             }
@@ -238,6 +242,7 @@ object AirScooterAbility {
             aang.aang_airScooterTasks.forEach { it.cancel() }
             if (this is ServerPlayerEntity) {
                 this.isAirScooting = false
+                this.showSpeedlines = false
                 //das hier suckt iwie lieber modifiers usen
                 this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
                 this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =

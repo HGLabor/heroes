@@ -188,7 +188,7 @@ object AirBallAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                buildCooldown(10.0, 5, AddValueTotal(-1.0, -1.0, -1.0, -1.0, -1.0))
             this.maxDurationProperty =
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 

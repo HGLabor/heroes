@@ -62,9 +62,15 @@ data class EarthColumnDescription(
     val center: @Serializable(with = BlockPosSerializer::class) BlockPos,
 )
 
-val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0), ).apply {
+val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0)).apply {
     icon = {
         Components.item(Items.STONE_SHOVEL.defaultStack)
+    }
+}
+
+val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(1.0, 1.0), levelScale = 20).apply {
+    icon = {
+        Components.item(Items.FIREWORK_ROCKET.defaultStack)
     }
 }
 
@@ -72,7 +78,7 @@ val EarthColumnInstantAbility = object : HoldAbility(
     "Earth Column"
 ) {
 
-    val earthColumnHeight = NumberProperty(3.0, 5, "Height", AddValueTotal(1.0, 1.0, 1.0, 3.0, 2.0), ).apply {
+    val earthColumnHeight = NumberProperty(3.0, 5, "Height", AddValueTotal(1.0, 1.0, 1.0, 3.0, 2.0)).apply {
         icon = {
             Components.item(Items.STONE.defaultStack)
         }
@@ -112,10 +118,11 @@ val EarthColumnInstantAbility = object : HoldAbility(
         this.properties = listOf(
             earthColumnRadius,
             earthColumnHeight,
+            earthColumnBoost
         )
 
         this.cooldownProperty =
-            buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+            buildCooldown(20.0, 5, AddValueTotal(-2.0, -2.0, -2.0, -2.0, -2.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
@@ -135,8 +142,13 @@ val EarthColumnInstantAbility = object : HoldAbility(
         earthColumnBlockInfos.receiveOnServer { earthColumn, context ->
             val world = context.player.serverWorld
             val player = context.player
-            mcCoroutineTask(sync = true, client = false, howOften = earthColumnHeight.getValue(player.uuid).toLong(), period = 0.ticks) {
-                earthColumn.move(world, it.round.toInt(), it.counterDownToZero == 0L)
+            mcCoroutineTask(
+                sync = true,
+                client = false,
+                howOften = earthColumnHeight.getValue(player.uuid).toLong(),
+                period = 0.ticks
+            ) {
+                earthColumn.move(world, it.round.toInt(), it.counterDownToZero == 0L, player)
             }
         }
     }
@@ -202,10 +214,6 @@ val EarthColumnInstantAbility = object : HoldAbility(
             val tickDelta = MinecraftClient.getInstance().renderTickCounter.getTickDelta(false)
             val hitResult = player.raycast(maxDistance, tickDelta, false)
 
-            //Jap das ist sehr kriminell und wenn das rausgefunden wird wars das lmao
-            //man mmüsste halt einen check einbauen liebe grüße an die zukunft XD <3
-            //Der vorteil hierdran ist halt dass der client die blöcke berechnet (sehr wichtig)
-            //Man könnte einen stichprobenartigen check einbauen
             if (hitResult != null && hitResult.type == HitResult.Type.BLOCK && player.isEarthColumn()) {
                 val blockInfos = mutableSetOf<BlockInfoSmall>()
                 val radius = player.getSyncedData<Int>(EarthColumnRadiusKey) ?: 1
@@ -233,7 +241,12 @@ val EarthColumnInstantAbility = object : HoldAbility(
     }
 }
 
-private fun EarthColumnDescription.move(world: ServerWorld, height: Int, isFinished: Boolean) {
+private fun EarthColumnDescription.move(
+    world: ServerWorld,
+    height: Int,
+    isFinished: Boolean,
+    player: ServerPlayerEntity
+) {
     blocks.forEach { (state, pos) ->
         val newPos = pos.up(height)
         if (world.getBlockState(newPos) == state) return@forEach
@@ -257,9 +270,12 @@ private fun EarthColumnDescription.move(world: ServerWorld, height: Int, isFinis
             blocks.forEach { (state, pos) ->
                 if (state.isAir) return@forEach
                 val newPos = pos.up(it.round.toInt()).up().toCenterPos()
-                world.getOtherEntities(null, Box.from(newPos).expand(2.0)).filterIsInstance<LivingEntity>()
+                world.getOtherEntities(null, Box.from(newPos).expand(earthColumnRadius.getValue(player.uuid))).filterIsInstance<LivingEntity>()
                     .forEach { entity ->
-                        entity.modifyVelocity(Vec3d(0.0, 2.0, 0.0))
+                        entity.damage(entity.damageSources.playerAttack(player), 0.001f)
+                        if (!entity.isSneaking) {
+                            entity.modifyVelocity(Vec3d(0.0, earthColumnBoost.getValue(player.uuid), 0.0))
+                        }
                     }
             }
         }

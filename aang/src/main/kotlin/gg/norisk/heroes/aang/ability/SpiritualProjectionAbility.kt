@@ -264,9 +264,9 @@ object SpiritualProjectionAbility {
         set(value) = this.setSyncedData(LEVITATION_KEY, value)
 
     val projectionMaxDistance = NumberProperty(
-        30.0, 3,
+        25.0, 5,
         "Spiritual Projection Max Distance",
-        AddValueTotal(10.0, 10.0, 30.0)
+        AddValueTotal(10.0, 10.0, 10.0, 10.0, 10.0)
     ).apply {
         icon = {
             Components.item(Items.SPYGLASS.defaultStack)
@@ -280,7 +280,7 @@ object SpiritualProjectionAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                buildCooldown(10.0, 5, AddValueTotal(-1.0, -1.0, -1.0, -1.0, -1.0))
 
             this.properties = listOf(projectionMaxDistance)
         }
