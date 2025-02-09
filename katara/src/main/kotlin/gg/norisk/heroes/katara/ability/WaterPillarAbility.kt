@@ -13,6 +13,7 @@ import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.ability.operation.MultiplyBase
 import gg.norisk.heroes.common.command.DebugCommand.sendDebugMessage
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.common.utils.toBlockPos
@@ -312,7 +313,7 @@ object WaterPillarAbility {
             return Components.item(Items.WATER_BUCKET.defaultStack)
         }
 
-        override fun onStart(player: PlayerEntity) {
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             if (player is ServerPlayerEntity) {
                 player.playEmote("waterpillar_start".toEmote())
                 mcCoroutineTask(sync = true, client = false, delay = 0.5.seconds) {

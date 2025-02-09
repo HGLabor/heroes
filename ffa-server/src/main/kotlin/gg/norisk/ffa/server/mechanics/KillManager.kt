@@ -14,6 +14,9 @@ import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
+import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
 import net.minecraft.entity.passive.ChickenEntity
@@ -58,7 +61,7 @@ object KillManager {
 
             val attacker =
                 source.attacker as? ServerPlayerEntity? ?: (player.damageTracker as IDamageTrackerExt).ffa_lastPlayer
-            if (attacker != null) {
+            if (attacker != null && attacker != player) {
                 FFAEvents.entityKilledOtherEntityEvent.invoke(
                     FFAEvents.EntityKilledOtherEntityEvent(
                         attacker,
@@ -74,10 +77,17 @@ object KillManager {
             return@register false
         }
 
+        ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
+            val item = entity as? ItemEntity? ?: return@register
+            item.itemAge = 4800
+        }
+
         FFAEvents.entityKilledOtherEntityEvent.listen { event ->
             val wasCombatLog = event.source.isOf(DamageTypes.GENERIC_KILL)
             val killer = event.killer as? ServerPlayerEntity?
             val killed = event.killed as? ServerPlayerEntity?
+
+            killed?.inventory?.dropAll()
 
             Silk.server?.broadcastText(literalText {
                 text(event.killer.name)
@@ -129,67 +139,63 @@ object KillManager {
     }
 
     private suspend fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
-        if (attacker.getHero() != null) {
-            val cachedAttacker = PlayerProvider.get(attacker.uuid)
-            cachedAttacker.kills++
-            cachedAttacker.currentKillStreak++
-            attacker.dbPlayer = cachedAttacker
-            if (cachedAttacker.currentKillStreak.mod(10) == 0 || cachedAttacker.currentKillStreak == 5) {
-                attacker.server.broadcastText {
-                    text(attacker.name)
-                    text(" hat eine Killstreak von ") {
-                        color = Color.YELLOW.rgb
-                    }
-                    text(cachedAttacker.currentKillStreak.toString()) {
-                        color = Color.RED.rgb
-                    }
+        val cachedAttacker = PlayerProvider.get(attacker.uuid)
+        cachedAttacker.kills++
+        cachedAttacker.currentKillStreak++
+        attacker.dbPlayer = cachedAttacker
+        if (cachedAttacker.currentKillStreak.mod(10) == 0 || cachedAttacker.currentKillStreak == 5) {
+            attacker.server.broadcastText {
+                text(attacker.name)
+                text(" hat eine Killstreak von ") {
+                    color = Color.YELLOW.rgb
                 }
-                provideExtraXpForKillStreak(attacker, cachedAttacker)
-                provideExtraBountyForKillStreak(attacker, cachedAttacker)
+                text(cachedAttacker.currentKillStreak.toString()) {
+                    color = Color.RED.rgb
+                }
             }
-            PlayerProvider.save(cachedAttacker)
-            attacker.addXp(ExperienceRegistry.KILLED_PLAYER, true)
+            provideExtraXpForKillStreak(attacker, cachedAttacker)
+            provideExtraBountyForKillStreak(attacker, cachedAttacker)
         }
+        PlayerProvider.save(cachedAttacker)
+        attacker.addXp(ExperienceRegistry.KILLED_PLAYER, true)
     }
 
     private suspend fun increaseDeathForPlayer(player: ServerPlayerEntity, source: DamageSource) {
-        if (player.getHero() != null) {
-            val heroDeathEvent = HeroEvents.HeroDeathEvent(player, true)
-            player.sendMessage(literalText {
-                text("Du bist gestorben".literal)
-            })
-            HeroEvents.heroDeathEvent.invoke(heroDeathEvent)
-            val cachedEntity = PlayerProvider.get(player.uuid)
-            if (heroDeathEvent.isValidDeath) {
-                cachedEntity.deaths++
-                if (cachedEntity.currentKillStreak > cachedEntity.highestKillStreak) {
-                    cachedEntity.highestKillStreak = cachedEntity.currentKillStreak
-                }
-                if (cachedEntity.currentKillStreak >= 5) {
-                    player.sendMessage(literalText {
-                        text(player.name)
-                        text("hat seine Killstreak von ") {
-                            color = Color.YELLOW.rgb
-                        }
-                        text(cachedEntity.currentKillStreak.toString()) {
-                            color = Color.RED.rgb
-                        }
-                        text(" verloren") {
-                            color = Color.YELLOW.rgb
-                        }
-                    })
-                }
-                cachedEntity.currentKillStreak = 0
-
-                player.dbPlayer = cachedEntity
-                mcCoroutineTask(sync = false, client = false) {
-                    PlayerProvider.save(cachedEntity)
-                }
+        val heroDeathEvent = HeroEvents.HeroDeathEvent(player, true)
+        player.sendMessage(literalText {
+            text("Du bist gestorben".literal)
+        })
+        HeroEvents.heroDeathEvent.invoke(heroDeathEvent)
+        val cachedEntity = PlayerProvider.get(player.uuid)
+        if (heroDeathEvent.isValidDeath) {
+            cachedEntity.deaths++
+            if (cachedEntity.currentKillStreak > cachedEntity.highestKillStreak) {
+                cachedEntity.highestKillStreak = cachedEntity.currentKillStreak
             }
-
-            if (!source.isOf(DamageTypes.GENERIC_KILL)) {
-                player.addXp(ExperienceRegistry.PLAYER_DEATH, true)
+            if (cachedEntity.currentKillStreak >= 5) {
+                player.sendMessage(literalText {
+                    text(player.name)
+                    text("hat seine Killstreak von ") {
+                        color = Color.YELLOW.rgb
+                    }
+                    text(cachedEntity.currentKillStreak.toString()) {
+                        color = Color.RED.rgb
+                    }
+                    text(" verloren") {
+                        color = Color.YELLOW.rgb
+                    }
+                })
             }
+            cachedEntity.currentKillStreak = 0
+
+            player.dbPlayer = cachedEntity
+            mcCoroutineTask(sync = false, client = false) {
+                PlayerProvider.save(cachedEntity)
+            }
+        }
+
+        if (!source.isOf(DamageTypes.GENERIC_KILL)) {
+            player.addXp(ExperienceRegistry.PLAYER_DEATH, true)
         }
     }
 

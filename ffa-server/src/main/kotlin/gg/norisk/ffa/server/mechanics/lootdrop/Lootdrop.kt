@@ -31,6 +31,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.Silk
+import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import org.joml.Vector3f
@@ -90,8 +91,10 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     }
 
     private fun end() {
-        allEntities.toList().forEach(::unregisterEntity)
-        posLootdropMap.remove(landingPos)
+        mcCoroutineTask(sync = true, client = false) {
+            allEntities.toList().forEach(::unregisterEntity)
+            posLootdropMap.remove(landingPos)
+        }
     }
 
     private fun startFallingAnimation() {

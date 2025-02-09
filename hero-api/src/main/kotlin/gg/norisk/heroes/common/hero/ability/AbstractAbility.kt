@@ -11,6 +11,7 @@ import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
+import gg.norisk.utils.DevUtils.uniqueId
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import kotlinx.coroutines.*
@@ -23,6 +24,7 @@ import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import net.silkmc.silk.core.task.mcCoroutineTask
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.nanoseconds
@@ -40,7 +42,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     var keyBind: KeyBinding? = null
     var properties = listOf<PlayerProperty<*>>()
     private val cooldowns = ConcurrentHashMap<UUID, CooldownInfo>()
-    private val cooldownCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) + SupervisorJob() }
+    private val cooldownTasks = ConcurrentHashMap<UUID, Job>()
     var cooldownProperty: CooldownProperty = buildCooldown(5.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
     var usageProperty: AbstractUsageProperty = SingleUseProperty(0.0, 0, "Use", MultiplyBase(listOf(0.0))).apply {
         icon = {
@@ -94,11 +96,35 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         return false
     }
 
+    fun removeCooldown(player: PlayerEntity) {
+        cooldowns.remove(player.uuid)
+    }
+
     fun setCooldown(cooldownInfo: CooldownInfo, player: PlayerEntity) {
         if (cooldownInfo.duration == 0L && cooldownInfo.startTime == 0L && cooldownInfo.currentTime == 0L) {
             cooldowns.remove(player.uuid)
         } else {
             cooldowns[player.uuid] = cooldownInfo
+        }
+    }
+
+    fun clearCooldown(player: PlayerEntity) {
+        cooldownTasks[player.uuid]?.cancel()
+        if (cooldowns.remove(player.uuid) != null) {
+            if (player is ServerPlayerEntity) {
+                Networking.s2cCooldownPacket.send(
+                    CooldownInfo(
+                        player.id,
+                        0,
+                        0,
+                        0,
+                        null,
+                        hero.internalKey,
+                        internalKey,
+                        null
+                    ), player
+                )
+            }
         }
     }
 
@@ -142,24 +168,14 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         ).apply {
             this.durationString = getCooldownText(this)
         }
-        logger.info(
-            "###REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime} ${
-                cooldownInfo.endTime?.minus(
-                    (cooldownInfo.startTime ?: 0L)
-                )
-            }"
-        )
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
-        logger.info("REMAINING COOLDOWN: ${cooldownInfo.remaining} ${cooldownInfo.endTime}")
         cooldowns[uuid] = cooldownInfo
         Networking.s2cCooldownPacket.send(cooldownInfo, player)
 
         //player.sendDebugMessage("Sending Cooldown: $cooldownInfo".literal)
-        println(JSON.encodeToString(cooldownInfo))
 
         if (cooldownInfo.remaining > 0) {
-            cooldownCoroutineScope.launch {
+            cooldownTasks[uuid]?.cancel()
+            cooldownTasks[uuid] = mcCoroutineTask(sync = false, client = false) {
                 //NO DELAY IN CREATIVE MODE FOR TESTING?
                 //player.sendMessage("START".literal.withColor(Color.red.rgb))
                 //player.sendMessage(getCooldownText(cooldownInfo)?.literal)
@@ -202,7 +218,14 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         }
     }
 
-    open fun onStart(player: PlayerEntity) {
+    open fun onEnable(player: PlayerEntity) {
+
+    }
+
+    open fun onDisable(player: PlayerEntity) {
+    }
+
+    open fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
     }
 
     open fun onTick(player: PlayerEntity) {

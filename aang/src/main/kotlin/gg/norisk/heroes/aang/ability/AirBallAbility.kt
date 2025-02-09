@@ -16,6 +16,7 @@ import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.Networking.mousePacket
@@ -40,7 +41,6 @@ import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.entity.directionVector
 import net.silkmc.silk.core.task.mcCoroutineTask
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 
 object AirBallAbility {
     val AIR_BENDING_KEY = "AangIsAirBending"
@@ -224,8 +224,8 @@ object AirBallAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 val airScooter = EntityRegistry.AIR_SCOOTER.create(player.world) ?: return
                 player.isAirBending = true
@@ -240,18 +240,27 @@ object AirBallAbility {
             }
         }
 
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            player.stopAirBall()
+        }
+
+        private fun PlayerEntity.stopAirBall() {
+            if (this is ServerPlayerEntity) {
+                this.isAirBending = false
+                if (this.aang.circleDetector != null) {
+                    this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.1, 1.5f)
+                    this.currentBendingEntity?.discard()
+                }
+                this.aang.circleDetector = null
+            } else {
+                this.aang.circleDetector = null
+            }
+        }
+
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             super.onEnd(player, abilityEndInformation)
-            if (player is ServerPlayerEntity) {
-                player.isAirBending = false
-                if (player.aang.circleDetector != null) {
-                    player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.1, 1.5f)
-                    player.currentBendingEntity?.discard()
-                }
-                player.aang.circleDetector = null
-            } else {
-                player.aang.circleDetector = null
-            }
+            player.stopAirBall()
         }
     }
 }

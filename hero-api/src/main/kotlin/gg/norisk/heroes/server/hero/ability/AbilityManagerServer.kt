@@ -31,12 +31,12 @@ import net.minecraft.util.Colors
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.task.mcSyncLaunch
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
 object AbilityManagerServer : IAbilityManager {
     private val abilitiesInUse = hashMapOf<UUID, AbstractAbility<*>>()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val abilityJobs: HashMap<UUID, HashMap<AbstractAbility<*>, Job>> = hashMapOf()
 
     override fun init() {
@@ -111,7 +111,6 @@ object AbilityManagerServer : IAbilityManager {
 
     private fun handleIncomingAbility(packet: AbilityPacket<*>, player: ServerPlayerEntity) {
         runCatching {
-            println("$packet $player")
             var ignoreCooldown = false
             if (packet.playerUuid != player.uuid) return@runCatching
             val ability = getAbilityFromAbilityUsePacket(packet) ?: return@runCatching
@@ -133,7 +132,7 @@ object AbilityManagerServer : IAbilityManager {
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
                     player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
-                    ability.onStart(player)
+                    ability.onStart(player, abilityScope)
                 }
 
                 is ToggleAbility -> {
@@ -149,7 +148,7 @@ object AbilityManagerServer : IAbilityManager {
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
                             player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
-                            ability.onStart(player)
+                            ability.onStart(player, abilityScope)
                             //ability.internalCallbacks.START
                         }
 
@@ -188,11 +187,20 @@ object AbilityManagerServer : IAbilityManager {
     ) {
         val playerJobs = abilityJobs.computeIfAbsent(player.uuid) { hashMapOf() }
         abilitiesInUse[player.uuid] = ability
-        playerJobs[ability] = coroutineScope.launch {
+        playerJobs[ability] = mcCoroutineTask(sync = false, client = false) {
             delay(ability.maxDurationProperty.getValue(player.uuid).seconds)
             yield()
-            forceEndAbility(player, ability, abilityScope)
+            mcCoroutineTask(sync = true, client = false) {
+                forceEndAbility(player, ability, abilityScope)
+            }
         }
+    }
+
+    fun clear(player: PlayerEntity) {
+        abilityJobs[player.uuid]?.forEach { (ability, job) ->
+            job.cancel()
+        }
+        abilitiesInUse.remove(player.uuid)
     }
 
     fun forceEndAbility(

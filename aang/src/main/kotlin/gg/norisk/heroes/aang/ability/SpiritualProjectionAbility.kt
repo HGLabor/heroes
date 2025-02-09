@@ -6,12 +6,14 @@ import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.network.EmoteNetworking.playEmote
+import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.aang.AangManager.Aang
 import gg.norisk.heroes.aang.AangManager.toId
 import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.cancelSpiritMode
 import gg.norisk.heroes.aang.client.sound.AirBendingLevitationSoundInstance
 import gg.norisk.heroes.aang.client.sound.VelocityBasedFlyingSoundInstance
 import gg.norisk.heroes.aang.entity.DummyPlayer
+import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.registry.EmoteRegistry
 import gg.norisk.heroes.aang.registry.EmoteRegistry.toEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
@@ -20,6 +22,7 @@ import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.HeroesManager.isClient
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.hero.ability.task.abilityCoroutineTask
 import gg.norisk.heroes.common.hero.setHero
@@ -215,7 +218,7 @@ object SpiritualProjectionAbility {
                     val distance = body.distanceTo(this)
                     if (distance > projectionMaxDistance.getValue(this.uuid).toFloat()) {
                         sendMessage(Text.translatable("heroes.katara.ability.spiritual_projection.too_far_away"))
-                        body.cancelProjection(null)
+                        cancelSpiritMode(body)
                     }
                 }
             }
@@ -233,14 +236,15 @@ object SpiritualProjectionAbility {
         }
     }
 
-    private fun PlayerEntity.cancelSpiritMode(): Boolean {
+    private fun PlayerEntity.cancelSpiritMode(toClear: DummyPlayer? = null): Boolean {
         if (this.world.isClient) return false
-        val body = (this as ServerPlayerEntity).serverWorld
+        val body = toClear ?: (this as ServerPlayerEntity).serverWorld
             .iterateEntities()
             .filterIsInstance<DummyPlayer>()
             .filter { it.spiritualOwner == this.id }
             .randomOrNull()
         if (body != null) {
+            Ability.addCooldown(this)
             body.cancelProjection(null)
             return true
         }
@@ -301,32 +305,57 @@ object SpiritualProjectionAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            player.cancelSpiritMode()
+            player.stopLevitation()
+        }
+
+        private fun PlayerEntity.stopLevitation() {
+            aang.aang_spiritualProjectionsTasks.forEach { it.cancel() }
+            isSpiritualLevitating = false
+            isSpiritualTransparent = false
+            removeStatusEffect(StatusEffects.LEVITATION)
+            (this as? ServerPlayerEntity)?.stopEmote(EmoteRegistry.SPIRITUAL_PROJECTION_START)
+        }
+
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
+                abilityScope.cancelCooldown()
                 if (player.cancelSpiritMode()) {
                     return
                 }
-                player.isSpiritualTransparent = false
-                player.isSpiritualLevitating = true
-                player.abilities.flying = false
-                player.abilities.allowFlying = false
-                player.addStatusEffect(
-                    StatusEffectInstance(
-                        StatusEffects.LEVITATION,
-                        2.12.seconds.inWholeMilliseconds.toInt() / 50
+                if (!player.isSpiritualLevitating) {
+                    player.isSpiritualTransparent = false
+                    player.isSpiritualLevitating = true
+                    player.abilities.flying = false
+                    player.abilities.allowFlying = false
+                    player.addStatusEffect(
+                        StatusEffectInstance(
+                            StatusEffects.LEVITATION,
+                            2.12.seconds.inWholeMilliseconds.toInt() / 50
+                        )
                     )
-                )
-                player.playEmote(EmoteRegistry.SPIRITUAL_PROJECTION_START)
-                abilityCoroutineTask(sync = true, client = false, delay = 2.12.seconds, executingPlayer = player) {
-                    player.isSpiritualTransparent = true
-                    player.isSpiritualLevitating = false
-                    player.abilities.flying = true
-                    player.abilities.allowFlying = true
-                    player.sendAbilitiesUpdate()
-                    player.spawnFakePlayer()
-                    player.sound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.2, 2f)
-                    player.modifyVelocity(0.0, 1.0, 0.0)
+                    player.playEmote(EmoteRegistry.SPIRITUAL_PROJECTION_START)
+                    player.aang.aang_spiritualProjectionsTasks += abilityCoroutineTask(
+                        sync = true,
+                        client = false,
+                        delay = 2.12.seconds,
+                        executingPlayer = player
+                    ) {
+                        player.isSpiritualTransparent = true
+                        player.isSpiritualLevitating = false
+                        player.abilities.flying = true
+                        player.abilities.allowFlying = true
+                        player.sendAbilitiesUpdate()
+                        player.spawnFakePlayer()
+                        player.sound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.2, 2f)
+                        player.modifyVelocity(0.0, 1.0, 0.0)
+                    }
+                } else {
+                    abilityScope.applyCooldown()
+                    player.stopLevitation()
                 }
             }
         }

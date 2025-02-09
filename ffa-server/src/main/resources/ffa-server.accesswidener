@@ -21,3 +21,5 @@ accessible field net/minecraft/entity/damage/DamageTracker ageOnLastDamage I
 accessible field net/minecraft/entity/damage/DamageTracker recentlyAttacked Z
 accessible field net/minecraft/entity/damage/DamageTracker hasDamage Z
 accessible field net/minecraft/entity/damage/DamageTracker recentDamage Ljava/util/List;
+
+accessible field net/minecraft/entity/ItemEntity itemAge I

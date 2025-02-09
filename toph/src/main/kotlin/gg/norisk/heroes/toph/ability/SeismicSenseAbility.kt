@@ -2,11 +2,13 @@ package gg.norisk.heroes.toph.ability
 
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
+import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.cameraShakePacket
@@ -41,7 +43,6 @@ import net.minecraft.world.World
 import net.silkmc.silk.core.entity.posUnder
 import net.silkmc.silk.core.kotlin.ticks
 import net.silkmc.silk.core.task.mcCoroutineTask
-import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -77,6 +78,27 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
             }
         }
 
+        syncedValueChangeEvent.listen { event ->
+            if (event.key != SeismicSenseKey) return@listen
+            val player = event.entity as? PlayerEntity? ?: return@listen
+            if (event.entity.world is ServerWorld) {
+
+            } else if (event.entity == MinecraftClient.getInstance().player) {
+                if (player.hasSeismicSense) {
+                    player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, client = true, delay = 0.32.seconds) {
+                        val gameRenderer = MinecraftClient.getInstance().gameRenderer as GameRendererAccessor
+                        gameRenderer.invokeLoadPostProcessor(SeismicSenseShader)
+                        player.spawnSeismicSenseGlowCircle()
+                        player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, delay = 90.ticks, client = true) {
+                            MinecraftClient.getInstance().gameRenderer.disablePostProcessor()
+                        }
+                    }
+                } else {
+                    cleanUp(player)
+                }
+            }
+        }
+
         this.cooldownProperty =
             buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
     }
@@ -99,45 +121,60 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
         return Identifier.of("textures/block/packed_mud.png")
     }
 
-    override fun onStart(player: PlayerEntity) {
-        super.onStart(player)
+    override fun onDisable(player: PlayerEntity) {
+        super.onDisable(player)
+        cleanUp(player)
+    }
+
+    private fun cleanUp(player: PlayerEntity) {
+        player.toph.toph_seismicTasks.forEach { it.cancel() }
+        player.removeStatusEffect(StatusEffects.DARKNESS)
+        player.removeStatusEffect(StatusEffects.SLOWNESS)
+        player.toph.seismicBlocks.clear()
+        player.toph.seismicEntities.clear()
         if (player is ServerPlayerEntity) {
-            val world = player.world as ServerWorld
-            player.playEmote("seismic-sense".toEmote())
-            player.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 140, 2, false, false))
-            mcCoroutineTask(sync = true, client = false, delay = 0.32.seconds) {
-                player.addStatusEffect(StatusEffectInstance(StatusEffects.DARKNESS, 140, 1, false, false))
-                player.setSyncedData(SeismicSenseKey, true)
-                cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player)
-                world.playSoundFromEntity(
-                    null,
-                    player,
-                    SoundRegistry.SEISMIC_SENSE_START,
-                    SoundCategory.PLAYERS,
-                    2f,
-                    1f
-                )
-                world.playSoundFromEntity(
-                    null,
-                    player,
-                    SoundRegistry.EARTH_ARMOR,
-                    SoundCategory.PLAYERS,
-                    0.4f,
-                    2f
-                )
-                mcCoroutineTask(sync = true, delay = 90.ticks, client = false) {
-                    player.removeStatusEffect(StatusEffects.DARKNESS)
-                    player.removeStatusEffect(StatusEffects.SLOWNESS)
-                    player.setSyncedData(SeismicSenseKey, false)
-                }
-            }
-        } else if (MinecraftClient.getInstance().player == player) {
-            mcCoroutineTask(sync = true, client = true, delay = 0.32.seconds) {
-                val gameRenderer = MinecraftClient.getInstance().gameRenderer as GameRendererAccessor
-                gameRenderer.invokeLoadPostProcessor(SeismicSenseShader)
-                player.spawnSeismicSenseGlowCircle()
-                mcCoroutineTask(sync = true, delay = 90.ticks, client = true) {
-                    MinecraftClient.getInstance().gameRenderer.disablePostProcessor()
+            player.hasSeismicSense = false
+        } else {
+            MinecraftClient.getInstance().gameRenderer.disablePostProcessor()
+        }
+    }
+
+    override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+        super.onStart(player, abilityScope)
+        if (player is ServerPlayerEntity) {
+            if (player.hasSeismicSense) {
+                cleanUp(player)
+            } else {
+                abilityScope.cancelCooldown()
+                val world = player.world as ServerWorld
+                player.playEmote("seismic-sense".toEmote())
+                player.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 140, 2, false, false))
+                player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, client = false, delay = 0.32.seconds) {
+                    player.addStatusEffect(StatusEffectInstance(StatusEffects.DARKNESS, 140, 1, false, false))
+                    player.setSyncedData(SeismicSenseKey, true)
+                    cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player)
+                    world.playSoundFromEntity(
+                        null,
+                        player,
+                        SoundRegistry.SEISMIC_SENSE_START,
+                        SoundCategory.PLAYERS,
+                        2f,
+                        1f
+                    )
+                    world.playSoundFromEntity(
+                        null,
+                        player,
+                        SoundRegistry.EARTH_ARMOR,
+                        SoundCategory.PLAYERS,
+                        0.4f,
+                        2f
+                    )
+                    player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, delay = 90.ticks, client = false) {
+                        player.removeStatusEffect(StatusEffects.DARKNESS)
+                        player.removeStatusEffect(StatusEffects.SLOWNESS)
+                        player.hasSeismicSense = false
+                        addCooldown(player)
+                    }
                 }
             }
         }
@@ -147,7 +184,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
 fun Entity.handleSeismicSenseOutline(cir: CallbackInfoReturnable<Boolean>) {
     val player = MinecraftClient.getInstance().player ?: return
     player.toph.seismicEntities.removeIf { (timestamp, _) -> timestamp < System.currentTimeMillis() }
-    if (player.toph.seismicEntities.any { (_, uuid) -> uuid == this.uuid } && player.hasSeismicSense()) {
+    if (player.toph.seismicEntities.any { (_, uuid) -> uuid == this.uuid } && player.hasSeismicSense) {
         cir.returnValue = true
     }
 }
@@ -162,7 +199,7 @@ fun PlayerEntity.spawnSeismicSenseGlowCircle() {
     val world = this.world as ClientWorld
 
     val maxRadius = 50
-    mcCoroutineTask(sync = true, client = true, howOften = 4, period = 10.ticks) {
+    player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, client = true, howOften = 4, period = 10.ticks) {
         world.playSoundFromEntity(
             player,
             player,
@@ -172,8 +209,8 @@ fun PlayerEntity.spawnSeismicSenseGlowCircle() {
             1f
         )
         repeat(maxRadius) { radius ->
-            mcCoroutineTask(delay = radius.ticks, client = true, sync = true) {
-                if (world.getBlockState(player.posUnder).isEarthBlock && hasSeismicSense()) {
+            player.toph.toph_seismicTasks += mcCoroutineTask(delay = radius.ticks, client = true, sync = true) {
+                if (world.getBlockState(player.posUnder).isEarthBlock && hasSeismicSense) {
                     SphereUtils.generateSphere(player.posUnder, radius, true).forEach {
                         val blockState = world.getBlockState(it)
                         /*if (blockState.isAir) {
@@ -199,14 +236,13 @@ fun PlayerEntity.spawnSeismicSenseGlowCircle() {
     }
 }
 
-fun Entity.hasSeismicSense(): Boolean {
-    val player = this as? PlayerEntity? ?: return false
-    return player.getSyncedData<Boolean>(SeismicSenseKey) == true
-}
+var PlayerEntity.hasSeismicSense: Boolean
+    get() = this.getSyncedData<Boolean>(SeismicSenseKey) ?: false
+    set(value) = this.setSyncedData(SeismicSenseKey, value)
 
 fun handleSeismicSenseShader(ci: CallbackInfo) {
     val player = MinecraftClient.getInstance().player ?: return
-    if (player.getSyncedData<Boolean>(SeismicSenseKey) == true) {
+    if (player.hasSeismicSense) {
         ci.cancel()
     }
 }

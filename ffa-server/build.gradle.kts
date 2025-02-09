@@ -22,7 +22,11 @@ dependencies {
     modApi(libs.emoteLib)
     modCompileOnly(libs.worldedit)
     includeImplementation(libs.bundles.mongodb)
-    implementAndInclude(libs.hglabor.database.utils)
+    modImplementation(libs.hglabor.database.utils) {
+        exclude(module = "fabric-api")
+        exclude(module = "hglabor-utils-events")
+    }
+    include(libs.hglabor.database.utils)
     //includeImplementation(libs.bundles.hglaborutils)
 
     modImplementation(files("../libs/npc-lib-fabric-3.0.0-SNAPSHOT.jar"))

@@ -62,7 +62,6 @@ object WaterCircleAbilityV2 {
     }
 
     val ability = object : AbstractAbility<Any>("Water Circle") {
-
         init {
             this.cooldownProperty = buildNoCooldown()
             this.properties = listOf(
@@ -89,6 +88,20 @@ object WaterCircleAbilityV2 {
                 } else {
                     (player as IKataraEntity).katara_entitySpinTracker.clear()
                 }
+            }
+        }
+
+        override fun onEnable(player: PlayerEntity) {
+            super.onEnable(player)
+            if (player is ServerPlayerEntity) {
+                player.waterCircleAmount = 0
+            }
+        }
+
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            if (player is ServerPlayerEntity) {
+                player.waterCircleAmount = 0
             }
         }
 

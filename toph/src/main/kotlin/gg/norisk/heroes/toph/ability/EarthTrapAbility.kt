@@ -8,6 +8,7 @@ import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.CooldownProperty
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.cameraShakePacket
@@ -132,7 +133,7 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
         EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
     )
 
-    override fun onStart(player: PlayerEntity) {
+    override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
         if (player is ServerPlayerEntity) {
             if (player.isSneaking && player.world.getBlockState(player.posUnder).isEarthBlock) {
                 val world = player.world as ServerWorld

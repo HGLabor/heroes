@@ -69,6 +69,7 @@ class TornadoEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
     fun disappear(entity: Entity?) {
         val player = entity as? PlayerEntity?
         if (player?.isTornadoMode == true) {
+            TornadoAbility.Ability.addCooldown(player)
             player.isTornadoMode = false
             player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.4f, 0.7f)
         }

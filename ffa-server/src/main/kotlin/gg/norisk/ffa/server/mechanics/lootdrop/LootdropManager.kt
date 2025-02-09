@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
 import net.silkmc.silk.core.Silk
+import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.broadcastText
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
@@ -31,7 +32,9 @@ object LootdropManager {
 
                 if (System.currentTimeMillis() >= lootdropTimes[lootdropIndex]) {
                     lootdropIndex++
-                    spawnLootdrop()
+                    mcCoroutineTask(sync = true, client = false) {
+                        spawnLootdrop()
+                    }
                 }
                 delay(1.seconds)
             }

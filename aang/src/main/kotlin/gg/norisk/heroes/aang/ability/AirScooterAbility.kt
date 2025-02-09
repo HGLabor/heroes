@@ -6,8 +6,11 @@ import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.aang.AangManager.toId
+import gg.norisk.heroes.aang.ability.AirBallAbility.currentBendingEntity
+import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.client.sound.AirScooterSoundInstance
 import gg.norisk.heroes.aang.entity.AirScooterEntity
+import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.registry.EmoteRegistry
 import gg.norisk.heroes.aang.registry.EntityRegistry
 import gg.norisk.heroes.aang.registry.ParticleRegistry
@@ -16,6 +19,7 @@ import gg.norisk.heroes.client.renderer.Speedlines.showSpeedlines
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
 import gg.norisk.heroes.common.hero.ability.task.abilityCoroutineTask
 import gg.norisk.heroes.common.utils.sound
@@ -181,15 +185,25 @@ object AirScooterAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 player.playEmote(EmoteRegistry.AIR_SCOOTER)
                 player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.5)
-                abilityCoroutineTask(sync = true, client = false, delay = 0.6.seconds, executingPlayer = player) {
+                player.aang.aang_airScooterTasks += abilityCoroutineTask(
+                    sync = true,
+                    client = false,
+                    delay = 0.6.seconds,
+                    executingPlayer = player
+                ) {
                     player.modifyVelocity(0.0, 0.55, 0.0)
                 }
-                abilityCoroutineTask(sync = true, client = false, delay = 0.83.seconds, executingPlayer = player) {
+                player.aang.aang_airScooterTasks += abilityCoroutineTask(
+                    sync = true,
+                    client = false,
+                    delay = 0.83.seconds,
+                    executingPlayer = player
+                ) {
                     //player.modifyVelocity(0.0,1.0,0.0)
                     airScooterSoundPacketS2C.sendToAll(player.id)
                     player.isAirScooting = true
@@ -202,7 +216,7 @@ object AirScooterAbility {
                             1.seconds.toJavaDuration(),
                             Easing.CUBIC_IN
                         )
-                    infiniteMcCoroutineTask(sync = true, client = false) {
+                    player.aang.aang_airScooterTasks += infiniteMcCoroutineTask(sync = true, client = false) {
                         if (speedAnimation.isDone) cancel()
                         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
                             speedAnimation.get().toDouble()
@@ -215,20 +229,30 @@ object AirScooterAbility {
             }
         }
 
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            player.stopRidingAirBall()
+        }
+
+        private fun PlayerEntity.stopRidingAirBall() {
+            aang.aang_airScooterTasks.forEach { it.cancel() }
+            if (this is ServerPlayerEntity) {
+                this.isAirScooting = false
+                //das hier suckt iwie lieber modifiers usen
+                this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
+                this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
+                    0.10000000149011612
+                this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.08
+                this.stopEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
+                this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 2f)
+            } else if (this == MinecraftClient.getInstance().player) {
+                this.showSpeedlines = false
+            }
+        }
+
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             super.onEnd(player, abilityEndInformation)
-            if (player is ServerPlayerEntity) {
-                player.isAirScooting = false
-                //das hier suckt iwie lieber modifiers usen
-                player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
-                    0.10000000149011612
-                player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.08
-                player.stopEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
-                player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 2f)
-            } else if (player == MinecraftClient.getInstance().player) {
-                player.showSpeedlines = false
-            }
+            player.stopRidingAirBall()
         }
     }
 }

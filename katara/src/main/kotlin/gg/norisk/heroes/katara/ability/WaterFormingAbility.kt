@@ -7,6 +7,7 @@ import gg.norisk.heroes.client.renderer.RenderUtils
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
+import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.utils.sound
@@ -76,8 +77,8 @@ object WaterFormingAbility {
             this.properties = listOf(waterFormingMaxDistance)
         }
 
-        override fun onStart(player: PlayerEntity) {
-            super.onStart(player)
+        override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
+            super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 val pos = (player.raycast(20.0, 0.0f, false) as? BlockHitResult?)?.blockPos?.toImmutable()
                 player.isWaterForming = true
