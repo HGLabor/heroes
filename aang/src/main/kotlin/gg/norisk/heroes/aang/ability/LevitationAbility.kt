@@ -90,6 +90,19 @@ object LevitationAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            cleanUp(player)
+        }
+
+        private fun cleanUp(player: PlayerEntity) {
+            if (player is ServerPlayerEntity) {
+                player.isAirLevitating = false
+                player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue =
+                    EntityAttributes.GENERIC_GRAVITY.value().defaultValue
+            }
+        }
+
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
@@ -100,11 +113,7 @@ object LevitationAbility {
 
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             super.onEnd(player, abilityEndInformation)
-            if (player is ServerPlayerEntity) {
-                player.isAirLevitating = false
-                player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue =
-                    EntityAttributes.GENERIC_GRAVITY.value().defaultValue
-            }
+            cleanUp(player)
         }
     }
 }

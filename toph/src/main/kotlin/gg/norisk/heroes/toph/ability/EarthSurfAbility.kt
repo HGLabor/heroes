@@ -50,7 +50,7 @@ import kotlin.math.sin
 
 val EarthSurfKey = "isEarthSurfing"
 
-val earthSurfRadius = NumberProperty(1.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0)).apply {
+val earthSurfRadius = NumberProperty(1.0, 3, "Radius", AddValueTotal(1.0, 1.0, 1.0), 20).apply {
     icon = {
         Components.item(Items.STONE_SHOVEL.defaultStack)
     }
@@ -84,7 +84,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
         this.properties = listOf(earthSurfStepHeight, earthSurfSpeedBoost, earthSurfRadius)
 
         this.cooldownProperty =
-            buildCooldown(30.0, 4, AddValueTotal(-4.0, -4.0, -4.0, -2.0))
+            buildCooldown(60.0, 5, AddValueTotal(-5.0, -5.0, -5.0, -5.0,-5.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 

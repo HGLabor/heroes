@@ -94,14 +94,18 @@ object KitEditorManager {
             val player = entity as? ServerPlayerEntity? ?: return@Load
             if (world == this.world) {
                 player.changeGameMode(GameMode.ADVENTURE)
-                val dbPlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
-                println("Loaded ${dbPlayer}")
-                if (dbPlayer.inventory == null) {
-                    resetInventory.invoke(player)
-                    dbPlayer.inventory = player.toDatabaseInventory()
+                mcCoroutineTask(sync = false, client = false) {
+                    val dbPlayer = PlayerProvider.get(player.uuid)
+                    println("Loaded ${dbPlayer}")
+                    if (dbPlayer.inventory == null) {
+                        resetInventory.invoke(player)
+                        dbPlayer.inventory = player.toDatabaseInventory()
+                    }
+                    mcCoroutineTask(sync = true, client = false) {
+                        player.loadInventory(dbPlayer.inventory!!)
+                    }
+                    entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.enter"))
                 }
-                player.loadInventory(dbPlayer.inventory!!)
-                entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.enter"))
             }
         })
 
@@ -109,16 +113,20 @@ object KitEditorManager {
             val player = entity as? ServerPlayerEntity? ?: return@Unload
             if (world == this.world) {
                 val inventory = player.toDatabaseInventory()
-                val dbPlayer = PlayerProvider.getCachedPlayerOrDummy(player.uuid)
-                dbPlayer.inventory = inventory
-                player.dbPlayer = dbPlayer
-                mcCoroutineTask(sync = false, client = false) {
-                    PlayerProvider.save(dbPlayer)
-                    println("Saved ${dbPlayer}")
-                    entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.save"))
+                mcCoroutineTask(sync = false, client = true) {
+                    val dbPlayer = PlayerProvider.get(player.uuid)
+                    dbPlayer.inventory = inventory
+                    player.dbPlayer = dbPlayer
+                    mcCoroutineTask(sync = false, client = false) {
+                        PlayerProvider.save(dbPlayer)
+                        println("Saved ${dbPlayer}")
+                        entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.save"))
+                    }
+                    entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.left"))
+                    mcCoroutineTask(sync = true, client = false) {
+                        player.loadInventory(inventory)
+                    }
                 }
-                entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.left"))
-                player.loadInventory(inventory)
             }
         })
 

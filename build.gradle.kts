@@ -94,11 +94,11 @@ subprojects {
 
   //ich weiß das ist kriminell aber
   version = rootProject.libs.versions.minecraft.get() + "-" + when (name) {
-    "hero-api" -> "1.2.79"
-    "katara" -> "1.0.21"
+    "hero-api" -> "1.2.80"
+    "katara" -> "1.0.22"
     "aang" -> "1.0.30"
-    "toph" -> "1.0.21"
-    "ffa-server" -> "1.2.62"
+    "toph" -> "1.0.23"
+    "ffa-server" -> "1.2.67"
     "datatracker" -> "1.0.17"
     else -> version
   }

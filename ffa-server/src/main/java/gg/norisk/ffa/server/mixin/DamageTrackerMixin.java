@@ -7,10 +7,13 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.silkmc.silk.core.server.ServerExtensionsKt;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,6 +25,7 @@ public abstract class DamageTrackerMixin implements IDamageTrackerExt {
     @Shadow
     @Final
     private LivingEntity entity;
+    @Unique
     private PlayerEntity lastPlayer;
 
     @Inject(
@@ -42,6 +46,11 @@ public abstract class DamageTrackerMixin implements IDamageTrackerExt {
             //only player combat should trigger combat logger
             ci.cancel();
         }
+    }
+
+    @Inject(method = "update", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V"))
+    private void ffa$updateEnd(CallbackInfo ci) {
+        lastPlayer = null;
     }
 
     @ModifyConstant(method = "update", constant = @Constant(intValue = 300))

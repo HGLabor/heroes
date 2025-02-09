@@ -23,7 +23,7 @@ object AbilityKeyBindManager {
                 .sortedByDescending { it.condition != null }.forEach { ability ->
                     val isConditionMet =
                         if (ability.condition == null) true else ability.condition?.invoke(player) == true
-                    if (handleAbility(player, hero, ability, event.pressed, event.pressed) && isConditionMet) {
+                    if (isConditionMet && handleAbility(player, hero, ability, event.pressed, event.pressed)) {
                         event.isCancelled.set(true)
                         return@listen
                     }
@@ -38,13 +38,13 @@ object AbilityKeyBindManager {
                 .sortedByDescending { it.condition != null }.forEach { ability ->
                     val isConditionMet =
                         if (ability.condition == null) true else ability.condition?.invoke(player) == true
-                    if (handleAbility(
+                    if (isConditionMet && handleAbility(
                             player,
                             hero,
                             ability,
                             event.isClicked(),
                             event.isHold()
-                        ) && isConditionMet
+                        )
                     ) {
                         event.isCancelled.set(true)
                         return@listen

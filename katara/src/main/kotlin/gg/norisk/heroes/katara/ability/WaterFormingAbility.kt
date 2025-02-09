@@ -95,6 +95,19 @@ object WaterFormingAbility {
             return Identifier.of("textures/block/packed_ice.png")
         }
 
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            cleanUp(player)
+        }
+
+        private fun cleanUp(player: PlayerEntity) {
+            if (player is ServerPlayerEntity) {
+                player.isWaterForming = false
+                player.firstWaterFormingPos = null
+                player.secondWaterFormingPos = null
+            }
+        }
+
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
             super.onEnd(player, abilityEndInformation)
             if (player is ServerPlayerEntity) {
@@ -104,9 +117,7 @@ object WaterFormingAbility {
                     player.firstWaterFormingPos,
                     player.secondWaterFormingPos
                 )
-                player.isWaterForming = false
-                player.firstWaterFormingPos = null
-                player.secondWaterFormingPos = null
+                cleanUp(player)
             }
         }
     }

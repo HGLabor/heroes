@@ -331,7 +331,12 @@ object WaterPillarAbility {
             }
         }
 
-        override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
+        override fun onDisable(player: PlayerEntity) {
+            super.onDisable(player)
+            cleanUp(player)
+        }
+
+        fun cleanUp(player: PlayerEntity) {
             if (player is ServerPlayerEntity) {
                 if (player.isWaterPillar) {
                     player.waterPillarOrigin = null
@@ -339,6 +344,10 @@ object WaterPillarAbility {
                     player.cleanUpWaterBendingBlocks()
                 }
             }
+        }
+
+        override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
+            cleanUp(player)
         }
 
         override fun onTick(player: PlayerEntity) {

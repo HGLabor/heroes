@@ -78,6 +78,8 @@ object SelectorServerManager {
         } else {
             KitEditor.handleKit(this)
         }
+        hungerManager.foodLevel = 20
+        hungerManager.saturationLevel = 5f
         setExperienceLevel(0)
         setExperiencePoints(0)
         if (!FabricLoader.getInstance().isDevelopmentEnvironment) {

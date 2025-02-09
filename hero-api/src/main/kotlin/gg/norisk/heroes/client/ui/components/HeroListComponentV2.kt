@@ -12,6 +12,7 @@ import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.container.OverlayContainer
 import io.wispforest.owo.ui.core.*
 import io.wispforest.owo.ui.util.UISounds
+import net.minecraft.client.MinecraftClient
 import net.silkmc.silk.core.text.literal
 
 class HeroListComponentV2(
@@ -28,7 +29,7 @@ class HeroListComponentV2(
     val editorButton = ScalableButtonComponent("EDITOR".literal, 1f, ::onEditorButton).apply {
         horizontalSizing(Sizing.fixed(48))
     }
-    val lobbyButton = ScalableButtonComponent("LOBBY".literal, 1f, ::onLobbyButton).apply {
+    val lobbyButton = ScalableButtonComponent("SPEC".literal, 1f, ::onLobbyButton).apply {
         horizontalSizing(Sizing.fixed(48))
     }
 

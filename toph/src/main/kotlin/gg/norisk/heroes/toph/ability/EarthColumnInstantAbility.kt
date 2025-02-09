@@ -6,11 +6,14 @@ import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
+import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
+import gg.norisk.heroes.common.hero.getHero
+import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
 import gg.norisk.heroes.common.networking.cameraShakePacket
@@ -18,6 +21,7 @@ import gg.norisk.heroes.common.networking.dto.BlockInfoSmall
 import gg.norisk.heroes.common.serialization.BlockPosSerializer
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
+import gg.norisk.heroes.toph.TophManager
 import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.network.earthColumnBlockInfos
@@ -127,21 +131,27 @@ val EarthColumnInstantAbility = object : HoldAbility(
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
         mouseScrollPacket.receiveOnServer { packet, context ->
-            val player = context.player
-            var radius = player.getSyncedData<Int>(EarthColumnRadiusKey) ?: 1
-            radius += if (!packet) -1 else 1
-            if (radius <= 0) {
-                radius = 1
+            mcCoroutineTask(sync = true, client = false) {
+                val player = context.player
+                if (!player.isHero(TophManager.Toph)) return@mcCoroutineTask
+                if (!player.isEarthColumn()) return@mcCoroutineTask
+
+                var radius = player.getSyncedData<Int>(EarthColumnRadiusKey) ?: 1
+                radius += if (!packet) -1 else 1
+                if (radius <= 0) {
+                    radius = 1
+                }
+                if (radius >= earthColumnRadius.getValue(player.uuid)) {
+                    radius = earthColumnRadius.getValue(player.uuid).toInt()
+                }
+                player.setSyncedData(EarthColumnRadiusKey, radius)
             }
-            if (radius >= earthColumnRadius.getValue(player.uuid)) {
-                radius = earthColumnRadius.getValue(player.uuid).toInt()
-            }
-            player.setSyncedData(EarthColumnRadiusKey, radius)
         }
 
         earthColumnBlockInfos.receiveOnServer { earthColumn, context ->
             val world = context.player.serverWorld
             val player = context.player
+            if (!player.isHero(TophManager.Toph)) return@receiveOnServer
             mcCoroutineTask(
                 sync = true,
                 client = false,
@@ -186,6 +196,20 @@ val EarthColumnInstantAbility = object : HoldAbility(
                 player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
                     ?.addTemporaryModifier(EARTH_COLUMN_SLOW_BOOST)
             }
+        }
+    }
+
+    override fun onDisable(player: PlayerEntity) {
+        super.onDisable(player)
+        cleanUp(player)
+    }
+
+    private fun cleanUp(player: PlayerEntity) {
+        if (player is ServerPlayerEntity) {
+            player.stopEmote("earth-column-start".toEmote())
+            player.setSyncedData(EarthColumnKey, false)
+            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                ?.removeModifier(EARTH_COLUMN_SLOW_BOOST.id)
         }
     }
 
@@ -270,7 +294,8 @@ private fun EarthColumnDescription.move(
             blocks.forEach { (state, pos) ->
                 if (state.isAir) return@forEach
                 val newPos = pos.up(it.round.toInt()).up().toCenterPos()
-                world.getOtherEntities(null, Box.from(newPos).expand(earthColumnRadius.getValue(player.uuid))).filterIsInstance<LivingEntity>()
+                world.getOtherEntities(null, Box.from(newPos).expand(earthColumnRadius.getValue(player.uuid)))
+                    .filterIsInstance<LivingEntity>()
                     .forEach { entity ->
                         entity.damage(entity.damageSources.playerAttack(player), 0.001f)
                         if (!entity.isSneaking) {
