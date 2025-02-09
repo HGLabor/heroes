@@ -78,6 +78,8 @@ object SelectorServerManager {
         } else {
             KitEditor.handleKit(this)
         }
+        setExperienceLevel(0)
+        setExperiencePoints(0)
         if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
             scoreboards.computeIfAbsent(this.uuid) { Scoreboard.getScoreboardForPlayer(this) }.displayToPlayer(this)
         }
