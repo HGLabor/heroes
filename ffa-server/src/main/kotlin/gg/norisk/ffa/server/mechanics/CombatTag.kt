@@ -4,6 +4,7 @@ import gg.norisk.heroes.common.events.HeroEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.entity.player.PlayerEntity
 import net.silkmc.silk.core.kotlin.ticks
+import net.silkmc.silk.core.task.mcCoroutineTask
 
 object CombatTag {
     interface ICombatPlayer {
@@ -14,8 +15,10 @@ object CombatTag {
 
     fun init() {
         ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect { handler, server ->
-            val player = handler.player
-            player.kill()
+            mcCoroutineTask(sync = true, client = false) {
+                val player = handler.player
+                player.kill()
+            }
         })
         HeroEvents.heroDeathEvent.listen { event ->
             /*if (event.player.isInCombat()) {
