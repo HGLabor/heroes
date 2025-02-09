@@ -40,6 +40,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     companion object {
@@ -131,6 +132,13 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 )
 
                 delay(50.milliseconds)
+            }
+        }
+
+        lootdropCoroutine.launch {
+            while (state == LootdropState.GLIDING || state == LootdropState.FREE_FALL) {
+                barrelEntity.playSound(SoundEvents.ENTITY_PHANTOM_FLAP, 0.4f, 1.4f)
+                delay(0.8.seconds)
             }
         }
     }
@@ -246,6 +254,22 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                     0.005
                 )
                 delay(50.milliseconds)
+            }
+        }
+
+        lootdropCoroutine.launch {
+            while (state == LootdropState.LANDED) {
+                val pitch = (3..12).random() / 10f
+
+                world.playSound(
+                    null,
+                    landingPos,
+                    SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+                    SoundCategory.BLOCKS,
+                    2.5f,
+                    pitch
+                )
+                delay((1500..3000).random().milliseconds)
             }
         }
     }
