@@ -92,7 +92,7 @@
   "ffa.mechanic.killstreak.lost": "§f%s §ehat seine Killstreak von §c%s §everloren.",
   "ffa.mechanic.lootdrop.found_xp": "§eDu hast §a%s §eXP erhalten.",
   "ffa.mechanic.kit.editor.enter": "§fDu hast den $cKit-Editor $ebetreten.",
-  "ffa.mechanic.kit.editor.save": "§aDein Kit wurde $2gespeichert $a.",
+  "ffa.mechanic.kit.editor.save": "§aDein Kit wurde $2gespeichert$a.",
   "ffa.mechanic.kit.editor.left": "§fDu hast den $cKit-Editor $everlassen.",
   "ffa.mechanic.kit.editor.inventory_instruction": "§fHier kannst du dein Inventar nach Belieben anordnen, damit es beim nächsten Mal gespeichert wird."
 }
