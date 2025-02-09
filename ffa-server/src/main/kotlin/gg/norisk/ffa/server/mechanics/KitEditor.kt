@@ -11,6 +11,7 @@ import com.github.juliarn.npclib.common.event.DefaultInteractNpcEvent
 import com.github.juliarn.npclib.fabric.FabricPlatform
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.FFAServer.isFFA
+import gg.norisk.ffa.server.FFAServer.logger
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSoupItems
 import gg.norisk.ffa.server.selector.SelectorServerManager.setUHCItems
@@ -28,6 +29,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.world.World
 import net.silkmc.silk.core.event.ServerEvents
+import net.silkmc.silk.core.text.literal
 import java.util.*
 
 object KitEditor {
@@ -42,6 +44,7 @@ object KitEditor {
     lateinit var resetNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
 
     fun initServer() {
+        logger.info("Initializing Mode: $mode")
         HeroEvents.preKitEditorEvent.listen { event ->
             if (event.player.isFFA) {
                 event.isCancelled.set(true)
@@ -86,14 +89,11 @@ object KitEditor {
     fun handleSoupKit(player: PlayerEntity) {
         player.inventory.clear()
         player.setSoupItems()
-        player.setSyncedData("duels:OLD_PVP", true)
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
     }
 
     fun handleUHCKit(player: PlayerEntity) {
         player.inventory.clear()
         player.setUHCItems()
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 4.0
     }
 
 
