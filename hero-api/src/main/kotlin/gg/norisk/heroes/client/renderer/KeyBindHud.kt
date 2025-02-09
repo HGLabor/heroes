@@ -21,6 +21,7 @@ object KeyBindHud {
     }
 
     fun render(drawContext: DrawContext, tickCounter: RenderTickCounter) {
+        if (MinecraftClient.getInstance().debugHud.shouldShowDebugHud()) return
         val player = MinecraftClient.getInstance().player ?: return
         val hero = player.getHero() ?: return
         val offset = 2
