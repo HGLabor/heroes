@@ -20,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.silkmc.silk.core.entity.directionVector
@@ -56,6 +57,10 @@ object IceShardAbility {
 
         override fun getIconComponent(): Component {
             return Components.item(Items.ARROW.defaultStack)
+        }
+
+        override fun getBackgroundTexture(): Identifier {
+            return Identifier.of("textures/block/packed_ice.png")
         }
 
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
