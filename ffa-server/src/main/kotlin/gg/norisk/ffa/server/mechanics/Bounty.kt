@@ -25,9 +25,7 @@ object Bounty {
                     val player = EntityArgumentType.getPlayer(this, "player")
                     val source = this.source.playerOrThrow
                     val dbPlayer = PlayerProvider.get(player.uuid)
-                    source.sendMessage(literalText {
-                        text("${player.name} hat ein Kopfgeld von ${dbPlayer.bounty}")
-                    })
+                    source.sendMessage(Text.translatable("ffa.mechanic.bounty.info", player.name, dbPlayer.bounty))
                 }
                 argument<Int>("bounty", IntegerArgumentType.integer(0)) { bountyToGive ->
                     runsAsync {
@@ -39,9 +37,7 @@ object Bounty {
                         println("Player: $sourceDbPlayer")
 
                         if (bountyToGive() > sourceDbPlayer.xp) {
-                            source.sendMessage(literalText {
-                                text("Du hast zu wenig Xp für dieses Kopfgeld")
-                            })
+                            source.sendMessage(Text.translatable("ffa.mechanic.bounty.not_enough_xp"))
                             return@runsAsync
                         }
 
@@ -54,22 +50,7 @@ object Bounty {
                         PlayerProvider.save(sourceDbPlayer)
                         PlayerProvider.save(dbPlayer)
 
-                        this.source.server.broadcastText {
-                            text(source.name)
-                            text(" hat das Kopfgeld von ") {
-                                color = Color.YELLOW.rgb
-                            }
-                            text(bountyToGive().toString()) {
-                                color = Color.GREEN.rgb
-                            }
-                            text(" auf ") {
-                                color = Color.YELLOW.rgb
-                            }
-                            text(player.name)
-                            text(" erteilt") {
-                                color = Color.YELLOW.rgb
-                            }
-                        }
+                        this.source.server.broadcastText(Text.translatable("ffa.mechanic.bounty.placed", source.name, bountyToGive().toString(), player.name))
                     }
                 }
             }
@@ -91,23 +72,7 @@ object Bounty {
             val bounty = targetDb.bounty
             targetDb.bounty = 0
             receiverDb.xp += bounty
-            receiver.server.broadcastText {
-                text(receiver.name)
-                text(" hat das Kopfgeld von ") {
-                    color = Color.YELLOW.rgb
-                }
-                text(bounty.toString()) {
-                    color = Color.GREEN.rgb
-                }
-                text(" für") {
-                    color = Color.YELLOW.rgb
-                }
-                text(target.name)
-                text(" erhalten") {
-                    color = Color.YELLOW.rgb
-                }
-            }
-
+            receiver.server.broadcastText(Text.translatable("ffa.mechanic.bounty.claimed", receiver.name, bounty, target.name))
             receiver.dbPlayer = receiverDb
             target.dbPlayer = targetDb
             PlayerProvider.save(receiverDb)

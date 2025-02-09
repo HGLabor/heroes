@@ -5,28 +5,26 @@ import gg.norisk.ffa.server.ext.IDamageTrackerExt
 import gg.norisk.ffa.server.mechanics.CombatTag.isInCombat
 import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
-import gg.norisk.heroes.common.player.DatabasePlayer
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.ffa.experience.ExperienceReason
 import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
 import gg.norisk.heroes.common.ffa.experience.addXp
-import gg.norisk.heroes.common.hero.getHero
+import gg.norisk.heroes.common.player.DatabasePlayer
 import gg.norisk.heroes.common.player.dbPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.damage.DamageTypes
 import net.minecraft.entity.passive.ChickenEntity
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.silkmc.silk.commands.PermissionLevel
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.Silk
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.broadcastText
-import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import java.awt.Color
 import kotlin.math.min
@@ -162,9 +160,7 @@ object KillManager {
 
     private suspend fun increaseDeathForPlayer(player: ServerPlayerEntity, source: DamageSource) {
         val heroDeathEvent = HeroEvents.HeroDeathEvent(player, true)
-        player.sendMessage(literalText {
-            text("Du bist gestorben".literal)
-        })
+        player.sendMessage(Text.translatable("ffa.died"))
         HeroEvents.heroDeathEvent.invoke(heroDeathEvent)
         val cachedEntity = PlayerProvider.get(player.uuid)
         if (heroDeathEvent.isValidDeath) {
@@ -173,18 +169,7 @@ object KillManager {
                 cachedEntity.highestKillStreak = cachedEntity.currentKillStreak
             }
             if (cachedEntity.currentKillStreak >= 5) {
-                player.sendMessage(literalText {
-                    text(player.name)
-                    text("hat seine Killstreak von ") {
-                        color = Color.YELLOW.rgb
-                    }
-                    text(cachedEntity.currentKillStreak.toString()) {
-                        color = Color.RED.rgb
-                    }
-                    text(" verloren") {
-                        color = Color.YELLOW.rgb
-                    }
-                })
+                player.sendMessage(Text.translatable("ffa.mechanic.killstreak.lost", player.name, cachedEntity.currentKillStreak))
             }
             cachedEntity.currentKillStreak = 0
 
