@@ -51,6 +51,7 @@ object WorldManager {
             //if (counter.get() < 300) {
             for (player in players) {
                 if (player.isFFA) {
+                    Random
                     player.sendMessage("Map Reset ${counter.getTimeAsString()}".literal, true)
                 }
             }

@@ -26,6 +26,7 @@ import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
+import net.minecraft.text.Text
 import net.minecraft.util.math.AffineTransformation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
@@ -180,8 +181,8 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     fun onBarrelOpen(player: PlayerEntity) {
         state = LootdropState.OPENED
         if (xpReward > 0) {
-            player.sendMessage("You received ${xpReward} xp".literal)
-            player.addXp(ExperienceReason("lootdrop_secured", xpReward), true)
+            player.sendMessage(Text.translatable("ffa.mechanic.lootdrop.found_xp", xpReward))
+            player.addXp(ExperienceReason("lootdrop_secured", xpReward))
         }
         end()
     }

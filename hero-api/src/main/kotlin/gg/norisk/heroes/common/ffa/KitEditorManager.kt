@@ -26,6 +26,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
+import net.minecraft.text.Text
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.GameMode
@@ -100,7 +101,7 @@ object KitEditorManager {
                     dbPlayer.inventory = player.toDatabaseInventory()
                 }
                 player.loadInventory(dbPlayer.inventory!!)
-                entity.sendMessage("Joint Kit World".literal)
+                entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.enter"))
             }
         })
 
@@ -114,9 +115,9 @@ object KitEditorManager {
                 mcCoroutineTask(sync = false, client = false) {
                     PlayerProvider.save(dbPlayer)
                     println("Saved ${dbPlayer}")
-                    entity.sendMessage("Saved Kit Editor".literal)
+                    entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.save"))
                 }
-                entity.sendMessage("Leavt Kit World".literal)
+                entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.left"))
                 player.loadInventory(inventory)
             }
         })
@@ -138,7 +139,7 @@ object KitEditorManager {
                     teleportToKitEditorSpawn(player)
                     player.sendMessage(literalText {
                         text(prefix)
-                        text("Hier kannst dein Inventar nach belieben anordnen damit es nächstes mal gespeichert wird")
+                        text(Text.translatable("ffa.mechanic.kit.editor.inventory_instruction"))
                     })
                     kitEditorWorld.setBlockState(BlockPos(0, 89, 0), Blocks.GOLD_BLOCK.defaultState)
                 }

@@ -82,5 +82,17 @@
   "hero.toph.ability.earth_trap.description": "Du musst auf Erde stehen, einen Gegner anvisieren und ihn dann in den Boden sinken lassen.",
   "hero.toph.ability.seismic_sense.description": "Alles wird schwarz, damit du die umliegende Umgebung scannen und versteckte Entitäten aufdecken kannst.",
   "heroes.ability.earth_trap.unlock_condition": "Du musst den Cooldown-Pfad von Erdstoß gemeistert haben.",
-  "heroes.ability.seismic_sense.unlock_condition": "Du musst den Cooldown-Pfad von Erdstoß gemeistert haben."
+  "heroes.ability.seismic_sense.unlock_condition": "Du musst den Cooldown-Pfad von Erdstoß gemeistert haben.",
+
+  "ffa.died": "$cDu bist gestorben",
+  "ffa.mechanic.bounty.claimed": "§f%s §ehat das Kopfgeld von §a%s §efür §f%s §eerhalten.",
+  "ffa.mechanic.bounty.placed": "§f%s §ehat ein Kopfgeld von §a%s §eauf §f%s §eerteilt.",
+  "ffa.mechanic.bounty.info": "§f%s §ehat ein Kopfgeld von §a%s§e.",
+  "ffa.mechanic.bounty.not_enough_xp": "§cDu hast zu wenig XP um dieses Kopfgeld zu erteilen.",
+  "ffa.mechanic.killstreak.lost": "§f%s §ehat seine Killstreak von §c%s §everloren.",
+  "ffa.mechanic.lootdrop.found_xp": "§eDu hast §a%s §eXP erhalten.",
+  "ffa.mechanic.kit.editor.enter": "§fDu hast den $cKit-Editor $ebetreten.",
+  "ffa.mechanic.kit.editor.save": "§aDein Kit wurde $2gespeichert $a.",
+  "ffa.mechanic.kit.editor.left": "§fDu hast den $cKit-Editor $everlassen.",
+  "ffa.mechanic.kit.editor.inventory_instruction": "§fHier kannst du dein Inventar nach Belieben anordnen, damit es beim nächsten Mal gespeichert wird."
 }
