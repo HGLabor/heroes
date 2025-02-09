@@ -78,7 +78,7 @@ val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTota
     }
 }
 
-val EarthColumnInstantAbility = object : HoldAbility(
+val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
     "Earth Column"
 ) {
 

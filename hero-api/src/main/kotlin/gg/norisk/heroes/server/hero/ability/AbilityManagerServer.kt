@@ -131,7 +131,6 @@ object AbilityManagerServer : IAbilityManager {
                 is PressAbility,
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
-                    player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                     ability.onStart(player, abilityScope)
                 }
 
@@ -147,7 +146,6 @@ object AbilityManagerServer : IAbilityManager {
                             if (ability.handleCooldown(player)) return@runCatching
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
-                            player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                             ability.onStart(player, abilityScope)
                             //ability.internalCallbacks.START
                         }
