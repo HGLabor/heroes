@@ -26,6 +26,7 @@ import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
 import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.model.EntityModelLayers
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributeModifier
@@ -70,12 +71,18 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
             //TODO condition sneaking
 
             LivingEntityFeatureRendererRegistrationCallback.EVENT.register { entityType, entityRenderer, registrationHelper, context ->
-                registrationHelper.register(
-                    BlockTrapFeatureRenderer(
-                        entityRenderer as FeatureRendererContext<LivingEntity, EntityModel<LivingEntity>>,
-                        context.heldItemRenderer
+                val modelPart = EntityModelLayers.getLayers().toList()
+                    .firstOrNull { it.id.path == entityType.untranslatedName.lowercase() }
+                if (modelPart != null) {
+                    val model = context.getPart(modelPart)
+                    registrationHelper.register(
+                        BlockTrapFeatureRenderer(
+                            entityRenderer as FeatureRendererContext<LivingEntity, EntityModel<LivingEntity>>,
+                            context.heldItemRenderer,
+                            model
+                        )
                     )
-                )
+                }
             }
         }
 

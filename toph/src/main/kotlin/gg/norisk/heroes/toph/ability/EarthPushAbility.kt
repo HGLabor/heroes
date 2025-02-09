@@ -82,7 +82,9 @@ val EarthPushAbility = object : PressAbility("Earth Push") {
             val clipWithDistance = RaycastUtils.clipWithDistance(player, player.world, 4.5) ?: return
             val pos = clipWithDistance.blockPos.toCenterPos()
             val state = world.getBlockState(clipWithDistance.blockPos)
+            abilityScope.cancelCooldown()
             if (!state.isEarthBlock) return
+            abilityScope.applyCooldown()
             val entity = BendingBlockEntity(world, pos.x, pos.y, pos.z, state)
             cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player as ServerPlayerEntity)
             entity.canAttack = true

@@ -60,6 +60,8 @@
   "heroes.property.tornado_decrease_rate.description": "The rate at which\nyour tornado shrinks\nover time.",
   "heroes.property.slowness": "Slowness",
   "heroes.property.slowness.description": "How slow the ability is.",
+  "heroes.property.earth_column_boost": "Boost",
+  "heroes.property.earth_column_boost.description": "How high entities\nare launched into the air.",
 
   "hero.aang.ability.air_scooter.description": "Creates an airball that you can ride on.",
   "hero.aang.ability.tornado.description": "Creates a tornado by spinning the mouse, launching nearby blocks and entities away.",

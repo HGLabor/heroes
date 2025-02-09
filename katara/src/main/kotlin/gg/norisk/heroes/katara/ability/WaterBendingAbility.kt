@@ -68,9 +68,9 @@ object WaterBendingAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                buildCooldown(10.0, 5, AddValueTotal(-1.0, -1.0, -1.0, -1.0, -1.0))
             this.maxDurationProperty =
-                buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
+                buildMaxDuration(10.0, 5, AddValueTotal(2.0, 1.0, 0.5, 0.5, 1.0))
         }
 
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {

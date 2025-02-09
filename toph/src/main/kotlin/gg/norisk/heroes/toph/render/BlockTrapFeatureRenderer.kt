@@ -2,6 +2,7 @@ package gg.norisk.heroes.toph.render
 
 import gg.norisk.heroes.toph.ability.isEarthTrapped
 import gg.norisk.heroes.toph.entity.ITrappedEntity
+import gg.norisk.heroes.toph.mixin.ModelPartAccessor
 import net.minecraft.block.Blocks
 import net.minecraft.client.model.ModelPart
 import net.minecraft.client.render.VertexConsumerProvider
@@ -13,13 +14,19 @@ import net.minecraft.client.render.model.json.ModelTransformationMode
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.RotationAxis
+import net.minecraft.util.math.random.Random
 
 
 //Credits an https://github.com/chyzman/wearThat/blob/master/src/main/java/com/chyzman/wearthat/client/WearThatClient.java
 class BlockTrapFeatureRenderer<T : LivingEntity, M : EntityModel<T>>(
     context: FeatureRendererContext<T, M>,
-    private val heldItemRenderer: HeldItemRenderer
+    private val heldItemRenderer: HeldItemRenderer,
+    val root: ModelPart,
 ) : FeatureRenderer<T, M>(context) {
+    val legs = (root as ModelPartAccessor).children.filter {
+        it.key.contains("leg") || it.key.contains("tentacle") || it.key.contains("rod")
+    }.map { it.value }
+
     override fun render(
         matrices: MatrixStack,
         vertexConsumers: VertexConsumerProvider,
@@ -32,33 +39,55 @@ class BlockTrapFeatureRenderer<T : LivingEntity, M : EntityModel<T>>(
         headYaw: Float,
         headPitch: Float
     ) {
-        val arrayNames = listOf("tentacles", "rods")
-
-        val trapped = entity as? ITrappedEntity ?: return
+        val trapped = entity as? ITrappedEntity? ?: return
+        if (!entity.isEarthTrapped()) {
+            if (trapped.earthRotationAnimation == null || trapped.earthRotationAnimation?.isDone == true) {
+                return
+            }
+        }
 
         var current: Class<*> = this.contextModel::class.java
         while (current.superclass != null) { // we don't want to process Object.class
             current.declaredFields.forEach { field ->
-                if (field.name.contains("leg", true)) {
-                    runCatching {
-                        field.isAccessible = true
-                        field.get(this.contextModel) as ModelPart
-                    }.onSuccess {
+                runCatching {
+                    field.isAccessible = true
+                    field.get(this.contextModel) as ModelPart
+                }.onSuccess {
+                    val random = Random.create()
+                    if (it.isEmpty) return@onSuccess
+                    if (legs.any { leg -> compareCuboids(leg.getRandomCuboid(random), it.getRandomCuboid(random)) }) {
                         it.renderBlock(matrices, entity, vertexConsumers, light)
                     }
-                } else if (arrayNames.any { field.name.contains(it, true) }) {
-                    runCatching {
-                        field.isAccessible = true
-                        field.get(this.contextModel) as Array<ModelPart>
-                    }.onSuccess {
-                        for (modelPart in it) {
-                            modelPart.renderBlock(matrices, entity, vertexConsumers, light)
+                }
+                runCatching {
+                    field.isAccessible = true
+                    field.get(this.contextModel) as Array<ModelPart>
+                }.onSuccess { modelParts ->
+                    for (it in modelParts) {
+                        if (it.isEmpty) return@onSuccess
+                        val random = Random.create()
+                        if (legs.any { leg ->
+                                compareCuboids(
+                                    leg.getRandomCuboid(random),
+                                    it.getRandomCuboid(random)
+                                )
+                            }) {
+                            it.renderBlock(matrices, entity, vertexConsumers, light)
                         }
                     }
                 }
             }
             current = current.superclass
         }
+    }
+
+    fun compareCuboids(cuboid1: ModelPart.Cuboid, cuboid2: ModelPart.Cuboid): Boolean {
+        return cuboid1.minX == cuboid2.minX &&
+                cuboid1.minY == cuboid2.minY &&
+                cuboid1.minZ == cuboid2.minZ &&
+                cuboid1.maxX == cuboid2.maxX &&
+                cuboid1.maxY == cuboid2.maxY &&
+                cuboid1.maxZ == cuboid2.maxZ
     }
 
     private fun ModelPart.renderBlock(
