@@ -20,6 +20,9 @@ import gg.norisk.heroes.common.ffa.KitEditorManager
 import gg.norisk.heroes.common.ffa.KitEditorManager.onBack
 import gg.norisk.heroes.common.ffa.KitEditorManager.onReset
 import gg.norisk.heroes.common.ffa.KitEditorManager.world
+import gg.norisk.heroes.common.player.InventorySorting
+import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
+import gg.norisk.heroes.common.utils.PlayStyle
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AllowDamage
 import net.minecraft.entity.attribute.EntityAttributes
@@ -31,12 +34,6 @@ import net.silkmc.silk.core.event.ServerEvents
 import java.util.*
 
 object KitEditor {
-    val mode
-        get() = System.getProperty(
-            "ffa_mode",
-            "UHC"
-        )
-
     val platform by lazy { FabricPlatform.minestomNpcPlatformBuilder().extension(this).actionController({}).build() }
     lateinit var backNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
     lateinit var resetNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
@@ -57,7 +54,7 @@ object KitEditor {
             it.setSelectorReady()
         }
         KitEditorManager.resetInventory = {
-            handleKit(it, mode)
+            handleKit(it, PlayStyle.current)
         }
 
         ServerEvents.postStop.listen { event ->
@@ -73,13 +70,13 @@ object KitEditor {
     }
 
     fun isUHC(): Boolean {
-        return mode == "UHC"
+        return PlayStyle.current == PlayStyle.UHC
     }
 
-    fun handleKit(player: PlayerEntity, mode: String = this.mode) {
-        when (KitEditor.mode) {
-            "SOUP" -> handleSoupKit(player)
-            "UHC" -> handleUHCKit(player)
+    fun handleKit(player: PlayerEntity, mode: PlayStyle = PlayStyle.current) {
+        when (PlayStyle.current) {
+            PlayStyle.SOUP -> handleSoupKit(player)
+            PlayStyle.UHC -> handleUHCKit(player)
         }
     }
 

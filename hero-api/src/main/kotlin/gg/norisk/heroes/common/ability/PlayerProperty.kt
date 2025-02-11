@@ -5,6 +5,7 @@ import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import io.wispforest.owo.ui.component.Components
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import io.wispforest.owo.ui.core.Component
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
@@ -154,9 +155,9 @@ sealed class PlayerProperty<T> {
     val translationKey get() = "heroes.property.${internalKey}"
     val descriptionKey get() = "heroes.property.${internalKey}.description"
 
-    fun getOrLoadPlayer(uuid: UUID): PropertyPlayer {
-        val player = PlayerProvider.getCachedPlayerOrDummy(uuid)
-        val heroMap = player.heroes.computeIfAbsent(hero.internalKey) { mutableMapOf() }
+    private fun getOrLoadPlayer(uuid: UUID): PropertyPlayer {
+        val player = runBlocking { PlayerProvider.get(uuid) }
+        val heroMap = player.heroProperties.computeIfAbsent(hero.internalKey) { mutableMapOf() }
         val abilityMap = heroMap.computeIfAbsent(ability.internalKey) { mutableMapOf() }
         val property = abilityMap.computeIfAbsent(internalKey) { PropertyPlayer() }
         return property

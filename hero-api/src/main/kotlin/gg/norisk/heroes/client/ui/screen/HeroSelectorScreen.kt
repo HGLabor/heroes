@@ -5,7 +5,7 @@ package gg.norisk.heroes.client.ui.screen
 import gg.norisk.heroes.client.ui.components.AbilitiesComponent
 import gg.norisk.heroes.client.ui.components.HeroListComponent
 import gg.norisk.heroes.common.hero.Hero
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.Containers
@@ -74,7 +74,7 @@ class HeroSelectorScreen(val heroes: List<Hero>, val isKitEditorEnabled: Boolean
         override fun draw(context: OwoUIDrawContext, mouseX: Int, mouseY: Int, partialTicks: Float, delta: Float) {
             text(literalText {
                 text("XP: ")
-                text((MinecraftClient.getInstance().player?.dbPlayer?.xp ?: 0).toString())
+                text((MinecraftClient.getInstance().player?.ffaPlayer?.xp ?: 0).toString())
             })
             super.draw(context, mouseX, mouseY, partialTicks, delta)
         }

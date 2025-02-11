@@ -6,13 +6,11 @@ import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
-import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
-import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
@@ -78,7 +76,7 @@ val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTota
     }
 }
 
-val EarthColumnInstantAbility = object : HoldAbility(
+val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
     "Earth Column"
 ) {
 
