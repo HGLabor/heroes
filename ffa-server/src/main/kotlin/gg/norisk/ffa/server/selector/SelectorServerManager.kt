@@ -86,6 +86,7 @@ object SelectorServerManager {
         }
         hungerManager.foodLevel = 20
         hungerManager.saturationLevel = 5f
+        closeHandledScreen()
         setExperienceLevel(0)
         setExperiencePoints(0)
         if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
@@ -170,6 +171,7 @@ object SelectorServerManager {
         this.health = this.maxHealth
         isFFA = false
         changeGameMode(GameMode.SPECTATOR)
+        closeHandledScreen()
         setHero(null)
         val packet = HeroSelectorPacket(HeroManager.registeredHeroes.keys.toList(), true, true)
         Networking.s2cHeroSelectorPacket.send(
