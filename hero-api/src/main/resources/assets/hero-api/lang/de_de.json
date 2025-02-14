@@ -8,6 +8,7 @@
   "heroes.announce_kill_streak": "%s hat eine %s Kill-Serie.",
   "heroes.end_kill_streak": "§4%s wurde mit einer %s Kill-Serie getötet.",
   "heroes.ability.locked": "Du musst diese Fähigkeit zuerst freischalten.",
+  "heroes.ability.cant_use": "You cannot use this ability right now.",
   "heroes.ability.healing.unlock_condition": "Du musst den Cooldown-Pfad\nvon Wasserbändigen vollständig aufrüsten, um es freizuschalten.",
   "heroes.ability.water_circle.unlock_condition": "Du musst den Cooldown-Pfad\nvon Wasserbändigen vollständig aufrüsten, um es freizuschalten.",
   "heroes.ability.water_circle.custom_activation": "Drehe dich 360°",
@@ -94,5 +95,7 @@
   "ffa.mechanic.kit.editor.enter": "§fDu hast den $cKit-Editor $ebetreten.",
   "ffa.mechanic.kit.editor.save": "§aDein Kit wurde $2gespeichert$a.",
   "ffa.mechanic.kit.editor.left": "§fDu hast den $cKit-Editor $everlassen.",
-  "ffa.mechanic.kit.editor.inventory_instruction": "§fHier kannst du dein Inventar nach Belieben anordnen, damit es beim nächsten Mal gespeichert wird."
+  "ffa.mechanic.kit.editor.inventory_instruction": "§fHier kannst du dein Inventar nach Belieben anordnen, damit es beim nächsten Mal gespeichert wird.",
+
+  "toph.ability.condition.spiritual_projection": "You cannot use this ability while in spirit mode."
 }

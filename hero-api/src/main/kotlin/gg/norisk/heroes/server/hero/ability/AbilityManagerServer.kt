@@ -120,6 +120,12 @@ object AbilityManagerServer : IAbilityManager {
                 player.sendMessage(Text.translatable("heroes.ability.locked").withColor(Colors.RED))
                 return@runCatching
             }
+
+            if (!ability.canUse(player)) {
+                player.sendMessage(Text.translatable("heroes.ability.cant_use").withColor(Colors.RED))
+                return@runCatching
+            }
+
             val condition = ability.condition
             if (condition != null && ability !is ToggleAbility) {
                 if (!condition.invoke(player)) {

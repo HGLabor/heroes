@@ -6,6 +6,7 @@ import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.ext.playEmote
 import gg.norisk.emote.ext.stopEmote
 import gg.norisk.heroes.aang.AangManager
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.AirBendingCircleSoundInstance
 import gg.norisk.heroes.aang.entity.AirScooterEntity
 import gg.norisk.heroes.aang.entity.aang
@@ -222,6 +223,10 @@ object AirBallAbility {
 
         override fun getBackgroundTexture(): Identifier {
             return Identifier.of("textures/block/quartz_block_bottom.png")
+        }
+
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            return !player.isUsingSpiritualProjection()
         }
 
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {

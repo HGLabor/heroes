@@ -74,6 +74,13 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         return true
     }
 
+    /*
+    ähnlich wie condition aber nur ServerSide Condition Check
+     */
+    open fun canUse(player: ServerPlayerEntity): Boolean {
+        return true
+    }
+
     open fun getUnlockCondition(): Text {
         return Text.empty()
     }

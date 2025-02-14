@@ -8,6 +8,7 @@ import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.aang.AangManager.toId
 import gg.norisk.heroes.aang.ability.AirBallAbility.currentBendingEntity
 import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.AirScooterSoundInstance
 import gg.norisk.heroes.aang.entity.AirScooterEntity
 import gg.norisk.heroes.aang.entity.aang
@@ -179,6 +180,10 @@ object AirScooterAbility {
                     }
                 }
             }
+        }
+
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            return !player.isUsingSpiritualProjection()
         }
 
         override fun getIconComponent(): Component {

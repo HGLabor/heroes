@@ -9,7 +9,9 @@ import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.aang.AangManager.Aang
 import gg.norisk.heroes.aang.AangManager.toId
-import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.cancelSpiritMode
+import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
+import gg.norisk.heroes.aang.ability.AirScooterAbility.isAirScooting
+import gg.norisk.heroes.aang.ability.LevitationAbility.isAirLevitating
 import gg.norisk.heroes.aang.client.sound.AirBendingLevitationSoundInstance
 import gg.norisk.heroes.aang.client.sound.VelocityBasedFlyingSoundInstance
 import gg.norisk.heroes.aang.entity.DummyPlayer
@@ -19,7 +21,6 @@ import gg.norisk.heroes.aang.registry.EmoteRegistry.toEmote
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.RenderUtils
 import gg.norisk.heroes.common.HeroesManager.client
-import gg.norisk.heroes.common.HeroesManager.isClient
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.AbilityScope
@@ -157,6 +158,10 @@ object SpiritualProjectionAbility {
         })
     }
 
+    fun PlayerEntity.isUsingSpiritualProjection(): Boolean {
+        return isSpiritualLevitating || isSpiritualTransparent
+    }
+
     fun PlayerEntity.replaceNameWithOwner(args: Args) {
         val owner = world.getEntityById(spiritualOwner) as? PlayerEntity? ?: return
         args.set(1, owner.gameProfile.name.literal)
@@ -283,6 +288,26 @@ object SpiritualProjectionAbility {
                 buildCooldown(10.0, 5, AddValueTotal(-1.0, -1.0, -1.0, -1.0, -1.0))
 
             this.properties = listOf(projectionMaxDistance)
+        }
+
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            if (player.isAirScooting) {
+                return false
+            }
+
+            if (player.hasVehicle()) {
+                return false
+            }
+
+            if (player.isAirBending) {
+                return false
+            }
+
+            if (player.isAirLevitating) {
+                return false
+            }
+
+            return super.canUse(player)
         }
 
         override fun getIconComponent(): Component {
