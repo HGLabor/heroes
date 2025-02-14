@@ -13,6 +13,7 @@
     "FallingBlockEntityMixin",
     "HungerManagerMixin",
     "ItemStackMixin",
+    "MinecraftDedicatedServerMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayerEntityMixin",
