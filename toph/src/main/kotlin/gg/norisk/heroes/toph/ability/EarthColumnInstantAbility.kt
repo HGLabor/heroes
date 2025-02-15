@@ -4,6 +4,7 @@ import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
+import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager
@@ -115,6 +116,13 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
                             )
                         }
                     }
+                }
+            }
+
+            ClientEvents.preHotbarScrollEvent.listen { event ->
+                val player = MinecraftClient.getInstance().player ?: return@listen
+                if (player.isEarthColumn()) {
+                    event.isCancelled.set(true)
                 }
             }
         }

@@ -12,6 +12,7 @@ import gg.norisk.heroes.aang.entity.IAangPlayer
 import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.registry.EmoteRegistry
 import gg.norisk.heroes.aang.registry.EntityRegistry
+import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
@@ -167,6 +168,14 @@ object AirBallAbility {
         init {
             client {
                 this.keyBind = HeroKeyBindings.firstKeyBind
+
+                ClientEvents.preHotbarScrollEvent.listen { event ->
+                    val player = MinecraftClient.getInstance().player ?: return@listen
+                    val entity = player.currentBendingEntity
+                    if (entity != null && !entity.wasLaunched) {
+                        event.isCancelled.set(true)
+                    }
+                }
             }
 
             this.cooldownProperty =
@@ -256,11 +265,12 @@ object AirBallAbility {
                 val currentEntity = this.currentBendingEntity
                 if (forceDiscard) {
                     currentEntity?.discard()
+                    this.currentBendingEntityId = -1
                 } else if (currentEntity != null && currentEntity.wasBended.not()) {
                     this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.1, 1.5f)
                     this.currentBendingEntity?.discard()
+                    this.currentBendingEntityId = -1
                 }
-                this.currentBendingEntityId = -1
             }
         }
 

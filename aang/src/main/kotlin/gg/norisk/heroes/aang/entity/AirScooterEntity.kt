@@ -6,6 +6,7 @@ import gg.norisk.heroes.aang.ability.AirBallAbility.getAirBendingPos
 import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.ability.AirScooterAbility
 import gg.norisk.heroes.aang.ability.AirScooterAbility.isAirScooting
+import gg.norisk.heroes.aang.ability.LevitationAbility.AIR_LEVITATING_KEY
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.utils.Easing
 import gg.norisk.utils.OldAnimation
@@ -39,10 +40,13 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     PathAwareEntity(entityType, world) {
     val startScaleAnimation = OldAnimation(0f, 3f, 1.seconds.toJavaDuration(), Easing.EXPO_OUT)
     var currentScale: Float = 0f
-    var wasLaunched = false
     var wasBended = false
     var isComingBack = false
     val pickedUpEntities = mutableSetOf<UUID>()
+
+    var wasLaunched: Boolean
+        get() = this.getSyncedData<Boolean>("AirScooter:WasLaunched") ?: false
+        set(value) = this.setSyncedData("AirScooter:WasLaunched", value)
 
     enum class Type {
         SCOOTER, PROJECTILE
