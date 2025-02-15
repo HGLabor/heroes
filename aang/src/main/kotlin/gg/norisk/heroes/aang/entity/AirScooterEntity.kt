@@ -3,6 +3,7 @@ package gg.norisk.heroes.aang.entity
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.aang.ability.AirBallAbility.getAirBendingPos
+import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.ability.AirScooterAbility
 import gg.norisk.heroes.aang.ability.AirScooterAbility.isAirScooting
 import gg.norisk.heroes.common.utils.sound
@@ -27,6 +28,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraft.world.explosion.AdvancedExplosionBehavior
 import net.silkmc.silk.core.entity.modifyVelocity
+import net.silkmc.silk.core.text.literal
 import java.util.*
 import java.util.function.Function
 import kotlin.random.Random
@@ -93,12 +95,22 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     private fun handleProjectileType() {
         noClip = false
 
-        if (!wasLaunched && !isBoomerang) {
-            setPosition(getOwner()?.getAirBendingPos() ?: return)
+        if (!wasLaunched && !isBoomerang && !world.isClient) {
+            val owner = getOwner()
+            val targetPos = owner?.getAirBendingPos()
+            if (owner != null && targetPos != null) {
+                val direction = targetPos.subtract(this.pos).normalize()
+                val distance = targetPos.distanceTo(this.pos)
+
+                // Je näher das Projektil am Ziel ist, desto kleiner wird der Multiplikationsfaktor
+                val speedMultiplier = distance
+
+                modifyVelocity(direction.multiply(speedMultiplier))
+            }
         }
 
         val player = getOwner()
-        if (isBoomerang && player != null && !world.isClient ) {
+        if (isBoomerang && player != null && !world.isClient) {
             val distanceToPlayer = this.distanceTo(player)
             pickUpNearbyItems()
 
@@ -161,7 +173,7 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
         }
         val attacker = damageSource.attacker as? LivingEntity ?: return false
         if (attacker.id == ownerId) {
-            if ((attacker as? PlayerEntity?)?.aang?.circleDetector != null) return false
+            if ((attacker as? PlayerEntity?)?.isAirBending == true) return false
             wasLaunched = true
             sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2f, pitch = 2f)
             setVelocity(attacker, attacker.pitch, attacker.yaw, 0.0f, 2.5f, 1.0f)

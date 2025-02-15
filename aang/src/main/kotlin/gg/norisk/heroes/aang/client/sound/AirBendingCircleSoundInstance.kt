@@ -1,5 +1,6 @@
 package gg.norisk.heroes.aang.client.sound
 
+import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.registry.SoundRegistry
 import net.minecraft.client.sound.MovingSoundInstance
@@ -32,8 +33,8 @@ class AirBendingCircleSoundInstance(private val entity: PlayerEntity) :
         this.y = entity.y.toFloat().toDouble()
         this.z = entity.z.toFloat().toDouble()
 
-        val progress = entity.aang.circleDetector?.calculateCircleAccuracy()
-        if (progress == null) {
+        val progress = entity.aang.aang_airBallSpinTracker.getSpinProgress()
+        if (!entity.isAirBending) {
             isFading = true
             return
         }
