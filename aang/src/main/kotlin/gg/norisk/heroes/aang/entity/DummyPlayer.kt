@@ -7,6 +7,7 @@ import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.cancelProjection
 import net.minecraft.client.network.OtherClientPlayerEntity
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.ActionResult
@@ -48,6 +49,11 @@ class DummyPlayer(
             cancelProjection(playerEntity)
         }
         return super.interactAt(playerEntity, vec3d, hand)
+    }
+
+    override fun onDeath(damageSource: DamageSource) {
+        cancelProjection(damageSource.attacker)
+        super.onDeath(damageSource)
     }
 
     fun playEmote(emote: Identifier) {
