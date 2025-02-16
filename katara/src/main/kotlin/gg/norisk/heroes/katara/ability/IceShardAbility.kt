@@ -50,9 +50,9 @@ object IceShardAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(24.0, 4, AddValueTotal(-2.0, -2.0, -2.0, -2.0))
+                buildCooldown(26.0, 4, AddValueTotal(-2.0, -2.0, -2.0, -2.0))
             this.maxDurationProperty =
-                buildMaxDuration(1.0, 4, AddValueTotal(0.5, 0.5, 0.5, 0.5))
+                buildMaxDuration(0.5, 5, AddValueTotal(0.25, 0.25, 0.25, 0.25, 0.25))
         }
 
         override fun getIconComponent(): Component {
@@ -102,6 +102,7 @@ object IceShardAbility {
                 val entity = user.getCurrentBendingEntity()
                 entity?.discard()
                 val iceShard = IceShardEntity(EntityRegistry.ICE_SHARD, world)
+                iceShard.damage = 1.0
                 val pos = user.eyePos.add(0.0, -0.1, 0.0).add(user.directionVector.normalize().multiply(1.0))
                 val offset = 1.0
                 val randomX = Random.nextDouble(-offset, offset)
