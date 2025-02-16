@@ -11,6 +11,11 @@ object MongoManager {
     var isConnected: Boolean = false
     lateinit var client: MongoClient
     lateinit var database: MongoDatabase
+    val databaseName
+        get() = System.getProperty(
+            "ffa_database",
+            "ffa"
+        )
 
     fun connect() {
         client = MongoClient.create(
@@ -33,6 +38,6 @@ object MongoManager {
                     )
                 }.build()
         )
-        database = client.getDatabase("ffa")
+        database = client.getDatabase(databaseName)
     }
 }
