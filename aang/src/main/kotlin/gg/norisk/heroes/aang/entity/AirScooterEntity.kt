@@ -6,6 +6,7 @@ import gg.norisk.heroes.aang.ability.AirBallAbility.getAirBendingPos
 import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.ability.AirScooterAbility
 import gg.norisk.heroes.aang.ability.AirScooterAbility.isAirScooting
+import gg.norisk.heroes.aang.ability.AirScooterAbility.stopRidingAirBall
 import gg.norisk.heroes.aang.ability.LevitationAbility.AIR_LEVITATING_KEY
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.utils.Easing
@@ -183,6 +184,7 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
             setVelocity(attacker, attacker.pitch, attacker.yaw, 0.0f, 2.5f, 1.0f)
             return false
         } else {
+            getOwner()?.stopRidingAirBall()
             this.discard()
             this.createExplosion(this.pos)
         }

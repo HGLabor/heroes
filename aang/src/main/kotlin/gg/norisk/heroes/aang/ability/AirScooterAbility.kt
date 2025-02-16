@@ -151,6 +151,23 @@ object AirScooterAbility {
         }
     }
 
+    fun PlayerEntity.stopRidingAirBall() {
+        aang.aang_airScooterTasks.forEach { it.cancel() }
+        if (this is ServerPlayerEntity) {
+            this.isAirScooting = false
+            this.showSpeedlines = false
+            //das hier suckt iwie lieber modifiers usen
+            this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
+            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
+                0.10000000149011612
+            this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.08
+            this.stopEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
+            this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 2f)
+        } else if (this == MinecraftClient.getInstance().player) {
+            this.showSpeedlines = false
+        }
+    }
+
     val Ability = object : ToggleAbility("Air Scooter") {
 
         init {
@@ -159,7 +176,7 @@ object AirScooterAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(10.0, 5, AddValueTotal(-0.1, -0.4, -0.2, -0.8, -1.5, -1.0))
+                buildCooldown(90.0, 4, AddValueTotal(-5.0, -5.0, -5.0, -5.0))
             this.maxDurationProperty =
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
@@ -241,23 +258,6 @@ object AirScooterAbility {
         override fun onDisable(player: PlayerEntity) {
             super.onDisable(player)
             player.stopRidingAirBall()
-        }
-
-        private fun PlayerEntity.stopRidingAirBall() {
-            aang.aang_airScooterTasks.forEach { it.cancel() }
-            if (this is ServerPlayerEntity) {
-                this.isAirScooting = false
-                this.showSpeedlines = false
-                //das hier suckt iwie lieber modifiers usen
-                this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
-                this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
-                    0.10000000149011612
-                this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.08
-                this.stopEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
-                this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 2f)
-            } else if (this == MinecraftClient.getInstance().player) {
-                this.showSpeedlines = false
-            }
         }
 
         override fun onEnd(player: PlayerEntity, abilityEndInformation: AbilityEndInformation) {
