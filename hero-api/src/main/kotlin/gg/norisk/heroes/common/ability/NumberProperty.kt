@@ -10,7 +10,7 @@ class NumberProperty(
     override var maxLevel: Int,
     override var name: String,
     override var modifier: Operation,
-    override var levelScale: Int = 10,
+    override var levelScale: Int = PlayerProperty.levelScale,
 ) : AbstractNumberProperty() {
 
 }

@@ -25,7 +25,7 @@ object Bounty {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
                     source.sendMessage(Text.translatable("ffa.mechanic.bounty.info", player.name, ffaPlayer.bounty))
                 }
-                argument<Int>("bounty", IntegerArgumentType.integer(0)) { bountyToGive ->
+                argument<Int>("bounty", IntegerArgumentType.integer(100)) { bountyToGive ->
                     runsAsync {
                         val player = EntityArgumentType.getPlayer(this, "player")
                         val source = this.source.playerOrThrow

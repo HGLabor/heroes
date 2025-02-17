@@ -5,20 +5,20 @@ import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.ext.playEmote
 import gg.norisk.emote.ext.stopEmote
-import gg.norisk.heroes.aang.AangManager
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.AirBendingCircleSoundInstance
 import gg.norisk.heroes.aang.entity.AirScooterEntity
+import gg.norisk.heroes.aang.entity.IAangPlayer
 import gg.norisk.heroes.aang.entity.aang
 import gg.norisk.heroes.aang.registry.EmoteRegistry
 import gg.norisk.heroes.aang.registry.EntityRegistry
-import gg.norisk.heroes.aang.utils.CircleDetector3D
+import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.ToggleAbility
-import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.Networking.mousePacket
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
 import gg.norisk.heroes.common.networking.dto.MousePacket
@@ -40,6 +40,7 @@ import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.entity.directionVector
 import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.text.literal
 import kotlin.random.Random
 
 object AirBallAbility {
@@ -102,24 +103,6 @@ object AirBallAbility {
     }
 
     fun PlayerEntity.handleTick() {
-        val max = 85.0 //TODO als setting?
-        if (!isHero(AangManager.Aang)) return
-        val detector = aang.circleDetector ?: return
-        val pos = getAirBendingPos()
-        if (detector.addMouseMovement(pos.x, pos.y, pos.z)) {
-            //this.sendMessage("Progress: ${detector.calculateCircleAccuracy()} $world".literal)
-            val accuracy = detector.calculateCircleAccuracy()
-            currentBendingEntity?.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue = 2 * (accuracy / 100)
-
-            //TODO das als setting?
-            if (accuracy >= max) {
-                //this.sendMessage("Done $world".literal)
-                this.isAirBending = false
-                this.aang.circleDetector = null
-                this.currentBendingEntity?.wasBended = true
-                this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 1f)
-            }
-        }
     }
 
     var PlayerEntity.isAirBending: Boolean
@@ -185,6 +168,14 @@ object AirBallAbility {
         init {
             client {
                 this.keyBind = HeroKeyBindings.firstKeyBind
+
+                ClientEvents.preHotbarScrollEvent.listen { event ->
+                    val player = MinecraftClient.getInstance().player ?: return@listen
+                    val entity = player.currentBendingEntity
+                    if (entity != null && !entity.wasLaunched) {
+                        event.isCancelled.set(true)
+                    }
+                }
             }
 
             this.cooldownProperty =
@@ -224,37 +215,62 @@ object AirBallAbility {
             return Identifier.of("textures/block/quartz_block_bottom.png")
         }
 
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            return !player.isUsingSpiritualProjection()
+        }
+
+        override fun onTick(player: PlayerEntity) {
+            super.onTick(player)
+            if (player is ServerPlayerEntity) {
+                if (player.isAirBending) {
+                    (player as IAangPlayer).aang_airBallSpinTracker.update(player)
+
+                    val progress = player.aang.aang_airBallSpinTracker.getSpinProgress().toDouble()
+                    player.currentBendingEntity?.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue =
+                        2 * (progress / 100.0)
+
+                    if (player.aang_airBallSpinTracker.hasSpunWildly()) {
+                        player.isAirBending = false
+                        player.currentBendingEntity?.wasBended = true
+                        player.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 1f)
+                        (player as IAangPlayer).aang_airBallSpinTracker.clear()
+                    }
+                } else {
+                    (player as IAangPlayer).aang_airBallSpinTracker.clear()
+                }
+            }
+        }
+
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 val airScooter = EntityRegistry.AIR_SCOOTER.create(player.world) ?: return
                 player.isAirBending = true
-                player.aang.circleDetector = CircleDetector3D()
                 airScooter.ownerId = player.id
                 airScooter.bendingType = AirScooterEntity.Type.PROJECTILE
                 airScooter.setPosition(player.getAirBendingPos())
                 player.serverWorld.spawnEntity(airScooter)
                 player.currentBendingEntityId = airScooter.id
-            } else {
-                player.aang.circleDetector = CircleDetector3D()
             }
         }
 
         override fun onDisable(player: PlayerEntity) {
             super.onDisable(player)
-            player.stopAirBall()
+            player.stopAirBall(true)
         }
 
-        private fun PlayerEntity.stopAirBall() {
+        private fun PlayerEntity.stopAirBall(forceDiscard: Boolean = false) {
             if (this is ServerPlayerEntity) {
                 this.isAirBending = false
-                if (this.aang.circleDetector != null) {
+                val currentEntity = this.currentBendingEntity
+                if (forceDiscard) {
+                    currentEntity?.discard()
+                    this.currentBendingEntityId = -1
+                } else if (currentEntity != null && currentEntity.wasBended.not()) {
                     this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.1, 1.5f)
                     this.currentBendingEntity?.discard()
+                    this.currentBendingEntityId = -1
                 }
-                this.aang.circleDetector = null
-            } else {
-                this.aang.circleDetector = null
             }
         }
 

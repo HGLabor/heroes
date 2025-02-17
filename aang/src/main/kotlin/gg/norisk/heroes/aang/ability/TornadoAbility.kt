@@ -3,6 +3,7 @@ package gg.norisk.heroes.aang.ability
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.aang.AangManager.toId
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.TornadoSoundInstance
 import gg.norisk.heroes.aang.entity.TornadoEntity
 import gg.norisk.heroes.aang.entity.aang
@@ -186,10 +187,14 @@ object TornadoAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(60.0, 4, AddValueTotal(-10.0, -10.0, -5.0, -5.0))
+                buildCooldown(130.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
 
             this.properties =
                 listOf(tornadoMaxDurationProperty, tornadoIncreaseRateProperty, tornadoDecreaseRateProperty)
+        }
+
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            return !player.isUsingSpiritualProjection()
         }
 
         override fun getIconComponent(): Component {

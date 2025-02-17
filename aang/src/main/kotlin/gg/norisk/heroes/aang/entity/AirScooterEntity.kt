@@ -3,8 +3,10 @@ package gg.norisk.heroes.aang.entity
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.aang.ability.AirBallAbility.getAirBendingPos
+import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.ability.AirScooterAbility
 import gg.norisk.heroes.aang.ability.AirScooterAbility.isAirScooting
+import gg.norisk.heroes.aang.ability.AirScooterAbility.stopRidingAirBall
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.utils.Easing
 import gg.norisk.utils.OldAnimation
@@ -27,6 +29,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraft.world.explosion.AdvancedExplosionBehavior
 import net.silkmc.silk.core.entity.modifyVelocity
+import net.silkmc.silk.core.text.broadcastText
 import java.util.*
 import java.util.function.Function
 import kotlin.random.Random
@@ -37,10 +40,13 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     PathAwareEntity(entityType, world) {
     val startScaleAnimation = OldAnimation(0f, 3f, 1.seconds.toJavaDuration(), Easing.EXPO_OUT)
     var currentScale: Float = 0f
-    var wasLaunched = false
     var wasBended = false
     var isComingBack = false
     val pickedUpEntities = mutableSetOf<UUID>()
+
+    var wasLaunched: Boolean
+        get() = this.getSyncedData<Boolean>("AirScooter:WasLaunched") ?: false
+        set(value) = this.setSyncedData("AirScooter:WasLaunched", value)
 
     enum class Type {
         SCOOTER, PROJECTILE
@@ -93,12 +99,22 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     private fun handleProjectileType() {
         noClip = false
 
-        if (!wasLaunched && !isBoomerang) {
-            setPosition(getOwner()?.getAirBendingPos() ?: return)
+        if (!wasLaunched && !isBoomerang && !world.isClient) {
+            val owner = getOwner()
+            val targetPos = owner?.getAirBendingPos()
+            if (owner != null && targetPos != null) {
+                val direction = targetPos.subtract(this.pos).normalize()
+                val distance = targetPos.distanceTo(this.pos)
+
+                // Je näher das Projektil am Ziel ist, desto kleiner wird der Multiplikationsfaktor
+                val speedMultiplier = distance
+
+                modifyVelocity(direction.multiply(speedMultiplier))
+            }
         }
 
         val player = getOwner()
-        if (isBoomerang && player != null && !world.isClient ) {
+        if (isBoomerang && player != null && !world.isClient) {
             val distanceToPlayer = this.distanceTo(player)
             pickUpNearbyItems()
 
@@ -141,6 +157,10 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     private fun handleAirScooterType() {
         noClip = true
         this.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue = startScaleAnimation.get().toDouble()
+        val owner = getOwner()
+        if (owner != null && !world.isClient) {
+            setPosition(owner.pos.add(0.0, 0.2, 0.0))
+        }
         if (getOwner()?.isAirScooting == false) {
             this.discard()
         }
@@ -156,19 +176,28 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     }
 
     override fun damage(damageSource: DamageSource, f: Float): Boolean {
+        if (world.isClient) {
+            return false
+        } else if (this.isDead) {
+            return false
+        }
         if (damageSource.isOf(DamageTypes.GENERIC_KILL)) {
             return super.damage(damageSource, f)
         }
         val attacker = damageSource.attacker as? LivingEntity ?: return false
         if (attacker.id == ownerId) {
-            if ((attacker as? PlayerEntity?)?.aang?.circleDetector != null) return false
+            if (bendingType == Type.SCOOTER) {
+                return false
+            }
+            if ((attacker as? PlayerEntity?)?.isAirBending == true) return false
             wasLaunched = true
             sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2f, pitch = 2f)
             setVelocity(attacker, attacker.pitch, attacker.yaw, 0.0f, 2.5f, 1.0f)
             return false
         } else {
+            getOwner()?.stopRidingAirBall()
             this.discard()
-            this.createExplosion(this.pos)
+            this.createExplosion(this.pos, 1f)
         }
         return false
     }
@@ -247,7 +276,7 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
         this.prevPitch = this.pitch
     }
 
-    private fun createExplosion(vec3d: Vec3d) {
+    private fun createExplosion(vec3d: Vec3d, power: Float = 1.2f * scale) {
         world
             .createExplosion(
                 this,
@@ -255,13 +284,13 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
                 AdvancedExplosionBehavior(
                     true,
                     false,
-                    Optional.of(1.22f * scale),
+                    Optional.of(power),
                     Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
                 ),
                 vec3d.getX(),
                 vec3d.getY(),
                 vec3d.getZ(),
-                1.2f * scale,
+                power,
                 false,
                 World.ExplosionSourceType.TRIGGER,
                 ParticleTypes.GUST_EMITTER_SMALL,

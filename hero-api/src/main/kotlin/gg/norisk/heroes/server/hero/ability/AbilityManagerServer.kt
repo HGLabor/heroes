@@ -119,6 +119,12 @@ object AbilityManagerServer : IAbilityManager {
                 player.sendMessage(Text.translatable("heroes.ability.locked").withColor(Colors.RED))
                 return@runCatching
             }
+
+            if (!ability.canUse(player)) {
+                player.sendMessage(Text.translatable("heroes.ability.cant_use").withColor(Colors.RED))
+                return@runCatching
+            }
+
             val condition = ability.condition
             if (condition != null && ability !is ToggleAbility) {
                 if (!condition.invoke(player)) {
@@ -130,7 +136,6 @@ object AbilityManagerServer : IAbilityManager {
                 is PressAbility,
                 is Ability -> {
                     if (ability.handleCooldown(player)) return@runCatching
-                    player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                     ability.onStart(player, abilityScope)
                 }
 
@@ -146,7 +151,6 @@ object AbilityManagerServer : IAbilityManager {
                             if (ability.handleCooldown(player)) return@runCatching
                             startAbilityAndForceEndAfterMaxDuration(player, abilityScope, ability)
                             ignoreCooldown = true
-                            player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
                             ability.onStart(player, abilityScope)
                             //ability.internalCallbacks.START
                         }

@@ -18,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.silkmc.silk.commands.PermissionLevel
 import net.silkmc.silk.commands.command
+import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 
 object DebugCommand {
@@ -49,6 +50,7 @@ object DebugCommand {
                                     cachedPlayer.xp = xp()
                                     player.ffaPlayer = cachedPlayer
                                     PlayerProvider.save(player.ffaPlayer)
+                                    this.source.sendMessage("Set Xp of ${player.gameProfile.name} to ${xp()}".literal)
                                 }
                             }
                         }

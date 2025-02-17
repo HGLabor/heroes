@@ -5,6 +5,7 @@ import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.ext.playEmote
 import gg.norisk.emote.ext.stopEmote
+import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.VelocityBasedFlyingSoundInstance
 import gg.norisk.heroes.aang.registry.EmoteRegistry
 import gg.norisk.heroes.client.option.HeroKeyBindings
@@ -84,6 +85,10 @@ object LevitationAbility {
 
         override fun getIconComponent(): Component {
             return Components.item(Items.FEATHER.defaultStack)
+        }
+
+        override fun canUse(player: ServerPlayerEntity): Boolean {
+            return !player.isUsingSpiritualProjection()
         }
 
         override fun getBackgroundTexture(): Identifier {

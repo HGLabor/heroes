@@ -8,11 +8,13 @@
   },
   "mixins": [
     "BarrelBlockEntityMixin",
+    "BucketItemMixin",
     "CommandManagerMixin",
     "DamageTrackerMixin",
     "FallingBlockEntityMixin",
     "HungerManagerMixin",
     "ItemStackMixin",
+    "MinecraftDedicatedServerMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayerEntityMixin",

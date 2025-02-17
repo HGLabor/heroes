@@ -8,6 +8,8 @@ import gg.norisk.heroes.common.ability.operation.MultiplyBase
 import gg.norisk.heroes.common.ability.operation.Operation
 import gg.norisk.heroes.common.cooldown.CooldownInfo
 import gg.norisk.heroes.common.cooldown.MultipleUsesInfo
+import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
+import gg.norisk.heroes.common.ffa.experience.addXp
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
@@ -69,6 +71,13 @@ abstract class AbstractAbility<T : Any>(val name: String) {
     }
 
     open fun hasUnlocked(player: PlayerEntity): Boolean {
+        return true
+    }
+
+    /*
+    ähnlich wie condition aber nur ServerSide Condition Check
+     */
+    open fun canUse(player: ServerPlayerEntity): Boolean {
         return true
     }
 
@@ -168,6 +177,7 @@ abstract class AbstractAbility<T : Any>(val name: String) {
         ).apply {
             this.durationString = getCooldownText(this)
         }
+        player.addXp(ExperienceRegistry.SMALL_ABILITY_USE, true)
         cooldowns[uuid] = cooldownInfo
         Networking.s2cCooldownPacket.send(cooldownInfo, player)
 

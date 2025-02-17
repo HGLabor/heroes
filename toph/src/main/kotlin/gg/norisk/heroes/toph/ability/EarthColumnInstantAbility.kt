@@ -4,6 +4,7 @@ import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
+import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
 import gg.norisk.heroes.common.HeroesManager.client
@@ -70,7 +71,7 @@ val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0,
     }
 }
 
-val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(1.0, 1.0), levelScale = 40).apply {
+val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(1.0, 1.0)).apply {
     icon = {
         Components.item(Items.FIREWORK_ROCKET.defaultStack)
     }
@@ -115,6 +116,13 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
                     }
                 }
             }
+
+            ClientEvents.preHotbarScrollEvent.listen { event ->
+                val player = MinecraftClient.getInstance().player ?: return@listen
+                if (player.isEarthColumn()) {
+                    event.isCancelled.set(true)
+                }
+            }
         }
 
         this.properties = listOf(
@@ -124,7 +132,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         )
 
         this.cooldownProperty =
-            buildCooldown(20.0, 5, AddValueTotal(-2.0, -2.0, -2.0, -2.0, -2.0))
+            buildCooldown(110.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 

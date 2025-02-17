@@ -17,6 +17,11 @@ class StoneSlideSoundInstance(private val player: PlayerEntity) :
     }
 
     override fun tick() {
+        if (!player.isAlive || player.isRemoved) {
+            setDone()
+        }
+
+
         x = player.x.toFloat().toDouble()
         y = player.y.toFloat().toDouble()
         z = player.z.toFloat().toDouble()

@@ -8,6 +8,7 @@
   "heroes.announce_kill_streak": "%s is on a %s killstreak",
   "heroes.end_kill_streak": "§4%s has been killed on a %s killstreak.",
   "heroes.ability.locked": "You must unlock this ability first.",
+  "heroes.ability.cant_use": "You cannot use this ability right now.",
   "heroes.ability.healing.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
   "heroes.ability.water_circle.unlock_condition": "You need to fully upgrade the cooldown path\nof Water Bending to unlock it.",
   "heroes.ability.water_circle.custom_activation": "Spin 360°",
@@ -100,6 +101,8 @@
   "ffa.mechanic.kit.editor.enter": "§eYou have entered the $cKit $eEditor.",
   "ffa.mechanic.kit.editor.save": "§aYour kit has been $2saved$a.",
   "ffa.mechanic.kit.editor.left": "§eYou have left the $cKit $eEditor.",
-  "ffa.mechanic.kit.editor.inventory_instruction": "§fHere you can arrange your inventory as you like, so it will be saved for next time."
+  "ffa.mechanic.kit.editor.inventory_instruction": "§fHere you can arrange your inventory as you like, so it will be saved for next time.",
+
+  "toph.ability.condition.spiritual_projection": "You cannot use this ability while in spirit mode."
 }
 

@@ -1,6 +1,5 @@
 package gg.norisk.heroes.aang.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import gg.norisk.heroes.aang.ability.AirBallAbility;
@@ -9,7 +8,7 @@ import gg.norisk.heroes.aang.ability.LevitationAbility;
 import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility;
 import gg.norisk.heroes.aang.entity.IAangPlayer;
 import gg.norisk.heroes.aang.entity.TornadoEntity;
-import gg.norisk.heroes.aang.utils.CircleDetector3D;
+import gg.norisk.heroes.aang.utils.EntitySpinTracker;
 import gg.norisk.heroes.aang.utils.PlayerRotationTracker;
 import kotlinx.coroutines.Job;
 import net.minecraft.entity.EntityType;
@@ -40,18 +39,17 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     public abstract void remove(RemovalReason removalReason);
 
     @Unique
-    private CircleDetector3D circleDetector;
-
-    @Unique
     private PlayerRotationTracker rotationTracker;
     @Unique
     private final List<Job> airScooterTasks = new ArrayList<>();
     @Unique
     private final List<Job> tornadoTasks = new ArrayList<>();
     @Unique
-    private List<Job> spiritualProjectionTasks = new ArrayList<>();
+    private final List<Job> spiritualProjectionTasks = new ArrayList<>();
     @Unique
     private TornadoEntity tornadoEntity;
+    @Unique
+    private final EntitySpinTracker entitySpinTracker = new EntitySpinTracker();
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -80,17 +78,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     @Inject(method = "handleFallDamage", at = @At("HEAD"), cancellable = true)
     private void handleFallAangInjection(float f, float g, DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         AirScooterAbility.INSTANCE.handleFallDamage((PlayerEntity) (Object) this, f, g, damageSource, cir);
-    }
-
-    @Nullable
-    @Override
-    public CircleDetector3D getCircleDetector() {
-        return circleDetector;
-    }
-
-    @Override
-    public void setCircleDetector(CircleDetector3D circleDetector) {
-        this.circleDetector = circleDetector;
     }
 
     @Nullable
@@ -142,5 +129,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IAangPla
     @Override
     public @NotNull List<Job> getAang_spiritualProjectionsTasks() {
         return spiritualProjectionTasks;
+    }
+
+    @Override
+    public @NotNull EntitySpinTracker getAang_airBallSpinTracker() {
+        return entitySpinTracker;
     }
 }

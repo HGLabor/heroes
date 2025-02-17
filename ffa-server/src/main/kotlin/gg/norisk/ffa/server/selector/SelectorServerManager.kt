@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.selector
 
+import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.mechanics.Scoreboard
@@ -20,6 +21,7 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EquipmentSlot
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
@@ -78,8 +80,14 @@ object SelectorServerManager {
         } else {
             KitEditor.handleKit(this)
         }
+        if (!KitEditor.isUHC()) {
+            setSyncedData("duels:OLD_PVP", true)
+            getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
+        }
         hungerManager.foodLevel = 20
         hungerManager.saturationLevel = 5f
+        clearStatusEffects()
+        closeHandledScreen()
         setExperienceLevel(0)
         setExperiencePoints(0)
         if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
@@ -164,6 +172,8 @@ object SelectorServerManager {
         this.health = this.maxHealth
         isFFA = false
         changeGameMode(GameMode.SPECTATOR)
+        closeHandledScreen()
+        clearStatusEffects()
         setHero(null)
         val packet = HeroSelectorPacket(HeroManager.registeredHeroes.keys.toList(), true, true)
         Networking.s2cHeroSelectorPacket.send(

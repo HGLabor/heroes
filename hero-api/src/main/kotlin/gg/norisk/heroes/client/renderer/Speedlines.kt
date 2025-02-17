@@ -18,7 +18,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 object Speedlines {
-    var client: MinecraftClient = MinecraftClient.getInstance()
     var lerpedSpeed: Double = 0.0
 
     lateinit var edge: GlUniform
@@ -44,6 +43,7 @@ object Speedlines {
 
         HudRenderCallback.EVENT.register(HudRenderCallback { context: DrawContext, tickCounter: RenderTickCounter ->
             val player = MinecraftClient.getInstance().player ?: return@HudRenderCallback
+            val client = MinecraftClient.getInstance()
             if (player.showSpeedlines) {
                 val width = client.getWindow().width.toFloat()
                 val height = client.getWindow().height.toFloat()
