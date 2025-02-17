@@ -134,7 +134,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         )
 
         this.cooldownProperty =
-            buildCooldown(20.0, 5, AddValueTotal(-2.0, -2.0, -2.0, -2.0, -2.0))
+            buildCooldown(110.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
