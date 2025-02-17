@@ -41,7 +41,7 @@ object KitEditor {
     lateinit var resetNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
 
     fun initServer() {
-        logger.info("Initializing Mode: $mode")
+        logger.info("Initializing Mode: ${PlayStyle.current}")
         HeroEvents.preKitEditorEvent.listen { event ->
             if (event.player.isFFA) {
                 event.isCancelled.set(true)
