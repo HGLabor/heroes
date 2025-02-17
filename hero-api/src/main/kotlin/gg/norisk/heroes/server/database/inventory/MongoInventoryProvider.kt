@@ -43,7 +43,7 @@ class MongoInventoryProvider : AbstractInventoryProvider(PlayStyle.current) {
     override suspend fun onPlayerJoin(player: ServerPlayerEntity) {
         val inventory = get(player.uuid)
         cache[player.uuid] = inventory
-        player.ffaPlayer.inventory = inventory
+        player.ffaPlayer.inventorySorting = inventory
         logger.info("Loaded inventory of ${player.gameProfile.name}")
     }
 

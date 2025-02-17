@@ -3,7 +3,6 @@ package gg.norisk.heroes.common.database.player
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.player.FFAPlayer
-import gg.norisk.heroes.common.utils.createIfNotExists
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,13 +42,13 @@ class JsonPlayerProvider : AbstractPlayerProvider() {
     override suspend fun save(data: FFAPlayer) {
         val database = loadDatabase()
         database.removeIf { it.uuid == data.uuid }
-        database.add(data.copy(inventory = null))
+        database.add(data.copy(inventorySorting = null))
         if (!file.exists()) {
             withContext(Dispatchers.IO) {
                 file.createNewFile()
             }
         }
-        file.writeText(JSON.encodeToString(database.map { it.copy(inventory = null) }))
+        file.writeText(JSON.encodeToString(database.map { it.copy(inventorySorting = null) }))
         logger.info("Saved Database Player for ${data.uuid} to $file")
     }
 }

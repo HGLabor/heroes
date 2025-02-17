@@ -98,12 +98,12 @@ object KitEditorManager {
                 mcCoroutineTask(sync = false, client = false) {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
                     println("Loaded ${ffaPlayer}")
-                    if (ffaPlayer.inventory == null) {
+                    if (ffaPlayer.inventorySorting == null) {
                         resetInventory.invoke(player)
-                        ffaPlayer.inventory = player.toDatabaseInventory()
+                        ffaPlayer.inventorySorting = player.toDatabaseInventory()
                     }
                     mcCoroutineTask(sync = true, client = false) {
-                        player.loadInventory(ffaPlayer.inventory!!)
+                        player.loadInventory(ffaPlayer.inventorySorting!!)
                     }
                     entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.enter"))
                 }
@@ -116,7 +116,7 @@ object KitEditorManager {
                 val inventory = player.toDatabaseInventory()
                 mcCoroutineTask(sync = false, client = true) {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
-                    ffaPlayer.inventory = inventory
+                    ffaPlayer.inventorySorting = inventory
                     player.ffaPlayer = ffaPlayer
                     mcCoroutineTask(sync = false, client = false) {
                         PlayerProvider.save(ffaPlayer)

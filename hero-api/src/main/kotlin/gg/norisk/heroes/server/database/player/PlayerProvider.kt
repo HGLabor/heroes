@@ -50,12 +50,12 @@ object PlayerProvider : AbstractPlayerProvider() {
 
     override suspend fun save(player: FFAPlayer) {
         provider.save(player)
-        InventoryProvider.save(player.inventory)
+        InventoryProvider.save(player.inventorySorting)
     }
 
     override suspend fun get(uuid: UUID): FFAPlayer {
         val player = provider.get(uuid)
-        player.inventory = InventoryProvider.get(uuid)
+        player.inventorySorting = InventoryProvider.get(uuid)
         return player
     }
 }

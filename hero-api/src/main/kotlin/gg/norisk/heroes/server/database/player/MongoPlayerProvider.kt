@@ -22,7 +22,7 @@ class MongoPlayerProvider : AbstractPlayerProvider() {
         cache[data.uuid] = data
         collection.replaceOne(
             FFAPlayer::uuid eq data.uuid,
-            data.copy(inventory = null),
+            data.copy(inventorySorting = null),
             ReplaceOptions().upsert(true)
         )
     }

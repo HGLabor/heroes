@@ -15,6 +15,6 @@ abstract class AbstractInventoryProvider(val playStyle: PlayStyle) : AbstractPro
 
     override fun getCachedClient(uuid: UUID): InventorySorting? {
         val ffaPlayer = MinecraftClient.getInstance().world?.getPlayerByUuid(uuid)?.ffaPlayer
-        return ffaPlayer?.inventory
+        return ffaPlayer?.inventorySorting
     }
 }

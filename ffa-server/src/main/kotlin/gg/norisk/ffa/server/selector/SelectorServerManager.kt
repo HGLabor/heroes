@@ -74,7 +74,7 @@ object SelectorServerManager {
     }
 
     private fun ServerPlayerEntity.setArenaReady() {
-        val inventory = this.ffaPlayer.inventory
+        val inventory = this.ffaPlayer.inventorySorting
         if (inventory != null) {
             this.loadInventory(inventory)
         } else {
