@@ -2,8 +2,8 @@ package gg.norisk.heroes.common.ability
 
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
-import io.wispforest.owo.ui.component.Components
 import gg.norisk.heroes.server.database.player.PlayerProvider
+import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -11,7 +11,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import net.minecraft.item.Items
 import java.util.*
-import kotlin.math.sqrt
+import kotlin.math.cbrt
+import kotlin.math.pow
 
 @Serializable
 sealed class PlayerProperty<T> {
@@ -32,6 +33,8 @@ sealed class PlayerProperty<T> {
     lateinit var ability: AbstractAbility<*>
 
     companion object {
+        val levelScale = 500
+
         val JSON = Json {
             prettyPrint = true
             encodeDefaults = true
@@ -124,30 +127,11 @@ sealed class PlayerProperty<T> {
     }
 
     private fun calculateLevel(xp: Int): Int {
-        return when {
-            xp < 352 -> {
-                // Level 0-16
-                sqrt((xp + 9).toDouble()).toInt() - 3
-            }
-
-            xp < 1507 -> {
-                // Level 17-31
-                ((40.5 + sqrt(1640.25 - 10 * (360 - xp))).toInt() / 5)
-            }
-
-            else -> {
-                // Level 32 und höher
-                ((162.5 + sqrt(26404.25 - 18 * (2220 - xp))).toInt() / 9)
-            }
-        } / levelScale
+        return cbrt((xp / levelScale).toDouble()).toInt()
     }
 
     private fun getXpForLevel(level: Int): Int {
-        return when (val scaledLevel = level * levelScale) {
-            in 0..16 -> scaledLevel * scaledLevel + 6 * scaledLevel
-            in 17..31 -> (2.5 * scaledLevel * scaledLevel - 40.5 * scaledLevel + 360).toInt()
-            else -> (4.5 * scaledLevel * scaledLevel - 162.5 * scaledLevel + 2220).toInt()
-        }
+        return (levelScale * level.toDouble().pow(3)).toInt()
     }
 
     val internalKey get() = name.lowercase().replace(" ", "_")
