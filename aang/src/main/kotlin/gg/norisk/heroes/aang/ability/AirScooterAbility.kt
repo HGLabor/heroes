@@ -38,13 +38,17 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
+import net.silkmc.silk.core.Silk
+import net.silkmc.silk.core.Silk.server
 import net.silkmc.silk.core.entity.modifyVelocity
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
+import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.network.packet.s2cPacket
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlin.random.Random
@@ -97,12 +101,12 @@ object AirScooterAbility {
     }
 
     fun PlayerEntity.spawnAirScooter() {
-        if (!world.isClient) return
-        val world = world as? ClientWorld? ?: return
+        val world = world as? ServerWorld? ?: return
         val airScooter = EntityRegistry.AIR_SCOOTER.create(world) ?: return
         airScooter.bendingType = AirScooterEntity.Type.SCOOTER
         airScooter.ownerId = id
-        world.addEntity(airScooter)
+        airScooter.setPosition(this.pos)
+        world.spawnEntity(airScooter)
     }
 
     fun Entity.handleBox(box: Box): Box {
