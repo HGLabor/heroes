@@ -91,16 +91,16 @@
   "heroes.ability.earth_trap.unlock_condition": "You must have mastered the cooldown path of Earth Push.",
   "heroes.ability.seismic_sense.unlock_condition": "You must have mastered the cooldown path of Earth Push.",
 
-  "ffa.died": "$cYou died.",
+  "ffa.died": "§cYou died.",
   "ffa.mechanic.bounty.claimed": "§f%s §ehas claimed the bounty of §a%s §efor §f%s§e.",
   "ffa.mechanic.bounty.placed": "§f%s §ehas placed a bounty of §a%s §eon §f%s§e.",
   "ffa.mechanic.bounty.info": "§f%s §ehas a bounty of §a%s§e.",
   "ffa.mechanic.bounty.not_enough_xp": "§cYou don't have enough XP to place this bounty.",
   "ffa.mechanic.killstreak.lost": "§f%s §ehas lost their killstreak of §c%s§e.",
   "ffa.mechanic.lootdrop.found_xp": "§eYou received §a%s §exp.",
-  "ffa.mechanic.kit.editor.enter": "§eYou have entered the $cKit $eEditor.",
-  "ffa.mechanic.kit.editor.save": "§aYour kit has been $2saved$a.",
-  "ffa.mechanic.kit.editor.left": "§eYou have left the $cKit $eEditor.",
+  "ffa.mechanic.kit.editor.enter": "§eYou have entered the §cKit §eEditor.",
+  "ffa.mechanic.kit.editor.save": "§aYour kit has been §2saved§a.",
+  "ffa.mechanic.kit.editor.left": "§eYou have left the §cKit §eEditor.",
   "ffa.mechanic.kit.editor.inventory_instruction": "§fHere you can arrange your inventory as you like, so it will be saved for next time.",
 
   "toph.ability.condition.spiritual_projection": "You cannot use this ability while in spirit mode."
