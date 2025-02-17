@@ -6,6 +6,7 @@ import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.mechanics.Scoreboard
 import gg.norisk.ffa.server.mechanics.Tracker
 import gg.norisk.ffa.server.mixin.accessor.LivingEntityAccessor
+import gg.norisk.ffa.server.world.WorldManager
 import gg.norisk.ffa.server.world.WorldManager.findSpawnLocation
 import gg.norisk.ffa.server.world.WorldManager.getCenter
 import gg.norisk.heroes.common.HeroesManager.logger
@@ -46,8 +47,9 @@ object SelectorServerManager {
             val server = player.server
             player.changeGameMode(GameMode.SURVIVAL)
             player.isFFA = true
-            val spawn = server.overworld.findSpawnLocation().toCenterPos()
-            player.teleport(server.overworld, spawn.x, spawn.y, spawn.z, 0f, 0f)
+            val world = WorldManager.getCurrentWorld()
+            val spawn = world.findSpawnLocation().toCenterPos()
+            player.teleport(world, spawn.x, spawn.y, spawn.z, 0f, 0f)
             player.setArenaReady()
         }
         ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join { handler, sender, server ->
@@ -180,8 +182,9 @@ object SelectorServerManager {
             packet,
             this,
         )
-        val spawn = server.overworld.getCenter().toCenterPos()
-        this.teleport(server.overworld, spawn.x, spawn.y, spawn.z, 0f, 0f)
+        val world = WorldManager.getCurrentWorld()
+        val spawn = world.getCenter().toCenterPos()
+        this.teleport(world, spawn.x, spawn.y, spawn.z, 0f, 0f)
         scoreboards[uuid]?.hideFromPlayer(this)
     }
 }

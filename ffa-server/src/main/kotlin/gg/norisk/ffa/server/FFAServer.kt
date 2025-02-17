@@ -3,6 +3,7 @@ package gg.norisk.ffa.server
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.command.LootdropCommand
+import gg.norisk.ffa.server.command.MapResetCommand
 import gg.norisk.ffa.server.command.MeCommand
 import gg.norisk.ffa.server.mechanics.Bounty
 import gg.norisk.ffa.server.mechanics.CombatTag
@@ -26,6 +27,7 @@ object FFAServer : ModInitializer {
         SelectorServerManager.initServer()
         WorldManager.initServer()
         MeCommand.init()
+        MapResetCommand.init()
         LootdropCommand.init()
         KitEditor.initServer()
         Bounty.init()

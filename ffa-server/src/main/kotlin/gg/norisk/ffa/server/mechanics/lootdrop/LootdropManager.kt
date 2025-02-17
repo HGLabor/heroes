@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
+import gg.norisk.ffa.server.world.WorldManager
 import kotlinx.coroutines.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
@@ -14,7 +15,7 @@ object LootdropManager {
     private val MAP_DURATION = 30.minutes
     private val MAX_LOOTDROP_DELAY = 6.minutes
     private val LOOTDROP_COUNT = 6
-    private val world by lazy { Silk.serverOrThrow.overworld }
+    private val world = WorldManager.getCurrentWorld()
 
     private var currentJob: Job? = null
 

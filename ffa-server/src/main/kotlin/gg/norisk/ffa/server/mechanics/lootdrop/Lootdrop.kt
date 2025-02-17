@@ -5,6 +5,7 @@ import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ExperienceLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ItemStackLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.SoupLootdropLoottable
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.UHCLootdropLoottable
+import gg.norisk.ffa.server.world.WorldManager
 import gg.norisk.heroes.common.ffa.experience.ExperienceReason
 import gg.norisk.heroes.common.ffa.experience.addXp
 import kotlinx.coroutines.*
@@ -329,7 +330,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 else -> 0f
             }
 
-            val textDisplay = TextDisplayEntity(EntityType.TEXT_DISPLAY, Silk.serverOrThrow.overworld).apply {
+            val textDisplay = TextDisplayEntity(EntityType.TEXT_DISPLAY, WorldManager.getCurrentWorld()).apply {
                 setPosition(displayPos.x, displayPos.y, displayPos.z)
                 yaw = yawRotation
                 pitch = pitchRotation

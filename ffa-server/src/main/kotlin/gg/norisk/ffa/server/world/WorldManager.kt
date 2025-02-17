@@ -3,12 +3,15 @@ package gg.norisk.ffa.server.world
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.FFAServer.logger
 import gg.norisk.ffa.server.mechanics.lootdrop.LootdropManager
-import gg.norisk.ffa.server.world.MapPlacer.chunkSize
+import gg.norisk.ffa.server.schematic.SchematicHandler
 import gg.norisk.ffa.server.world.MapPlacer.mapSize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
-import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.block.Blocks
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PositionFlag
 import net.minecraft.server.MinecraftServer
@@ -19,26 +22,41 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.GameRules
 import net.minecraft.world.World
+import net.silkmc.silk.core.Silk
 import net.silkmc.silk.core.event.Events
 import net.silkmc.silk.core.event.Server
+import net.silkmc.silk.core.event.ServerEvents
 import net.silkmc.silk.core.kotlin.ticks
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
+import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.core.text.literal
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.math.absoluteValue
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 object WorldManager {
-    var currentPair = Pair(0, 0)
-    var mapReset = 30 * 60L
+    var mapReset = 30L
     var mapResetTask: Job? = null
-    val usedMaps = mutableSetOf<Pair<Int, Int>>()
-    val maxCount get() = (-chunkSize..chunkSize).count()
     val counter = AtomicLong(mapReset)
+    val worlds = mutableListOf<ServerWorld>()
+    var currentWorldIndex = 0
+    val schematicDir by lazy {
+        Silk.serverOrThrow.runDirectory.resolve("schematics/").toFile().apply {
+            if (!exists()) mkdirs()
+        }
+    }
+
+    fun init() {
+        ServerEvents.postStart.listen { event ->
+            schematicDir.listFiles().forEach { file ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    SchematicHandler.loadSchematic(file)
+                }
+            }
+        }
+    }
 
     fun mapResetCycle(server: MinecraftServer) {
-        currentPair = getFreeMapPos()
         mapResetTask?.cancel()
         counter.set(mapReset)
         mapResetTask = infiniteMcCoroutineTask(period = 20.ticks, sync = true, client = false) {
@@ -57,15 +75,22 @@ object WorldManager {
             }
             //}
             if (counter.get() == 0L) {
-                usedMaps.add(currentPair)
-                mapResetCycle(server)
-                server.overworld.players.forEach { player ->
-                    player.teleportToNewMap(currentPair.first, currentPair.second)
-                }
-                setWorldBorder(server.overworld)
-                LootdropManager.onArenaReset()
+                resetMap()
             }
         }
+    }
+
+    private fun resetMap() {
+        val server = Silk.serverOrThrow
+        val lastWorld = getCurrentWorld()
+        mapResetCycle(server)
+
+        lastWorld.players.forEach { player ->
+            player.teleportToNewWorld(getCurrentWorld())
+        }
+        setWorldBorder(getCurrentWorld())
+        LootdropManager.onArenaReset()
+        SchematicHandler.pasteSchematic(lastWorld, SchematicHandler.cachedSchematics.values.random())
     }
 
     fun PlayerEntity.isInKitEditorWorld(): Boolean {
@@ -85,28 +110,14 @@ object WorldManager {
 
     fun setWorldBorder(world: World) {
         world.worldBorder.setCenter(
-            (currentPair.first * mapSize).toDouble() + mapSize / 2.0,
-            (currentPair.second * mapSize).toDouble() + mapSize / 2.0
+            mapSize / 2.0,
+            mapSize / 2.0
         )
         world.worldBorder.size = mapSize.toDouble()
     }
 
-    fun getFreeMapPos(): Pair<Int, Int> {
-        val pair = Pair(
-            Random.nextInt(-chunkSize, chunkSize + 1),
-            Random.nextInt(-chunkSize, chunkSize + 1)
-        )
-
-        //TODO bypass für volle map sollte aber eig nicht passieren da große map
-        if (usedMaps.size >= maxCount) {
-            return pair
-        }
-
-        return if (usedMaps.contains(pair)) {
-            getFreeMapPos()
-        } else {
-            pair
-        }
+    fun getCurrentWorld(): ServerWorld {
+        return worlds[currentWorldIndex % worlds.size]
     }
 
     fun initServer() {
@@ -117,52 +128,60 @@ object WorldManager {
             world.gameRules.get(GameRules.ANNOUNCE_ADVANCEMENTS).set(false, server)
             world.gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, server)
             world.gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, server)
+
+            if (world.registryKey.value.toString().contains("ffa-arena")) {
+                worlds += world
+                server.broadcastText("LOADED FFA ARENA: ${world.registryKey.value}")
+            }
         })
+
         ServerLifecycleEvents.SERVER_STARTED.register { server ->
             logger.info("Init Map Reset Cycle...")
-            usedMaps.clear()
-            if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
-                mapResetCycle(server)
-                setWorldBorder(server.overworld)
-                LootdropManager.onArenaReset()
-            }
+            //if (!FabricLoader.getInstance().isDevelopmentEnvironment) {
+            mapResetCycle(server)
+            setWorldBorder(getCurrentWorld())
+            LootdropManager.onArenaReset()
+            //}
         }
     }
 
-    fun ServerPlayerEntity.teleportToNewMap(x: Int, z: Int, mapSize: Int = MapPlacer.mapSize) {
-        val world = this.serverWorld
+    private fun ServerPlayerEntity.teleportToNewWorld(newWorld: ServerWorld) {
+        val newY = run {
+            var lastUnsafePos = blockPos
 
-        val relativeX = (this.blockPos.x and (mapSize - 1)) + this.x.fractional().absoluteValue
-        val relativeZ = (this.blockPos.z and (mapSize - 1)) + this.z.fractional().absoluteValue
-
-        //TODO bug dass es dings ist hä also z und x wird manchmal ganz seltsam
-
-        val realCoordinateX = mapSize * x + relativeX
-        val realCoordinateZ = mapSize * z + relativeZ
+            if (newWorld.getBlockState(lastUnsafePos).isAir && newWorld.getBlockState(lastUnsafePos.up()).isAir) {
+                while (!newWorld.isTopSolid(lastUnsafePos.down(), this)) {
+                    lastUnsafePos = lastUnsafePos.down()
+                }
+                lastUnsafePos.y
+            } else {
+                while (newWorld.getBlockState(lastUnsafePos.up()).block != Blocks.AIR
+                    || newWorld.getBlockState(lastUnsafePos.up().up()).block != Blocks.AIR
+                ) {
+                    lastUnsafePos = lastUnsafePos.up()
+                }
+                lastUnsafePos.up().y
+            }
+        }
         this.teleport(
-            world,
-            realCoordinateX,
+            newWorld,
+            this.x,
+            newY.toDouble(),
             this.y,
-            realCoordinateZ,
             PositionFlag.VALUES,
             this.yaw,
             this.pitch
         )
     }
 
-    fun Double.fractional(): Double {
-        return this - this.toInt()
-    }
-
     fun ServerWorld.getCenter(): BlockPos {
-        val x = (currentPair.first * mapSize).toDouble() + mapSize / 2.0
-        val z = (currentPair.second * mapSize).toDouble() + mapSize / 2.0
-        return BlockPos(x.toInt(), 64, z.toInt())
+        return BlockPos(0, topY, 0)
     }
 
     fun ServerWorld.findSpawnLocation(): BlockPos {
-        val xRange = (currentPair.first * mapSize..currentPair.first * mapSize + mapSize)
-        val zRange = (currentPair.second * mapSize..currentPair.second * mapSize + mapSize)
-        return SpawnLocating.findOverworldSpawn(this, xRange.random(), zRange.random()) ?: this.findSpawnLocation()
+        val radius = (worldBorder.size / 2).toInt()
+        val x = Random.nextInt(-radius, radius)
+        val z = Random.nextInt(-radius, radius)
+        return SpawnLocating.findOverworldSpawn(this, x, z) ?: this.findSpawnLocation()
     }
 }

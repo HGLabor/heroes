@@ -1,6 +1,7 @@
 package gg.norisk.ffa.server.mechanics.lootdrop.loottable
 
 import gg.norisk.ffa.server.utils.EnchantmentUtils.getEntry
+import gg.norisk.ffa.server.world.WorldManager
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.item.Items
 import net.silkmc.silk.core.Silk
@@ -31,7 +32,7 @@ class UHCLootdropLoottable : LootdropLoottable() {
         item(Items.COBBLESTONE, 1.3, 64..128)
 
         item(itemStack(Items.IRON_SWORD) {
-            addEnchantment(Enchantments.FIRE_ASPECT.getEntry(Silk.serverOrThrow.overworld), 1)
+            addEnchantment(Enchantments.FIRE_ASPECT.getEntry(WorldManager.getCurrentWorld()), 1)
         }, 0.3)
 
         exp(1.0, 50..100)
