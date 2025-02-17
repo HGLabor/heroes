@@ -9,8 +9,8 @@ import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.ffa.experience.ExperienceReason
 import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
 import gg.norisk.heroes.common.ffa.experience.addXp
-import gg.norisk.heroes.common.player.DatabasePlayer
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.FFAPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
@@ -119,28 +119,28 @@ object KillManager {
         }
     }
 
-    private fun provideExtraXpForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
-        val currentKillStreak = dbPlayer.currentKillStreak
+    private fun provideExtraXpForKillStreak(player: ServerPlayerEntity, ffaPlayer: FFAPlayer) {
+        val currentKillStreak = ffaPlayer.currentKillStreak
         val killStreakXp = min(3000, ExperienceRegistry.KILLED_PLAYER.value * currentKillStreak * 10)
         player.addXp(ExperienceReason("kill_streak", killStreakXp))
     }
 
-    private fun provideExtraBountyForKillStreak(player: ServerPlayerEntity, dbPlayer: DatabasePlayer) {
-        val currentKillStreak = dbPlayer.currentKillStreak
+    private fun provideExtraBountyForKillStreak(player: ServerPlayerEntity, ffaPlayer: FFAPlayer) {
+        val currentKillStreak = ffaPlayer.currentKillStreak
         val bountyXp = when (currentKillStreak) {
             10 -> 1000
             20 -> 2000
             else -> return
         }
 
-        dbPlayer.bounty += bountyXp
+        ffaPlayer.bounty += bountyXp
     }
 
     private suspend fun increaseKillsForPlayer(attacker: ServerPlayerEntity) {
         val cachedAttacker = PlayerProvider.get(attacker.uuid)
         cachedAttacker.kills++
         cachedAttacker.currentKillStreak++
-        attacker.dbPlayer = cachedAttacker
+        attacker.ffaPlayer = cachedAttacker
         if (cachedAttacker.currentKillStreak.mod(10) == 0 || cachedAttacker.currentKillStreak == 5) {
             attacker.server.broadcastText {
                 text(attacker.name)
@@ -173,7 +173,7 @@ object KillManager {
             }
             cachedEntity.currentKillStreak = 0
 
-            player.dbPlayer = cachedEntity
+            player.ffaPlayer = cachedEntity
             mcCoroutineTask(sync = false, client = false) {
                 PlayerProvider.save(cachedEntity)
             }

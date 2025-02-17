@@ -3,7 +3,7 @@ package gg.norisk.heroes.client.ui.skilltree
 import com.mojang.blaze3d.systems.RenderSystem
 import gg.norisk.heroes.common.HeroesManager.toId
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.common.ui.ScrollContainerV2
 import gg.norisk.ui.components.ScalableLabelComponent
 import io.wispforest.owo.ui.container.Containers
@@ -21,7 +21,6 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.minecraft.util.Colors
-import net.minecraft.util.DyeColor
 import net.minecraft.util.Identifier
 import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
@@ -100,7 +99,7 @@ class AbilitySkillTreeComponent(
         override fun draw(context: OwoUIDrawContext, mouseX: Int, mouseY: Int, partialTicks: Float, delta: Float) {
             super.draw(context, mouseX, mouseY, partialTicks, delta)
             val textRenderer = MinecraftClient.getInstance().textRenderer
-            val string = "" + player.dbPlayer.xp
+            val string = "" + player.ffaPlayer.xp
 
             val x = this.x() - textRenderer.getWidth(string) / 2
             val y = this.y() + textRenderer.fontHeight / 2

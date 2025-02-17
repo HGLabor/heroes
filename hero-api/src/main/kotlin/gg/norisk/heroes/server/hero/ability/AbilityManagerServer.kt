@@ -14,7 +14,7 @@ import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.Networking.c2sAbilityPacket
 import gg.norisk.heroes.common.networking.Networking.c2sSkillProperty
 import gg.norisk.heroes.common.networking.Networking.s2cAbilityPacket
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import kotlinx.coroutines.*
 import net.fabricmc.api.EnvType
@@ -31,7 +31,6 @@ import net.minecraft.util.Colors
 import net.silkmc.silk.core.server.players
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
-import net.silkmc.silk.core.task.mcSyncLaunch
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
@@ -105,7 +104,7 @@ object AbilityManagerServer : IAbilityManager {
         }
 
         logger.info("Spent Experience $spentExperience $experienceToSpend ${cachedPlayer.xp}")
-        player.dbPlayer = cachedPlayer
+        player.ffaPlayer = cachedPlayer
         PlayerProvider.save(cachedPlayer)
     }
 

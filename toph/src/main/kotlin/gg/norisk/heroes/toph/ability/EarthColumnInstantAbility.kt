@@ -7,13 +7,11 @@ import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.client.events.ClientEvents
 import gg.norisk.heroes.client.option.HeroKeyBindings
 import gg.norisk.heroes.client.renderer.BlockOutlineRenderer
-import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.client
 import gg.norisk.heroes.common.ability.NumberProperty
 import gg.norisk.heroes.common.ability.operation.AddValueTotal
 import gg.norisk.heroes.common.hero.ability.AbilityScope
 import gg.norisk.heroes.common.hero.ability.implementation.HoldAbility
-import gg.norisk.heroes.common.hero.getHero
 import gg.norisk.heroes.common.hero.isHero
 import gg.norisk.heroes.common.networking.BoomShake
 import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket

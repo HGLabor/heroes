@@ -14,8 +14,8 @@ import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.setHero
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
-import gg.norisk.heroes.common.player.DatabaseInventory.Companion.loadInventory
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
+import gg.norisk.heroes.common.player.ffaPlayer
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
@@ -74,7 +74,7 @@ object SelectorServerManager {
     }
 
     private fun ServerPlayerEntity.setArenaReady() {
-        val inventory = this.dbPlayer.inventory
+        val inventory = this.ffaPlayer.inventory
         if (inventory != null) {
             this.loadInventory(inventory)
         } else {

@@ -3,7 +3,7 @@ package gg.norisk.heroes.common.ffa.experience
 import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.common.utils.createIfNotExists
 import gg.norisk.heroes.server.config.ConfigManagerServer.JSON
 import gg.norisk.heroes.server.database.player.PlayerProvider
@@ -24,9 +24,9 @@ object Experience {
     fun add(player: ServerPlayerEntity, reason: ExperienceReason, printMessage: Boolean = false) {
         mcCoroutineTask(sync = false, client = false) {
             val receivedXp = reason.value
-            val dbPlayer = PlayerProvider.get(player.uuid)
-            dbPlayer.xp += receivedXp
-            player.dbPlayer = dbPlayer
+            val ffaPlayer = PlayerProvider.get(player.uuid)
+            ffaPlayer.xp += receivedXp
+            player.ffaPlayer = ffaPlayer
 
             if (printMessage) {
                 player.sendMessage(literalText {
@@ -37,7 +37,7 @@ object Experience {
                 })
             }
 
-            PlayerProvider.save(dbPlayer)
+            PlayerProvider.save(ffaPlayer)
         }
     }
 

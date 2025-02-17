@@ -2,7 +2,7 @@ package gg.norisk.heroes.client.command
 
 import gg.norisk.heroes.client.config.ConfigManagerClient
 import gg.norisk.heroes.common.HeroesManager
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import kotlinx.serialization.encodeToString
 import net.silkmc.silk.commands.clientCommand
 import net.silkmc.silk.commands.player
@@ -13,13 +13,13 @@ object ClientHeroCommand {
         clientCommand("heroes-client") {
             requires { it.enabledFeatures.contains(HeroesManager.heroesFlag) }
             literal("debug") {
-                literal("printdbplayer") {
+                literal("printffaplayer") {
                     runs {
                         val player = this.source.player
                         player.sendMessage(literalText {
-                            text("DB Player:")
+                            text("FFA Player:")
                             emptyLine()
-                            text(ConfigManagerClient.JSON.encodeToString(player.dbPlayer))
+                            text(ConfigManagerClient.JSON.encodeToString(player.ffaPlayer))
                         })
                     }
                 }

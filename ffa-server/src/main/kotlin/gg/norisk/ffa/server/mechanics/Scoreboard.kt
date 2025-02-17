@@ -1,7 +1,7 @@
 package gg.norisk.ffa.server.mechanics
 
 import gg.norisk.ffa.server.mechanics.CombatTag.isInCombat
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import net.minecraft.server.network.ServerPlayerEntity
 import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.game.sideboard.Sideboard
@@ -39,7 +39,7 @@ object Scoreboard {
                     text(": ") {
                         color = secondaryColor
                     }
-                    text(player.dbPlayer.kills.toString())
+                    text(player.ffaPlayer.kills.toString())
                 }
             }
             updatingLine(1.seconds) {
@@ -50,7 +50,7 @@ object Scoreboard {
                     text(": ") {
                         color = secondaryColor
                     }
-                    text(player.dbPlayer.deaths.toString())
+                    text(player.ffaPlayer.deaths.toString())
                 }
             }
             updatingLine(1.seconds) {
@@ -61,7 +61,7 @@ object Scoreboard {
                     text(": ") {
                         color = secondaryColor
                     }
-                    text(player.dbPlayer.currentKillStreak.toString())
+                    text(player.ffaPlayer.currentKillStreak.toString())
                 }
             }
             updatingLine(1.seconds) {
@@ -85,7 +85,7 @@ object Scoreboard {
                         text(": ") {
                             color = secondaryColor
                         }
-                        text(player.dbPlayer.bounty.toString())
+                        text(player.ffaPlayer.bounty.toString())
                     }
                 }
             }
@@ -97,7 +97,7 @@ object Scoreboard {
                     text(": ") {
                         color = secondaryColor
                     }
-                    text(player.dbPlayer.xp.toString())
+                    text(player.ffaPlayer.xp.toString())
                 }
             }
             emptyLine()

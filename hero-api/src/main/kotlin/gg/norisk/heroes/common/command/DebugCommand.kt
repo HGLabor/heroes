@@ -10,7 +10,7 @@ import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.hero.ability.AbstractAbility
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.command.argument.EntityArgumentType
@@ -48,8 +48,8 @@ object DebugCommand {
                                 for (player in players) {
                                     val cachedPlayer = PlayerProvider.get(player.uuid)
                                     cachedPlayer.xp = xp()
-                                    player.dbPlayer = cachedPlayer
-                                    PlayerProvider.save(player.uuid)
+                                    player.ffaPlayer = cachedPlayer
+                                    PlayerProvider.save(player.ffaPlayer)
                                     this.source.sendMessage("Set Xp of ${player.gameProfile.name} to ${xp()}".literal)
                                 }
                             }

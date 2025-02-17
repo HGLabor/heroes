@@ -4,12 +4,14 @@ import gg.norisk.heroes.common.HeroesManager.isServer
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.player.DatabaseInventory.Companion.loadInventory
-import gg.norisk.heroes.common.player.DatabaseInventory.Companion.toDatabaseInventory
+import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
-import gg.norisk.heroes.common.player.dbPlayer
+import gg.norisk.heroes.common.player.InventorySorting
+import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
+import gg.norisk.heroes.common.player.ffaPlayer
+import gg.norisk.heroes.common.utils.PlayStyle
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -32,7 +34,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.GameMode
 import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.broadcastText
-import net.silkmc.silk.core.text.literal
 import net.silkmc.silk.core.text.literalText
 import kotlin.math.cos
 import kotlin.math.sin
@@ -95,14 +96,14 @@ object KitEditorManager {
             if (world == this.world) {
                 player.changeGameMode(GameMode.ADVENTURE)
                 mcCoroutineTask(sync = false, client = false) {
-                    val dbPlayer = PlayerProvider.get(player.uuid)
-                    println("Loaded ${dbPlayer}")
-                    if (dbPlayer.inventory == null) {
+                    val ffaPlayer = PlayerProvider.get(player.uuid)
+                    println("Loaded ${ffaPlayer}")
+                    if (ffaPlayer.inventory == null) {
                         resetInventory.invoke(player)
-                        dbPlayer.inventory = player.toDatabaseInventory()
+                        ffaPlayer.inventory = player.toDatabaseInventory()
                     }
                     mcCoroutineTask(sync = true, client = false) {
-                        player.loadInventory(dbPlayer.inventory!!)
+                        player.loadInventory(ffaPlayer.inventory!!)
                     }
                     entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.enter"))
                 }
@@ -114,12 +115,12 @@ object KitEditorManager {
             if (world == this.world) {
                 val inventory = player.toDatabaseInventory()
                 mcCoroutineTask(sync = false, client = true) {
-                    val dbPlayer = PlayerProvider.get(player.uuid)
-                    dbPlayer.inventory = inventory
-                    player.dbPlayer = dbPlayer
+                    val ffaPlayer = PlayerProvider.get(player.uuid)
+                    ffaPlayer.inventory = inventory
+                    player.ffaPlayer = ffaPlayer
                     mcCoroutineTask(sync = false, client = false) {
-                        PlayerProvider.save(dbPlayer)
-                        println("Saved ${dbPlayer}")
+                        PlayerProvider.save(ffaPlayer)
+                        println("Saved ${ffaPlayer}")
                         entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.save"))
                     }
                     entity.sendMessage(Text.translatable("ffa.mechanic.kit.editor.left"))
@@ -230,5 +231,16 @@ object KitEditorManager {
             )
             g += Math.PI / 20
         }
+    }
+
+    private fun ServerPlayerEntity.toDatabaseInventory(): InventorySorting {
+        return InventorySorting(
+            uuid,
+            PlayStyle.current,
+            CURRENT_VERSION,
+            inventory.armor.toTypedArray(),
+            inventory.offHand.toTypedArray(),
+            inventory.main.toTypedArray(),
+        )
     }
 }
