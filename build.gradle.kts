@@ -35,6 +35,7 @@ allprojects {
     maven(uri("https://maven.wispforest.io"))
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://repo.cloudnetservice.eu/repository/releases/")
 
     maven {
       name = "GeckoLib"
@@ -94,11 +95,11 @@ subprojects {
 
   //ich weiß das ist kriminell aber
   version = rootProject.libs.versions.minecraft.get() + "-" + when (name) {
-    "hero-api" -> "1.3.0"
+    "hero-api" -> "1.3.1"
     "katara" -> "1.1.0"
     "aang" -> "1.1.0"
     "toph" -> "1.1.0"
-    "ffa-server" -> "1.3.0"
+    "ffa-server" -> "1.3.17"
     "datatracker" -> "1.0.17"
     else -> version
   }

@@ -15,11 +15,13 @@
     "HungerManagerMixin",
     "ItemStackMixin",
     "MinecraftDedicatedServerMixin",
+    "MiningToolItemMixin",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "SwordItemMixin",
+    "WitherSkullBlockMixin",
     "accessor.LivingEntityAccessor"
   ]
 }

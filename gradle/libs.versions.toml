@@ -46,6 +46,8 @@ paperLib = "1.0.8"
 packetEvents = "2.7.0"
 protocolLib = "6845acd89d"
 
+cloudnet = "4.0.0-RC10"
+
 
 [libraries]
 
@@ -99,6 +101,11 @@ playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib
 geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", version.ref = "geckolib" }
 emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
 
+# cloudnet
+cloudnet-driver = { module = "eu.cloudnetservice.cloudnet:driver", version.ref = "cloudnet" }
+cloudnet-bridge = { module = "eu.cloudnetservice.cloudnet:bridge", version.ref = "cloudnet" }
+cloudnet-wrapper = { module = "eu.cloudnetservice.cloudnet:wrapper-jvm", version.ref = "cloudnet" }
+
 # nrc
 nrcZoom = { group = "gg.norisk", name = "noriskclient-zoom", version = "1.21-2.0.2" }
 nrcFullbright = { group = "gg.norisk", name = "fullbright", version = "1.21-2.0.0" }
@@ -130,6 +137,7 @@ fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
 nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom", "nrcNametag"]
 mongodb = ["mongodb-core", "mongodb-kotlin", "mongodb-bson"]
 hglaborutils = ["hglabor-database-utils"]
+cloudnet = ["cloudnet-bridge", "cloudnet-driver", "cloudnet-wrapper"]
 
 [plugins]
 

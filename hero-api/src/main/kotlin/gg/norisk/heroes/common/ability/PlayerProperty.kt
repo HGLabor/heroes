@@ -34,7 +34,7 @@ sealed class PlayerProperty<T> {
     lateinit var ability: AbstractAbility<*>
 
     companion object {
-        val levelScale = 500
+        val levelScale = 250
 
         val JSON = Json {
             prettyPrint = true
