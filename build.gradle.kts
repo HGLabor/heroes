@@ -98,7 +98,7 @@ subprojects {
     "katara" -> "1.0.24"
     "aang" -> "1.0.43"
     "toph" -> "1.0.25"
-    "ffa-server" -> "1.2.73"
+    "ffa-server" -> "1.2.78"
     "datatracker" -> "1.0.17"
     else -> version
   }

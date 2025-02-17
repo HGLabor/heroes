@@ -161,8 +161,15 @@ object WorldManager {
     }
 
     fun ServerWorld.findSpawnLocation(): BlockPos {
-        val xRange = (currentPair.first * mapSize..currentPair.first * mapSize + mapSize)
-        val zRange = (currentPair.second * mapSize..currentPair.second * mapSize + mapSize)
+        //smaller number -> bigger radius
+        val startMultiplier = 0.15
+        val endMultiplier = startMultiplier * 2
+        val xRange =
+            (currentPair.first * mapSize + (mapSize * startMultiplier).toInt()..currentPair.first * mapSize + (mapSize - mapSize * endMultiplier).toInt())
+        val zRange =
+            (currentPair.second * mapSize + (mapSize * startMultiplier).toInt()..currentPair.second * mapSize + (mapSize - mapSize * endMultiplier).toInt())
+        //logger.info("X-Range: $xRange | ${(mapSize * startMultiplier).toInt()} | ${(mapSize - mapSize * endMultiplier).toInt()}")
+        //logger.info("Z-Range: $zRange | ${(mapSize * startMultiplier).toInt()} | ${(mapSize - mapSize * endMultiplier).toInt()}")
         return SpawnLocating.findOverworldSpawn(this, xRange.random(), zRange.random()) ?: this.findSpawnLocation()
     }
 }
