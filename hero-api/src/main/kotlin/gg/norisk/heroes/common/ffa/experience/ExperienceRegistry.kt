@@ -3,7 +3,7 @@ package gg.norisk.heroes.common.ffa.experience
 object ExperienceRegistry {
     val reasons = mutableSetOf<ExperienceReason>()
 
-    val KILLED_PLAYER = register("killed_player", 500)
+    val KILLED_PLAYER = register("killed_player", 200)
     val PLAYER_DEATH = register("player_death", 25)
     val SOUP_EATEN = register("soup_eaten", 5)
     val SMALL_ABILITY_USE = register("small_ability_use", 5)
