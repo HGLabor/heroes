@@ -15,7 +15,7 @@ import java.io.File
 import kotlin.math.pow
 
 object MapPlacer {
-    val chunkSize = 1
+    val chunkSize = 3
     val mapSize = 512
 
     fun init() {

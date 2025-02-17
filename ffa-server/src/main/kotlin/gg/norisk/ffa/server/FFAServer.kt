@@ -9,6 +9,7 @@ import gg.norisk.ffa.server.mechanics.CombatTag
 import gg.norisk.ffa.server.mechanics.KillManager
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.selector.SelectorServerManager
+import gg.norisk.ffa.server.world.MapPlacer
 import gg.norisk.ffa.server.world.WorldManager
 import gg.norisk.heroes.common.HeroesManager.isServer
 import net.fabricmc.api.ModInitializer
@@ -26,6 +27,7 @@ object FFAServer : ModInitializer {
         SelectorServerManager.initServer()
         WorldManager.initServer()
         MeCommand.init()
+        MapPlacer.init()
         LootdropCommand.init()
         KitEditor.initServer()
         Bounty.init()
