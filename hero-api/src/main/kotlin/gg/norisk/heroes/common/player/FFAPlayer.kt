@@ -25,7 +25,7 @@ data class FFAPlayer(
     var currentKillStreak: Int = 0,
     var highestKillStreak: Int = 0,
     var bounty: Int = 0,
-    var heroProperties: MutableMap<String, MutableMap<String, MutableMap<String, PropertyPlayer>>> = mutableMapOf(),
+    var heroes: MutableMap<String, MutableMap<String, MutableMap<String, PropertyPlayer>>> = mutableMapOf(),
     var inventory: InventorySorting? = null,
 )
 

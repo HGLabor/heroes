@@ -11,7 +11,7 @@ import kotlinx.serialization.encodeToString
 import java.util.*
 
 class JsonPlayerProvider : AbstractPlayerProvider() {
-    private val file = HeroesManager.baseDirectory.resolve("player-database.json").createIfNotExists()
+    private val file get() = HeroesManager.baseDirectory.resolve("player-database.json")
 
     private suspend fun loadDatabase(): MutableSet<FFAPlayer> {
         var database = mutableSetOf<FFAPlayer>()
@@ -20,6 +20,10 @@ class JsonPlayerProvider : AbstractPlayerProvider() {
                 database = JSON.decodeFromString(file.readText())
             }
         }.onFailure {
+            if (file.readText().isBlank()) {
+                file.writeText("[]")
+            }
+            logger.error("Error Reading ${file.absolutePath}")
             it.printStackTrace()
         }
         return database

@@ -1,13 +1,13 @@
 package gg.norisk.heroes.common.utils
 
-import net.silkmc.silk.core.logging.logger
+import gg.norisk.heroes.common.HeroesManager
 
 enum class PlayStyle(val displayName: String) {
     SOUP("Soup"), UHC("UHC");
 
     companion object {
         val current by lazy {
-            /*(runCatching {
+            (runCatching {
                 PlayStyle.entries.first {
                     it.displayName.equals(
                         System.getProperty(
@@ -16,9 +16,8 @@ enum class PlayStyle(val displayName: String) {
                     )
                 }
             }.getOrNull() ?: UHC).also {
-                logger().info("Current play style: $it")
-            }*/
-            UHC
+                HeroesManager.logger.info("Current play style: $it")
+            }
         }
     }
 }

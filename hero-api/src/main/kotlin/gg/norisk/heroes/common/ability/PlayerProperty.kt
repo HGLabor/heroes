@@ -141,7 +141,7 @@ sealed class PlayerProperty<T> {
 
     private fun getOrLoadPlayer(uuid: UUID): PropertyPlayer {
         val player = runBlocking { PlayerProvider.get(uuid) }
-        val heroMap = player.heroProperties.computeIfAbsent(hero.internalKey) { mutableMapOf() }
+        val heroMap = player.heroes.computeIfAbsent(hero.internalKey) { mutableMapOf() }
         val abilityMap = heroMap.computeIfAbsent(ability.internalKey) { mutableMapOf() }
         val property = abilityMap.computeIfAbsent(internalKey) { PropertyPlayer() }
         return property

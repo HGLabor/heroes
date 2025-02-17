@@ -1,5 +1,6 @@
 package gg.norisk.heroes.common.serialization
 
+import gg.norisk.heroes.common.HeroesManager.isServer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -24,7 +25,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
             return
         }
         val registryManager =
-            if (FabricLoader.getInstance().environmentType == EnvType.SERVER) serverOrThrow.registryManager else MinecraftClient.getInstance().world?.registryManager
+            if (isServer) serverOrThrow.registryManager else MinecraftClient.getInstance().world?.registryManager
         val nbt = value.encode(registryManager) as NbtCompound
         val string = NbtHelper.toNbtProviderString(nbt)
         encoder.encodeString(string)
@@ -32,7 +33,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
 
     override fun deserialize(decoder: Decoder): ItemStack {
         val registryManager =
-            if (FabricLoader.getInstance().environmentType == EnvType.SERVER) serverOrThrow.registryManager else MinecraftClient.getInstance().world?.registryManager
+            if (isServer) serverOrThrow.registryManager else MinecraftClient.getInstance().world?.registryManager
         val string = decoder.decodeString()
         if (string == emptyItemStack) {
             return ItemStack.EMPTY

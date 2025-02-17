@@ -12,7 +12,7 @@ import kotlinx.serialization.encodeToString
 import java.util.*
 
 class JsonInventoryProvider : AbstractInventoryProvider(PlayStyle.current) {
-    private val file = HeroesManager.baseDirectory.resolve("player-inventory-database.json").createIfNotExists()
+    private val file get() = HeroesManager.baseDirectory.resolve("player-inventory-database.json").createIfNotExists()
 
     private fun loadDatabase(): MutableSet<InventorySorting> {
         var database = mutableSetOf<InventorySorting>()
@@ -21,10 +21,15 @@ class JsonInventoryProvider : AbstractInventoryProvider(PlayStyle.current) {
                 database = JSON.decodeFromString(file.readText())
             }
         }.onFailure {
+            if (file.readText().isBlank()) {
+                file.writeText("[]")
+            }
+            logger.info("Error Reading File ${file.absolutePath}")
             it.printStackTrace()
         }
         return database
     }
+
     private suspend fun find(uuid: UUID): InventorySorting? {
         val database = loadDatabase()
         return database.find { it.userId == uuid && it.playStyle == playStyle }
