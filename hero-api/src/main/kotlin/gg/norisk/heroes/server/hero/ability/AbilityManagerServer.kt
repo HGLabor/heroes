@@ -69,13 +69,18 @@ object AbilityManagerServer : IAbilityManager {
     }
 
     private fun sendCooldownToPlayers(server: MinecraftServer) {
-        for (player in server.players) {
-            val hero = player.getHero() ?: continue
-            for (ability in hero.abilities.values) {
-                val cooldown = ability.getCooldown(player) ?: continue
-                cooldown.durationString = ability.getCooldownText(cooldown)
-                Networking.s2cCooldownPacket.send(cooldown, player)
+        runCatching {
+            for (player in server.players) {
+                val hero = player.getHero() ?: continue
+                for (ability in hero.abilities.values) {
+                    val cooldown = ability.getCooldown(player) ?: continue
+                    cooldown.durationString = ability.getCooldownText(cooldown)
+                    Networking.s2cCooldownPacket.send(cooldown, player)
+                }
             }
+        }.onFailure {
+            logger.error("Failed to send cooldown to players {}", it.message)
+            it.printStackTrace()
         }
     }
 
@@ -93,7 +98,7 @@ object AbilityManagerServer : IAbilityManager {
 
         val newLevel = property.getLevelInfo(player.uuid)
 
-        logger.info("OldLevel $oldLevel CurrentLevel: $newLevel")
+        //logger.info("OldLevel $oldLevel CurrentLevel: $newLevel")
         if (oldLevel.currentLevel != newLevel.currentLevel) {
             //upgrade
             if (newLevel.currentLevel == newLevel.maxLevel) {
@@ -103,7 +108,7 @@ object AbilityManagerServer : IAbilityManager {
             }
         }
 
-        logger.info("Spent Experience $spentExperience $experienceToSpend ${cachedPlayer.xp}")
+        //logger.info("Spent Experience $spentExperience $experienceToSpend ${cachedPlayer.xp}")
         player.ffaPlayer = cachedPlayer
         PlayerProvider.save(cachedPlayer)
     }

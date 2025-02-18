@@ -156,7 +156,7 @@ object TornadoAbility {
     }
 
     val tornadoMaxDurationProperty = CooldownProperty(
-        10.0, 3,
+        5.0, 3,
         "Max Duration",
         AddValueTotal(5.0, 5.0, 5.0)
     )
@@ -187,7 +187,7 @@ object TornadoAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(130.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
+                buildCooldown(160.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
 
             this.properties =
                 listOf(tornadoMaxDurationProperty, tornadoIncreaseRateProperty, tornadoDecreaseRateProperty)

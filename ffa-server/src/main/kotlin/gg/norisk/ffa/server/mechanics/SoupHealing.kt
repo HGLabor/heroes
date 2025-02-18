@@ -21,9 +21,17 @@ object SoupHealing {
         world: World,
         hand: Hand
     ) {
+        val consumedSoup = potentialSoupUse(player, item)
+
+        if (consumedSoup) cir.returnValue = TypedActionResult.pass(ItemStack(Items.BOWL))
+    }
+
+    fun potentialSoupUse(
+        player: PlayerEntity, item: Item,
+    ): Boolean {
         val foodData = player.hungerManager
 
-        if (!item.isStew || player.health >= player.maxHealth && !foodData.isNotFull) return
+        if (!item.isStew || player.health >= player.maxHealth && !foodData.isNotFull) return false
 
         var consumedSoup = false
 
@@ -43,8 +51,9 @@ object SoupHealing {
             (player as? ServerPlayerEntity?)?.apply {
                 this.addXp(ExperienceRegistry.SOUP_EATEN)
             }
-            cir.returnValue = TypedActionResult.pass(ItemStack(Items.BOWL))
         }
+
+        return consumedSoup
     }
 
     private val Item.isStew: Boolean

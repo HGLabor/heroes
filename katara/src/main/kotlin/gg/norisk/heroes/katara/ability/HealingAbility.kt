@@ -136,9 +136,9 @@ object HealingAbility {
     }
 
     val waterHealingRegeneration = NumberProperty(
-        0.0, 3,
+        0.0, 2,
         "Regeneration",
-        AddValueTotal(1.0, 1.0, 1.0)
+        AddValueTotal(1.0, 1.0)
     ).apply {
         icon = {
             Components.item(itemStack(Items.POTION) {
@@ -168,7 +168,7 @@ object HealingAbility {
                 it.getCurrentBendingEntity() != null
             }
             //this.usageProperty = buildMultipleUses(1.0, 3, AddValueTotal(1.0, 1.0, 1.0))
-            this.cooldownProperty = buildCooldown(50.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
+            this.cooldownProperty = buildCooldown(90.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
 
             this.properties = listOf(waterHealingRegeneration, waterHealingMaxDuration)
         }

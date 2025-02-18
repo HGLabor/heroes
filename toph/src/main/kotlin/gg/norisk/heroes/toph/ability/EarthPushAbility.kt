@@ -32,7 +32,7 @@ import net.minecraft.util.math.Vec3d
 import net.silkmc.silk.core.entity.modifyVelocity
 import kotlin.random.Random
 
-val earthPushDamage = NumberProperty(2.0, 3, "Damage", AddValueTotal(1.25, 1.25, 2.0)).apply {
+val earthPushDamage = NumberProperty(3.25, 3, "Damage", AddValueTotal(1.25, 1.25, 2.0)).apply {
     icon = {
         Components.item(Items.STONE_SWORD.defaultStack)
     }

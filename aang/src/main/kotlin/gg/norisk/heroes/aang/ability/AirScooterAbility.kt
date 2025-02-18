@@ -6,8 +6,6 @@ import gg.norisk.datatracker.entity.syncedValueChangeEvent
 import gg.norisk.emote.network.EmoteNetworking.playEmote
 import gg.norisk.emote.network.EmoteNetworking.stopEmote
 import gg.norisk.heroes.aang.AangManager.toId
-import gg.norisk.heroes.aang.ability.AirBallAbility.currentBendingEntity
-import gg.norisk.heroes.aang.ability.AirBallAbility.isAirBending
 import gg.norisk.heroes.aang.ability.SpiritualProjectionAbility.isUsingSpiritualProjection
 import gg.norisk.heroes.aang.client.sound.AirScooterSoundInstance
 import gg.norisk.heroes.aang.entity.AirScooterEntity
@@ -31,7 +29,6 @@ import io.wispforest.owo.ui.core.Component
 import kotlinx.coroutines.cancel
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
@@ -43,12 +40,9 @@ import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
-import net.silkmc.silk.core.Silk
-import net.silkmc.silk.core.Silk.server
 import net.silkmc.silk.core.entity.modifyVelocity
 import net.silkmc.silk.core.task.infiniteMcCoroutineTask
 import net.silkmc.silk.core.task.mcCoroutineTask
-import net.silkmc.silk.core.text.broadcastText
 import net.silkmc.silk.network.packet.s2cPacket
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlin.random.Random
@@ -180,7 +174,7 @@ object AirScooterAbility {
             }
 
             this.cooldownProperty =
-                buildCooldown(90.0, 4, AddValueTotal(-5.0, -5.0, -5.0, -5.0))
+                buildCooldown(90.0, 4, AddValueTotal(-20.0, -10.0, -5.0, -5.0))
             this.maxDurationProperty =
                 buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 

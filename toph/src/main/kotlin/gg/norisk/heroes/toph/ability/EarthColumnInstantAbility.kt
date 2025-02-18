@@ -71,7 +71,7 @@ val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0,
     }
 }
 
-val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(1.0, 1.0)).apply {
+val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(0.5, 0.5)).apply {
     icon = {
         Components.item(Items.FIREWORK_ROCKET.defaultStack)
     }
@@ -132,7 +132,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         )
 
         this.cooldownProperty =
-            buildCooldown(110.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
+            buildCooldown(90.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 

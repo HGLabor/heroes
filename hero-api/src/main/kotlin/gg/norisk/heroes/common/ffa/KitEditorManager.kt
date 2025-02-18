@@ -4,12 +4,12 @@ import gg.norisk.heroes.common.HeroesManager.isServer
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.common.player.InventorySorting
 import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
+import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.common.utils.PlayStyle
 import gg.norisk.heroes.server.database.player.PlayerProvider
@@ -18,6 +18,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.minecraft.block.Blocks
+import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
@@ -90,6 +91,13 @@ object KitEditorManager {
                 world.gameRules.get(GameRules.DO_ENTITY_DROPS).set(false, server)*/
             }
         })
+
+        ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
+            val item = entity as? ItemEntity? ?: return@register
+            if (item.world == world) {
+                entity.discard()
+            }
+        }
 
         ServerEntityEvents.ENTITY_LOAD.register(ServerEntityEvents.Load { entity, world ->
             val player = entity as? ServerPlayerEntity? ?: return@Load
