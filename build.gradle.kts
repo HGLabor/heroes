@@ -102,7 +102,7 @@ subprojects {
     "ffa-server" -> "1.3.17"
     "datatracker" -> "1.0.17"
     else -> version
-  }
+  } //+ "-SNAPSHOT"
 
   dependencies {
     "compileOnly"(rootProject.libs.annotations)
@@ -227,14 +227,22 @@ subprojects {
       }
       maven {
         name = "production"
-        url = uri("https://maven.norisk.gg/repository/norisk-production/")
+        url = if (version.toString().endsWith("SNAPSHOT")) {
+          uri("https://maven.norisk.gg/repository/norisk-snapshots/")
+        } else {
+          uri("https://maven.norisk.gg/repository/norisk-production/")
+        }
         applyCredentials()
       }
       maven {
         name = "dev"
         // this could also be a maven repo on the dev server
         // e.g. maven-staging.norisk.gg
-        url = uri("https://maven.norisk.gg/repository/maven-releases/")
+          url = if (version.toString().endsWith("SNAPSHOT")) {
+              uri("https://maven.norisk.gg/repository/maven-snapshots/")
+          } else {
+              uri("https://maven.norisk.gg/repository/maven-releases/")
+          }
         applyCredentials()
       }
     }
