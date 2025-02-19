@@ -47,6 +47,7 @@ packetEvents = "2.7.0"
 protocolLib = "6845acd89d"
 
 cloudnet = "4.0.0-RC10"
+luckperms = "5.4"
 
 
 [libraries]
@@ -84,6 +85,9 @@ silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "sil
 silk-nbt = { group = "net.silkmc", name = "silk-nbt", version.ref = "silkMc" }
 silk-game = { group = "net.silkmc", name = "silk-game", version.ref = "silkMc" }
 owolib = { group = "io.wispforest", name = "owo-lib", version = "0.12.15+1.21" }
+
+# luckperms
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms"}
 
 # perfomance
 sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.21-0.5.11" }

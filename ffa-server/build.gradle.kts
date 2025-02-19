@@ -22,6 +22,7 @@ dependencies {
     modApi(libs.emoteLib)
     modImplementation(libs.bundles.cloudnet)
     modCompileOnly(libs.worldedit)
+    modCompileOnly(libs.luckperms)
     includeImplementation(libs.bundles.mongodb)
     modImplementation(libs.hglabor.database.utils) {
         exclude(module = "fabric-api")
