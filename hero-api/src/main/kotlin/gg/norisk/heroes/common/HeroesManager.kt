@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.MinecraftClient
 import net.minecraft.resource.featuretoggle.FeatureFlag
 import net.minecraft.util.Identifier
 import net.minecraft.util.WorldSavePath
@@ -31,8 +32,8 @@ object HeroesManager : ModInitializer {
             text(" ")
         }
 
-    val isServer get() = FabricLoader.getInstance().isDevelopmentEnvironment || FabricLoader.getInstance().environmentType == EnvType.SERVER
-    val isClient get() = FabricLoader.getInstance().isDevelopmentEnvironment || FabricLoader.getInstance().environmentType == EnvType.CLIENT
+    val isServer get() = FabricLoader.getInstance().environmentType == EnvType.SERVER || MinecraftClient.getInstance().server != null
+    val isClient get() = FabricLoader.getInstance().environmentType == EnvType.CLIENT
 
     override fun onInitialize() {
         logger.info("Init Hero-Api Common...")
