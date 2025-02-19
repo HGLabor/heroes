@@ -2,6 +2,7 @@ package gg.norisk.ffa.server
 
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
+import gg.norisk.ffa.server.command.InvseeCommand
 import gg.norisk.ffa.server.command.LootdropCommand
 import gg.norisk.ffa.server.command.MeCommand
 import gg.norisk.ffa.server.mechanics.Bounty
@@ -33,6 +34,7 @@ object FFAServer : ModInitializer {
         Bounty.init()
         CombatTag.init()
         KillManager.init()
+        InvseeCommand.init()
     }
 
     const val FFA_KEY = "hero-ffa"
