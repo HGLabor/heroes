@@ -20,7 +20,7 @@ dependencies {
     modApi(libs.npcLibCommon)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
-    modImplementation(libs.bundles.cloudnet)
+    //modImplementation(libs.bundles.cloudnet)
     modCompileOnly(libs.worldedit)
     includeImplementation(libs.bundles.mongodb)
     modImplementation(libs.hglabor.database.utils) {
