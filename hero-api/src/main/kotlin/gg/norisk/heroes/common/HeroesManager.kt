@@ -1,5 +1,6 @@
 package gg.norisk.heroes.common
 
+import gg.norisk.heroes.common.localization.LocalizationManager
 import gg.norisk.heroes.common.registry.SoundRegistry
 import gg.norisk.heroes.server.HeroesManagerServer
 import net.fabricmc.api.EnvType
@@ -38,6 +39,7 @@ object HeroesManager : ModInitializer {
         logger.info("Init Hero-Api Common...")
         SoundRegistry.init()
         HeroesManagerServer.initServer()
+        LocalizationManager.init()
 
         ServerLifecycleEvents.SERVER_STARTING.register {
             setBasePath(it.getSavePath(WorldSavePath("heroes")))
