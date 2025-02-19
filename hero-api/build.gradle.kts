@@ -16,4 +16,5 @@ dependencies {
     modApi(libs.owolib)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
+    modApi(libs.kyoriAdventure)
 }

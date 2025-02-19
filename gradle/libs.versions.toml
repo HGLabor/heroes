@@ -48,7 +48,7 @@ protocolLib = "6845acd89d"
 
 cloudnet = "4.0.0-RC10"
 luckperms = "5.4"
-
+kyoriAdventure = "5.14.1"
 
 [libraries]
 
@@ -104,6 +104,9 @@ npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version =
 playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib-fabric", version.ref = "playerAnimator" }
 geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", version.ref = "geckolib" }
 emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
+
+# kyori
+kyoriAdventure = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "kyoriAdventure" }
 
 # cloudnet
 cloudnet-driver = { module = "eu.cloudnetservice.cloudnet:driver", version.ref = "cloudnet" }
