@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
+import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ExperienceLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ItemStackLootdropItem
@@ -189,6 +190,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     }
 
     fun onBarrelOpen(player: PlayerEntity) {
+        if (!player.isFFA || player.isSpectator) return
         state = LootdropState.OPENED
         if (xpReward > 0) {
             player.sendMessage(Text.translatable("ffa.mechanic.lootdrop.found_xp", xpReward))
