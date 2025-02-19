@@ -14,17 +14,21 @@
     "MinecraftServerMixin",
     "PlayerEntityMixin",
     "ResourcePackManagerMixin",
-    "WorldAccessor"
+    "WorldAccessor",
+    "accessor.NativeImageAccessor"
   ],
   "client": [
+    "accessor.TextureManagerAccessor",
     "client.CameraMixin",
     "client.ClientPlayerEntityMixin",
     "client.EntityRenderDispatcherMixin",
     "client.GameOptionsMixin",
     "client.GameRendererMixin",
+    "client.HeldItemRendererMixin",
     "client.MouseMixin",
     "client.PlayerEntityRendererMixin",
     "client.PlayerListHudMixin",
+    "client.ScrollerMixin",
     "client.compat.DefaultChunkRendererMixin"
   ]
 }

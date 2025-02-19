@@ -1,30 +1,25 @@
 package gg.norisk.heroes.client.renderer
 
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.render.RenderLayer
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.ColorHelper
 
 object RenderUtils {
-    fun renderOverlay(drawContext: DrawContext, identifier: Identifier, f: Float) {
-        RenderSystem.disableDepthTest()
-        RenderSystem.depthMask(false)
-        RenderSystem.enableBlend()
-        drawContext.setShaderColor(1.0f, 1.0f, 1.0f, f)
-        drawContext.drawTexture(
+    fun renderOverlay(context: DrawContext, identifier: Identifier, f: Float) {
+        val i = ColorHelper.getWhite(f)
+        context.drawTexture(
+            RenderLayer::getGuiTexturedOverlay,
             identifier,
             0,
             0,
-            -90,
             0.0f,
             0.0f,
-            drawContext.scaledWindowWidth,
-            drawContext.scaledWindowHeight,
-            drawContext.scaledWindowWidth,
-            drawContext.scaledWindowHeight
+            context.scaledWindowWidth,
+            context.scaledWindowHeight,
+            context.getScaledWindowWidth(),
+            context.getScaledWindowHeight(),
+            i
         )
-        RenderSystem.disableBlend()
-        RenderSystem.depthMask(true)
-        RenderSystem.enableDepthTest()
-        drawContext.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
     }
 }

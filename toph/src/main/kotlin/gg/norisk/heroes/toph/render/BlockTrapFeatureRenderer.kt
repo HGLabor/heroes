@@ -1,5 +1,6 @@
 package gg.norisk.heroes.toph.render
 
+/* TODO 1.21.4
 import gg.norisk.heroes.toph.ability.isEarthTrapped
 import gg.norisk.heroes.toph.entity.ITrappedEntity
 import gg.norisk.heroes.toph.mixin.ModelPartAccessor
@@ -133,3 +134,4 @@ class BlockTrapFeatureRenderer<T : LivingEntity, M : EntityModel<T>>(
         matrices.pop()
     }
 }
+*/

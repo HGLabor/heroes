@@ -199,7 +199,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
                 1f
             )
             runCatching {
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                     ?.addTemporaryModifier(EARTH_COLUMN_SLOW_BOOST)
             }
         }
@@ -214,7 +214,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         if (player is ServerPlayerEntity) {
             player.stopEmote("earth-column-start".toEmote())
             player.setSyncedData(EarthColumnKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+            player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                 ?.removeModifier(EARTH_COLUMN_SLOW_BOOST.id)
         }
     }
@@ -237,7 +237,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
             cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player as ServerPlayerEntity)
             player.sound(SoundRegistry.STONE_SMASH)
             player.setSyncedData(EarthColumnKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+            player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                 ?.removeModifier(EARTH_COLUMN_SLOW_BOOST.id)
         } else if (player == MinecraftClient.getInstance().player) {
             val world = player.world
@@ -290,7 +290,8 @@ private fun EarthColumnDescription.move(
                     entity.z,
                     PositionFlag.VALUES,
                     entity.yaw,
-                    entity.pitch
+                    entity.pitch,
+                    true
                 )
             }
     }
@@ -303,7 +304,7 @@ private fun EarthColumnDescription.move(
                 world.getOtherEntities(null, Box.from(newPos).expand(earthColumnRadius.getValue(player.uuid)))
                     .filterIsInstance<LivingEntity>()
                     .forEach { entity ->
-                        entity.damage(entity.damageSources.playerAttack(player), 0.001f)
+                        entity.damage(world,entity.damageSources.playerAttack(player), 0.001f)
                         if (!entity.isSneaking) {
                             entity.modifyVelocity(Vec3d(0.0, earthColumnBoost.getValue(player.uuid), 0.0))
                         }

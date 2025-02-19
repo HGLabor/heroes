@@ -1,13 +1,15 @@
 package gg.norisk.heroes.aang.client.render.entity.model
 
-import gg.norisk.heroes.aang.entity.TornadoEntity
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.model.*
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.entity.model.SinglePartEntityModel
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.LivingEntityRenderState
 import net.minecraft.util.math.MathHelper
 import java.util.function.Function
 
-class TornadoEntityModel(private val root: ModelPart) : SinglePartEntityModel<TornadoEntity>(
+class TornadoEntityModel(private val root: ModelPart) : EntityModel<LivingEntityRenderState>(
+    root,
     Function(RenderLayer::getEntityTranslucent)
 ) {
     val head: ModelPart
@@ -26,8 +28,10 @@ class TornadoEntityModel(private val root: ModelPart) : SinglePartEntityModel<To
         this.rods = root.getChild("body").getChild("rods")
     }
 
-    override fun setAngles(breezeEntity: TornadoEntity, f: Float, g: Float, h: Float, i: Float, j: Float) {
-        this.part.traverse().forEach { obj: ModelPart -> obj.resetTransform() }
+    override fun setAngles(state: LivingEntityRenderState) {
+        super.setAngles(state)
+        // this.part.traverse().forEach { obj: ModelPart -> obj.resetTransform() }
+        val h = MinecraftClient.getInstance().renderTickCounter.getTickDelta(false)
         val k = h * 3.1415927f * -0.1f
         windTop.pivotX = MathHelper.cos(k) * 1.0f * 0.6f
         windTop.pivotZ = MathHelper.sin(k) * 1.0f * 0.6f
@@ -37,10 +41,6 @@ class TornadoEntityModel(private val root: ModelPart) : SinglePartEntityModel<To
         windBottom.pivotZ = MathHelper.sin(k) * -0.25f * 1.0f
         head.pivotY = 4.0f + MathHelper.cos(k) / 4.0f
         rods.yaw = h * 3.1415927f * 0.1f
-    }
-
-    override fun getPart(): ModelPart {
-        return this.root
     }
 
     companion object {

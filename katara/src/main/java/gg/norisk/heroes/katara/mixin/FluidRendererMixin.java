@@ -18,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.BlockView;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,35 +35,9 @@ public abstract class FluidRendererMixin implements IFluidRendererExt {
     @Final
     private Sprite[] waterSprites;
 
-    @Shadow
-    protected static boolean isSameFluid(FluidState fluidState, FluidState fluidState2) {
-        return false;
-    }
-
-    @Shadow
-    public static boolean shouldRenderSide(BlockRenderView blockRenderView, BlockPos blockPos, FluidState fluidState, BlockState blockState, Direction direction, FluidState fluidState2) {
-        return false;
-    }
-
-    @Shadow
-    protected static boolean isSideCovered(BlockView blockView, BlockPos blockPos, Direction direction, float f, BlockState blockState) {
-        return false;
-    }
-
-    @Shadow
-    protected abstract float getFluidHeight(BlockRenderView blockRenderView, Fluid fluid, BlockPos blockPos);
-
-    @Shadow
-    protected abstract float calculateFluidHeight(BlockRenderView blockRenderView, Fluid fluid, float f, float g, float h, BlockPos blockPos);
-
-    @Shadow
-    protected abstract float getFluidHeight(BlockRenderView blockRenderView, Fluid fluid, BlockPos blockPos, BlockState blockState, FluidState fluidState);
 
     @Shadow
     protected abstract int getLight(BlockRenderView blockRenderView, BlockPos blockPos);
-
-    @Shadow
-    protected abstract void vertex(VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k, float l, float m, int n);
 
     private void vertex2(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k, float l, float m, int n) {
         vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 1.0F).texture(l, m).light(n).normal(0.0F, 1.0F, 0.0F);
@@ -72,6 +45,11 @@ public abstract class FluidRendererMixin implements IFluidRendererExt {
 
     @Shadow
     private Sprite waterOverlaySprite;
+
+    @Shadow
+    protected static boolean isSideCovered(Direction direction, float f, BlockState blockState) {
+        return false;
+    }
 
     public void katara_renderFluid(MatrixStack matrixStack, BlockRenderView blockRenderView, Vec3d pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, Color waterColor) {
         Matrix4f matrix = matrixStack.peek().getPositionMatrix();
@@ -277,7 +255,7 @@ public abstract class FluidRendererMixin implements IFluidRendererExt {
                         bl8 = bl7;
                 }
 
-                if (bl8 && !isSideCovered(blockRenderView, blockPos, direction, Math.max(adx, yx), blockRenderView.getBlockState(blockPos.offset(direction)))) {
+                if (bl8 && !isSideCovered(direction, Math.max(adx, yx), blockRenderView.getBlockState(blockPos.offset(direction)))) {
                     BlockPos blockPos2 = blockPos.offset(direction);
                     Sprite sprite2 = sprites[1];
                     if (!bl) {

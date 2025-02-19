@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
-    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderer;render(Lnet/minecraft/entity/Entity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"))
-    private boolean onlyRenderIfAllowed(EntityRenderer<Entity> targetClass, Entity entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        var event = new EntityEvents.EntityRendererEvent(entity, f, g, matrixStack, vertexConsumerProvider, i);
+    @WrapWithCondition(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V"))
+    private <E extends Entity> boolean onlyRenderIfAllowed(EntityRenderDispatcher instance, E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EntityRenderer<? super E, ?> renderer) {
+        var event = new EntityEvents.EntityRendererEvent(entity, x, y, z, matrices, vertexConsumers, light);
         EntityEvents.INSTANCE.getEntityRendererEvent().invoke(event);
         return !event.isCancelled().get();
     }

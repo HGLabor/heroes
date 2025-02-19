@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.Util
 import org.joml.Matrix4f
 
+/*
 @Environment(value = EnvType.CLIENT)
 class HealingWaterFeatureRenderer<T : Entity, M : EntityModel<T>>(featureRendererContext: FeatureRendererContext<T, M>) :
     FeatureRenderer<T, M>(featureRendererContext) {
@@ -79,3 +80,4 @@ class HealingWaterFeatureRenderer<T : Entity, M : EntityModel<T>>(featureRendere
         }
     }
 }
+*/

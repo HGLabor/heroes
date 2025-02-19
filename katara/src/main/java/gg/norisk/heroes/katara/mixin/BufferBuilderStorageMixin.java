@@ -1,6 +1,5 @@
 package gg.norisk.heroes.katara.mixin;
 
-import gg.norisk.heroes.katara.client.render.HealingWaterFeatureRenderer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.RenderLayer;
@@ -19,6 +18,6 @@ public abstract class BufferBuilderStorageMixin {
 
     @Inject(method = "method_54639", at = @At("TAIL"))
     private void injected(Object2ObjectLinkedOpenHashMap object2ObjectLinkedOpenHashMap, CallbackInfo ci) {
-        assignBufferBuilder(object2ObjectLinkedOpenHashMap, HealingWaterFeatureRenderer.Companion.getLAYER());
+        //TODO 1.21.4 assignBufferBuilder(object2ObjectLinkedOpenHashMap, HealingWaterFeatureRenderer.Companion.getLAYER());
     }
 }

@@ -129,7 +129,13 @@ class BendingBlockEntity(world: World, x: Double, y: Double, z: Double, blockSta
             it.isAlive && it.uuid != this.owner
         }) {
             flag = true
-            enemy.damage(this.damageSources.playerAttack(owner), earthPushDamage.getValue(owner.uuid).toFloat())
+            if (world is ServerWorld) {
+                enemy.damage(
+                    world as ServerWorld,
+                    this.damageSources.playerAttack(owner),
+                    earthPushDamage.getValue(owner.uuid).toFloat()
+                )
+            }
         }
 
         if (flag) {

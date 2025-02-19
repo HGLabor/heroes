@@ -7,10 +7,10 @@ checkstyleTools = "10.21.1"
 fabricLoom = "1.9-SNAPSHOT"
 
 # fabric
-minecraft = "1.21"
-yarn-mappings = "1.21+build.9"
+minecraft = "1.21.4"
+yarn-mappings = "1.21.4+build.8"
 fabric_loader = "0.16.10"
-fabric-api = "0.102.0+1.21"
+fabric-api = "0.116.1+1.21.4"
 fabric-kotlin = "1.13.0+kotlin.2.1.0"
 
 # Kotlin
@@ -26,7 +26,7 @@ mongodb = "5.2.0"
 
 # animation
 playerAnimator = "1.0.2-rc1+1.21"
-geckolib = "4.5.6"
+geckolib = "4.8.4"
 
 
 # general
@@ -84,16 +84,16 @@ silk-core = { group = "net.silkmc", name = "silk-core", version.ref = "silkMc" }
 silk-network = { group = "net.silkmc", name = "silk-network", version.ref = "silkMc" }
 silk-nbt = { group = "net.silkmc", name = "silk-nbt", version.ref = "silkMc" }
 silk-game = { group = "net.silkmc", name = "silk-game", version.ref = "silkMc" }
-owolib = { group = "io.wispforest", name = "owo-lib", version = "0.12.15+1.21" }
+owolib = { group = "io.wispforest", name = "owo-lib", version = "0.12.20+1.21.4" }
 
 # luckperms
-luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms"}
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
 
 # perfomance
-sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.21-0.5.11" }
-lithium = { group = "maven.modrinth", name = "lithium", version = "mc1.21-0.13.1" }
-modmenu = { group = "maven.modrinth", name = "modmenu", version = "11.0.3" }
-ferrite-core = { group = "maven.modrinth", name = "ferrite-core", version = "7.0.0-fabric" }
+sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.21.4-0.6.6-fabric" }
+lithium = { group = "maven.modrinth", name = "lithium", version = "mc1.21.4-0.14.7-fabric" }
+modmenu = { group = "maven.modrinth", name = "modmenu", version = "13.0.1" }
+ferrite-core = { group = "maven.modrinth", name = "ferrite-core", version = "7.1.1-fabric" }
 nvidium = { group = "maven.modrinth", name = "nvidium", version = "0.3.1" }
 
 # npc-lib
@@ -102,8 +102,8 @@ npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version =
 
 # animation
 playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib-fabric", version.ref = "playerAnimator" }
-geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21", version.ref = "geckolib" }
-emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21-1.1.20" }
+geckolib = { group = "software.bernie.geckolib", name = "geckolib-fabric-1.21.4", version.ref = "geckolib" }
+emoteLib = { group = "gg.norisk", name = "emote-lib", version = "1.21.4-1.1.20" }
 
 # cloudnet
 cloudnet-driver = { module = "eu.cloudnetservice.cloudnet:driver", version.ref = "cloudnet" }
@@ -111,10 +111,10 @@ cloudnet-bridge = { module = "eu.cloudnetservice.cloudnet:bridge", version.ref =
 cloudnet-wrapper = { module = "eu.cloudnetservice.cloudnet:wrapper-jvm", version.ref = "cloudnet" }
 
 # nrc
-nrcZoom = { group = "gg.norisk", name = "noriskclient-zoom", version = "1.21-2.0.2" }
-nrcFullbright = { group = "gg.norisk", name = "fullbright", version = "1.21-2.0.0" }
-nrcFreelook = { group = "gg.norisk", name = "freelook", version = "1.21-2.0.4" }
-nrcNametag = { group = "gg.norisk", name = "nametags", version = "1.21-2.0.0" }
+nrcZoom = { group = "gg.norisk", name = "noriskclient-zoom", version = "1.21.4-2.0.2" }
+nrcFullbright = { group = "gg.norisk", name = "fullbright", version = "1.21.4-2.0.0" }
+nrcFreelook = { group = "gg.norisk", name = "freelook", version = "1.21.4-2.0.5" }
+nrcNametag = { group = "gg.norisk", name = "nametags", version = "1.21.4-2.0.0" }
 
 # mongodb
 mongodb-core = { group = "org.mongodb", name = "mongodb-driver-core", version.ref = "mongodb" }
@@ -128,7 +128,7 @@ reactor-core = { group = "io.projectreactor", name = "reactor-core", version = "
 hglabor-database-utils = { group = "de.hglabor", name = "hglabor-utils-database", version.ref = "hglaborUtils" }
 
 # misc
-worldedit = { group = "com.sk89q.worldedit", name = "worldedit-fabric-mc1.21", version = "7.3.4" }
+worldedit = { group = "com.sk89q.worldedit", name = "worldedit-fabric-mc1.21.4", version = "7.3.10" }
 
 # dummy version, just here for renovate to detect that there is something to update
 checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version.ref = "checkstyleTools" }
@@ -136,7 +136,7 @@ checkstyleTools = { group = "com.puppycrawl.tools", name = "checkstyle", version
 [bundles]
 #silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
 silk = ["silk-commands", "silk-core", "silk-network", "silk-game", "silk-nbt"]
-performance = ["sodium", "lithium", "modmenu", "ferrite-core", "nvidium"]
+performance = ["sodium", "lithium", "modmenu", "ferrite-core"]
 fabric = ["fabric-api", "fabric-kotlin", "fabric_loader"]
 nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom", "nrcNametag"]
 mongodb = ["mongodb-core", "mongodb-kotlin", "mongodb-bson"]

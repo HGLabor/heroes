@@ -11,7 +11,6 @@ import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.Containers
 import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*
-import me.cortex.nvidium.Nvidium
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.silkmc.silk.core.text.literal
@@ -83,7 +82,7 @@ class HeroSelectorScreen(val heroes: List<Hero>, val isKitEditorEnabled: Boolean
     override fun close() {
         super.close()
         if (FabricLoader.getInstance().isModLoaded("nvidium")) {
-            Nvidium.FORCE_DISABLE = false
+            //Nvidium.FORCE_DISABLE = false
             this.client?.worldRenderer?.reload()
         }
     }
@@ -98,7 +97,7 @@ class HeroSelectorScreen(val heroes: List<Hero>, val isKitEditorEnabled: Boolean
         }
 
         if (FabricLoader.getInstance().isModLoaded("nvidium")) {
-            Nvidium.FORCE_DISABLE = true
+            //Nvidium.FORCE_DISABLE = true
             this.client?.worldRenderer?.reload()
         }
     }

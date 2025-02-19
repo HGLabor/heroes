@@ -29,7 +29,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
         super(clientWorld, gameProfile);
     }
 
-    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;tick(ZF)V", shift = At.Shift.AFTER))
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;tick()V", shift = At.Shift.AFTER))
     public void inputHandle(CallbackInfo ci) {
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (!MinecraftClient.getInstance().isRunning() || player == null) return;

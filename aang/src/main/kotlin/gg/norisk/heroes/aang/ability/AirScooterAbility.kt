@@ -30,6 +30,7 @@ import kotlinx.coroutines.cancel
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
+import net.minecraft.entity.SpawnReason
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
@@ -96,7 +97,7 @@ object AirScooterAbility {
 
     fun PlayerEntity.spawnAirScooter() {
         val world = world as? ServerWorld? ?: return
-        val airScooter = EntityRegistry.AIR_SCOOTER.create(world) ?: return
+        val airScooter = EntityRegistry.AIR_SCOOTER.create(world, SpawnReason.MOB_SUMMONED) ?: return
         airScooter.bendingType = AirScooterEntity.Type.SCOOTER
         airScooter.ownerId = id
         airScooter.setPosition(this.pos)
@@ -155,10 +156,10 @@ object AirScooterAbility {
             this.isAirScooting = false
             this.showSpeedlines = false
             //das hier suckt iwie lieber modifiers usen
-            this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
+            this.getAttributeInstance(EntityAttributes.STEP_HEIGHT)?.baseValue = 0.6
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)?.baseValue =
                 0.10000000149011612
-            this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.08
+            this.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue = 0.08
             this.stopEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
             this.sound(SoundEvents.ENTITY_BREEZE_IDLE_AIR, 0.2, 2f)
         } else if (this == MinecraftClient.getInstance().player) {
@@ -231,7 +232,7 @@ object AirScooterAbility {
                     //player.modifyVelocity(0.0,1.0,0.0)
                     airScooterSoundPacketS2C.sendToAll(player.id)
                     player.isAirScooting = true
-                    player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue =
+                    player.getAttributeInstance(EntityAttributes.STEP_HEIGHT)?.baseValue =
                         airScooterStepHeight.getValue(player.uuid)
                     val speedAnimation =
                         OldAnimation(
@@ -242,10 +243,10 @@ object AirScooterAbility {
                         )
                     player.aang.aang_airScooterTasks += infiniteMcCoroutineTask(sync = true, client = false) {
                         if (speedAnimation.isDone) cancel()
-                        player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.baseValue =
+                        player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)?.baseValue =
                             speedAnimation.get().toDouble()
                     }
-                    player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.02
+                    player.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue = 0.02
                     player.playEmote(EmoteRegistry.AIR_SCOOTER_SITTING)
                 }
             } else if (player == MinecraftClient.getInstance().player) {

@@ -1,16 +1,14 @@
 package gg.norisk.heroes.katara.client.render
 
-import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import net.minecraft.client.model.ModelData
 import net.minecraft.client.model.ModelPart
 import net.minecraft.client.model.TexturedModelData
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.entity.model.SinglePartEntityModel
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.LivingEntityRenderState
 
 class WaterBendingEntityModel(val modelPart: ModelPart) :
-    SinglePartEntityModel<WaterBendingEntity>(RenderLayer::getEntityTranslucent) {
-    override fun setAngles(entity: WaterBendingEntity?, f: Float, g: Float, h: Float, i: Float, j: Float) {
-    }
+    EntityModel<LivingEntityRenderState>(modelPart, RenderLayer::getEntityTranslucent) {
 
     companion object {
         fun getTexturedModelData(): TexturedModelData {
@@ -19,7 +17,7 @@ class WaterBendingEntityModel(val modelPart: ModelPart) :
         }
     }
 
-    override fun getPart(): ModelPart {
-        return modelPart
+    override fun setAngles(state: LivingEntityRenderState?) {
+        super.setAngles(state)
     }
 }

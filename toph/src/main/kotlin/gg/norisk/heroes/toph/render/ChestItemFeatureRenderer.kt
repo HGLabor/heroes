@@ -1,5 +1,6 @@
 package gg.norisk.heroes.toph.render
 
+/*
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.feature.FeatureRenderer
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
@@ -268,3 +269,4 @@ class ChestItemFeatureRenderer<T : LivingEntity, M : EntityModel<T>>(
         }
     }
 }
+*/

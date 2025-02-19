@@ -12,7 +12,6 @@ import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.waterBendingDistance
-import gg.norisk.heroes.katara.client.render.HealingWaterFeatureRenderer
 import gg.norisk.heroes.katara.client.sound.WaterHealingSoundInstance
 import gg.norisk.heroes.katara.entity.IKataraEntity
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
@@ -89,7 +88,7 @@ object HealingAbility {
 
     fun initClient() {
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register(LivingEntityFeatureRendererRegistrationCallback { entityType, entityRenderer, registrationHelper, context ->
-            registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer))
+            //TODO 1.21.4 registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer))
         })
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
             val player = MinecraftClient.getInstance().player ?: return@register
@@ -143,7 +142,7 @@ object HealingAbility {
         icon = {
             Components.item(itemStack(Items.POTION) {
                 setPotion(
-                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                    MinecraftClient.getInstance().world!!.registryManager.getOrThrow(RegistryKeys.POTION)
                         .getEntry(Potions.REGENERATION.value())
                 )
             })
@@ -176,7 +175,7 @@ object HealingAbility {
         override fun getIconComponent(): Component {
             return Components.item(itemStack(Items.POTION) {
                 setPotion(
-                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                    MinecraftClient.getInstance().world!!.registryManager.getOrThrow(RegistryKeys.POTION)
                         .getEntry(Potions.REGENERATION.value())
                 )
             })

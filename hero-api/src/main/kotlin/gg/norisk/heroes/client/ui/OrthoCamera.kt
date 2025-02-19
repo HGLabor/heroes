@@ -8,7 +8,6 @@ import gg.norisk.heroes.common.hero.HeroManager
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.utils.OldAnimation
-import me.cortex.nvidium.Nvidium
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.math.MathHelper
@@ -34,7 +33,7 @@ object OrthoCamera {
                 mcCoroutineTask(sync = true, client = true) {
                     if (isEnabled) {
                         if (FabricLoader.getInstance().isModLoaded("nvidium")) {
-                            Nvidium.FORCE_DISABLE = false
+                            //me.cortex.nvidium.Nvidium.FORCE_DISABLE = false
                             MinecraftClient.getInstance()?.worldRenderer?.reload()
                         }
                         MinecraftClient.getInstance().setScreen(null)

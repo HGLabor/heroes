@@ -26,7 +26,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         }
         val registryManager =
             if (isServer) serverOrThrow.registryManager else MinecraftClient.getInstance().world?.registryManager
-        val nbt = value.encode(registryManager) as NbtCompound
+        val nbt = value.toNbt(registryManager) as NbtCompound
         val string = NbtHelper.toNbtProviderString(nbt)
         encoder.encodeString(string)
     }

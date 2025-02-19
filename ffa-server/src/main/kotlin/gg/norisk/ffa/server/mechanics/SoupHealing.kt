@@ -4,11 +4,10 @@ import gg.norisk.heroes.common.ffa.experience.ExperienceRegistry
 import gg.norisk.heroes.common.ffa.experience.addXp
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
-import net.minecraft.util.TypedActionResult
 import net.minecraft.world.World
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 
@@ -17,13 +16,13 @@ object SoupHealing {
     const val SOUP_HEAL = 7F
     fun onPotentialSoupUse(
         player: PlayerEntity, item: Item,
-        cir: CallbackInfoReturnable<TypedActionResult<ItemStack>>,
+        cir: CallbackInfoReturnable<ActionResult>,
         world: World,
         hand: Hand
     ) {
         val consumedSoup = potentialSoupUse(player, item)
 
-        if (consumedSoup) cir.returnValue = TypedActionResult.pass(ItemStack(Items.BOWL))
+        if (consumedSoup) cir.returnValue = ActionResult.PASS
     }
 
     fun potentialSoupUse(

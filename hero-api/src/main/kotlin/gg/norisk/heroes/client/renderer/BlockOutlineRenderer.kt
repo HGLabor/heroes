@@ -4,6 +4,7 @@ import gg.norisk.heroes.common.utils.toVec
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.render.VertexRendering
 import net.minecraft.client.render.WorldRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.BlockPos
@@ -82,6 +83,6 @@ object BlockOutlineRenderer {
         m: Float
     ) {
         val vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getDebugFilledBox())
-        WorldRenderer.renderFilledBox(matrixStack, vertexConsumer, d, e, f, g, h, i, j, k, l, m)
+        VertexRendering.drawFilledBox(matrixStack, vertexConsumer, d, e, f, g, h, i, j, k, l, m)
     }
 }

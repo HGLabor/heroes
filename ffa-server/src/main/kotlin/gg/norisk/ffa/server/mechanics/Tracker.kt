@@ -7,15 +7,13 @@ import net.minecraft.item.Items
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Hand
-import net.minecraft.util.TypedActionResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.silkmc.silk.core.item.itemStack
 import net.silkmc.silk.core.item.setCustomName
 import net.silkmc.silk.core.server.players
-import net.silkmc.silk.core.text.sendText
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import net.silkmc.silk.core.text.literalText
 import kotlin.math.sqrt
 
 object Tracker {
@@ -33,7 +31,6 @@ object Tracker {
     fun onTrackerUse(
         playerEntity: PlayerEntity,
         stack: ItemStack,
-        cir: CallbackInfoReturnable<TypedActionResult<ItemStack>>,
         world: World,
         hand: Hand
     ) {
@@ -42,12 +39,12 @@ object Tracker {
             val nearestPlayer = player.nearestPlayerInfo()?.first
             if (nearestPlayer != null) {
                 val distance = player.nearestPlayerInfo()?.second?.toInt()
-                player.sendText {
+                player.sendMessage(literalText {
                     text(nearestPlayer.name.string)
                     text(" ist ")
                     text(distance.toString())
                     text(" Blöcke entfernt")
-                }
+                })
                 player.networkHandler.sendPacket(
                     PlayerSpawnPositionS2CPacket(
                         BlockPos(
@@ -58,9 +55,9 @@ object Tracker {
                     )
                 )
             } else {
-                player.sendText("Es konnte kein Spieler gefunden werden") {
+                player.sendMessage(literalText("Es konnte kein Spieler gefunden werden") {
                     color = 0xFF4B4B
-                }
+                })
             }
         }
     }
