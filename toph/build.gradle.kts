@@ -1,3 +1,5 @@
+version = "1.1.0"
+
 dependencies {
     implementation(project(":hero-api", configuration = "namedElements"))
     implementation(project(":datatracker", configuration = "namedElements"))

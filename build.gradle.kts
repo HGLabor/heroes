@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val snapshot = false
+
 plugins {
   alias(libs.plugins.spotless)
   alias(libs.plugins.nexusPublish)
@@ -93,16 +95,7 @@ subprojects {
   apply(plugin = "kotlin")
   apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
-  //ich weiß das ist kriminell aber
-  version = rootProject.libs.versions.minecraft.get() + "-" + when (name) {
-    "hero-api" -> "1.3.1"
-    "katara" -> "1.1.0"
-    "aang" -> "1.1.0"
-    "toph" -> "1.1.0"
-    "ffa-server" -> "1.3.17"
-    "datatracker" -> "1.0.17"
-    else -> version
-  } //+ "-SNAPSHOT"
+  version = "${rootProject.libs.versions.minecraft.get()}-${version}${if (snapshot) "-SNAPSHOT" else ""}"
 
   dependencies {
     "compileOnly"(rootProject.libs.annotations)
