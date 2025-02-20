@@ -12,6 +12,7 @@ dependencies {
     api(project(":katara", configuration = "namedElements"))
     api(project(":aang", configuration = "namedElements"))
     api(project(":toph", configuration = "namedElements"))
+    api(project(":spiderman", configuration = "namedElements"))
 
     modApi(libs.bundles.fabric)
     modApi(libs.bundles.silk)

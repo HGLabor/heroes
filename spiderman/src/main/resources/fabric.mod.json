@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "name": "Spiderman",
+  "id": "spiderman",
+  "version": "${version}",
+  "description": "Spiderman",
+  "authors": [
+    "NoRiskk",
+    "Fabi.exe"
+  ],
+  "icon": "assets/spiderman/icon.png",
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.spiderman.SpidermanManager"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.spiderman.SpidermanManager"
+      }
+    ],
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "gg.norisk.heroes.spiderman.SpidermanManager"
+      }
+    ]
+  },
+  "mixins": [
+    "spiderman.mixins.json"
+  ],
+  "accessWidener": "spiderman.accesswidener",
+  "depends": {
+    "java": ">=21",
+    "minecraft": "*",
+    "fabric": "*",
+    "fabric-language-kotlin": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "hero-api"
+      }
+    }
+  }
+}
