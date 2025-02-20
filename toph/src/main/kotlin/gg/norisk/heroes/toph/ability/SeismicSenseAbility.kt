@@ -56,7 +56,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
         client {
             this.keyBind = HeroKeyBindings.fourthKeyBinding
 
-            WorldRenderEvents.AFTER_TRANSLUCENT.register { context ->
+            WorldRenderEvents.BEFORE_DEBUG_RENDER.register { context ->
                 val world = context.world()
                 val player = MinecraftClient.getInstance().player ?: return@register
                 val matrices = context.matrixStack() ?: return@register

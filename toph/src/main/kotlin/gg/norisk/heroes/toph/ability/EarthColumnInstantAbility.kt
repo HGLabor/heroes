@@ -91,7 +91,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
     init {
         client {
             this.keyBind = HeroKeyBindings.thirdKeyBind
-            WorldRenderEvents.AFTER_TRANSLUCENT.register {
+            WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
                 val world = it.world()
                 val player = MinecraftClient.getInstance().player ?: return@register
                 val matrices = it.matrixStack() ?: return@register
