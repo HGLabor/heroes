@@ -94,7 +94,7 @@ object KitEditorManager {
 
         ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
             val item = entity as? ItemEntity? ?: return@register
-            if (item.world == world) {
+            if (item.world == this.world) {
                 entity.discard()
             }
         }
