@@ -48,7 +48,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlin.time.Duration.Companion.seconds
 
-val SeismicSenseShader = "shaders/post/seismic_sense.json".toId()
+val SeismicSenseShader = "seismic_sense".toId()
 val SeismicSenseKey = "hasSeismicSense"
 
 val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
@@ -87,7 +87,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
                 if (player.hasSeismicSense) {
                     player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, client = true, delay = 0.32.seconds) {
                         val gameRenderer = MinecraftClient.getInstance().gameRenderer as GameRendererAccessor
-                        gameRenderer.invokeLoadPostProcessor(SeismicSenseShader)
+                        gameRenderer.invokeSetPostProcessor(SeismicSenseShader)
                         player.spawnSeismicSenseGlowCircle()
                         player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, delay = 90.ticks, client = true) {
                             MinecraftClient.getInstance().gameRenderer.clearPostProcessor()

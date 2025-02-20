@@ -3,6 +3,7 @@ package gg.norisk.heroes.katara.client.render
 import com.mojang.blaze3d.systems.RenderSystem
 import gg.norisk.heroes.katara.KataraManager.toId
 import gg.norisk.heroes.katara.ability.HealingAbility.isReceivingWaterHealing
+import gg.norisk.utils.ext.EntityRenderStateExt
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
@@ -10,17 +11,18 @@ import net.minecraft.client.render.*
 import net.minecraft.client.render.entity.feature.FeatureRenderer
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
 import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.Identifier
+import net.minecraft.util.TriState
 import net.minecraft.util.Util
 import org.joml.Matrix4f
 
-/*
 @Environment(value = EnvType.CLIENT)
-class HealingWaterFeatureRenderer<T : Entity, M : EntityModel<T>>(featureRendererContext: FeatureRendererContext<T, M>) :
-    FeatureRenderer<T, M>(featureRendererContext) {
+class HealingWaterFeatureRenderer(featureRendererContext: FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>) :
+    FeatureRenderer<EntityRenderState, EntityModel<EntityRenderState>>(featureRendererContext) {
     companion object {
         val healingWaterTexture = "textures/overlay/healing_water.png".toId()
 
@@ -34,7 +36,7 @@ class HealingWaterFeatureRenderer<T : Entity, M : EntityModel<T>>(featureRendere
                 .texture(
                     RenderPhase.Texture(
                         Identifier.ofVanilla("textures/entity/creeper/creeper_armor.png"),
-                        true,
+                        TriState.TRUE,
                         false
                     )
                 )
@@ -57,27 +59,27 @@ class HealingWaterFeatureRenderer<T : Entity, M : EntityModel<T>>(featureRendere
     }
 
     override fun render(
-        matrixStack: MatrixStack,
+        matrices: MatrixStack,
         vertexConsumerProvider: VertexConsumerProvider,
-        i: Int,
-        entity: T,
-        f: Float,
-        g: Float,
-        h: Float,
-        j: Float,
-        k: Float,
-        l: Float
+        light: Int,
+        state: EntityRenderState,
+        limbAngle: Float,
+        limbDistance: Float
     ) {
+        val entity = (state as EntityRenderStateExt).nrc_entity ?: return
         val livingEntity = entity as? LivingEntity? ?: return
         if (livingEntity.isReceivingWaterHealing) {
+            val h = MinecraftClient.getInstance().renderTickCounter.getTickDelta(false)
             val m = (entity as Entity).age.toFloat() + h
-            val entityModel: EntityModel<T> = this.contextModel
-            entityModel.animateModel(entity, f, g, h)
-            this.contextModel.copyStateTo(entityModel)
+            //val entityModel: EntityModel<T> = this.contextModel
+            //this.contextModel.setAngles(state)
+            //this.contextModel.toString()
+            //entityModel.animateModel(entity, f, g, h)
+            //this.contextModel.copyStateTo(entityModel)
             val vertexConsumer = vertexConsumerProvider.getBuffer(LAYER)
-            entityModel.setAngles(entity, f, g, j, k, l)
-            entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV)
+            //entityModel.setAngles(entity, f, g, j, k, l)
+            this.contextModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV)
+            // entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV)
         }
     }
 }
-*/

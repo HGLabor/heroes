@@ -15,6 +15,7 @@ import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.player.ffaPlayer
+import gg.norisk.heroes.common.utils.oldTeleport
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
@@ -47,7 +48,7 @@ object SelectorServerManager {
             player.changeGameMode(GameMode.SURVIVAL)
             player.isFFA = true
             val spawn = server.overworld.findSpawnLocation().toCenterPos()
-            player.teleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f, true)
+            player.oldTeleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f)
             player.setArenaReady()
         }
         ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join { handler, sender, server ->
@@ -181,7 +182,7 @@ object SelectorServerManager {
             this,
         )
         val spawn = server.overworld.getCenter().toCenterPos()
-        this.teleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f, true)
+        this.oldTeleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f, true)
         scoreboards[uuid]?.hideFromPlayer(this)
     }
 }
