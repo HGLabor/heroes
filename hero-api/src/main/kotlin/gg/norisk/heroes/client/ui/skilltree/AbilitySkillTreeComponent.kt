@@ -11,11 +11,9 @@ import io.wispforest.owo.ui.container.FlowLayout
 import io.wispforest.owo.ui.core.*
 import io.wispforest.owo.ui.util.NinePatchTexture
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.render.BufferRenderer
-import net.minecraft.client.render.GameRenderer
-import net.minecraft.client.render.Tessellator
+import net.minecraft.client.gl.ShaderProgramKeys
+import net.minecraft.client.render.*
 import net.minecraft.client.render.VertexFormat.DrawMode
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.sound.SoundEvents
@@ -68,6 +66,7 @@ class AbilitySkillTreeComponent(
             val divider = 240f
             RenderSystem.setShaderColor(divider / 255f, divider / 255f, divider / 255f, 1f);
             context.drawTexture(
+                RenderLayer::getGuiTextured,
                 ability.getBackgroundTexture(),
                 component.x(),
                 component.y(),
@@ -171,6 +170,7 @@ class AbilitySkillTreeComponent(
         matrices.push()
         matrices.translate(0f, 0f, 5.0f)
         context.drawTexture(
+            RenderLayer::getGuiTextured,
             shadow,
             scroll.x(),
             scroll.y(),
@@ -253,6 +253,7 @@ class AbilitySkillTreeComponent(
                         box.surface { context2, component ->
                             val root = "textures/gui/root_panel.png".toId()
                             context2.drawTexture(
+                                RenderLayer::getGuiTextured,
                                 root,
                                 component.x(),
                                 component.y(),
@@ -270,6 +271,7 @@ class AbilitySkillTreeComponent(
                                 val root =
                                     Identifier.ofVanilla("textures/gui/sprites/advancements/goal_frame_obtained.png")
                                 owoUIDrawContext.drawTexture(
+                                    RenderLayer::getGuiTextured,
                                     root,
                                     parentComponent.x(),
                                     parentComponent.y(),
@@ -290,6 +292,7 @@ class AbilitySkillTreeComponent(
                         box.surface { context2, component ->
                             val root = Identifier.ofVanilla("textures/gui/sprites/advancements/goal_frame_obtained.png")
                             context2.drawTexture(
+                                RenderLayer::getGuiTextured,
                                 root,
                                 component.x(),
                                 component.y(),
@@ -307,6 +310,7 @@ class AbilitySkillTreeComponent(
                                 val root =
                                     Identifier.ofVanilla("textures/gui/sprites/advancements/goal_frame_unobtained.png")
                                 owoUIDrawContext.drawTexture(
+                                    RenderLayer::getGuiTextured,
                                     root,
                                     parentComponent.x(),
                                     parentComponent.y(),
@@ -329,6 +333,7 @@ class AbilitySkillTreeComponent(
                         box.surface { owoUIDrawContext, parentComponent ->
                             val root = "textures/gui/goal_frame_dark.png".toId()
                             owoUIDrawContext.drawTexture(
+                                RenderLayer::getGuiTextured,
                                 root,
                                 parentComponent.x(),
                                 parentComponent.y(),
@@ -447,7 +452,7 @@ class AbilitySkillTreeComponent(
 
         RenderSystem.enableBlend()
         RenderSystem.defaultBlendFunc()
-        RenderSystem.setShader { GameRenderer.getPositionColorProgram() }
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR)
         BufferRenderer.drawWithGlobalProgram(buffer.end())
     }
 

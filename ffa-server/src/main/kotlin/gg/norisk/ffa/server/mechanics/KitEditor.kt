@@ -26,6 +26,7 @@ import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
 import gg.norisk.heroes.common.utils.PlayStyle
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AllowDamage
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack

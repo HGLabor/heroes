@@ -5,8 +5,8 @@ import gg.norisk.ffa.server.mechanics.SoupHealing;
 import gg.norisk.ffa.server.mechanics.Tracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,11 +20,11 @@ public abstract class ItemStackMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    public void onUse(World world, PlayerEntity playerEntity, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+    public void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         ItemStack itemStack = (ItemStack) (Object) this;
         if (!KitEditor.INSTANCE.isUHC()) {
-            SoupHealing.INSTANCE.onPotentialSoupUse(playerEntity, itemStack.getItem(), cir, world, hand);
+            SoupHealing.INSTANCE.onPotentialSoupUse(user, itemStack.getItem(), cir, world, hand);
         }
-        Tracker.INSTANCE.onTrackerUse(playerEntity, itemStack, cir, world, hand);
+        Tracker.INSTANCE.onTrackerUse(user, itemStack, world, hand);
     }
 }

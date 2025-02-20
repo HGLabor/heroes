@@ -4,17 +4,14 @@ import gg.norisk.heroes.toph.ability.SeismicSenseAbilityKt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
-    @Shadow
-    abstract void loadPostProcessor(Identifier identifier);
+
 
     @Inject(at = @At("HEAD"), method = "togglePostProcessorEnabled", cancellable = true)
     private void togglePostProcessorEnabledInjection(CallbackInfo ci) {
@@ -25,7 +22,8 @@ public abstract class GameRendererMixin {
     private void onCameraEntitySet(Entity entity, CallbackInfo ci) {
         var player = MinecraftClient.getInstance().player;
         if (player != null && SeismicSenseAbilityKt.getHasSeismicSense(player)) {
-            this.loadPostProcessor(SeismicSenseAbilityKt.getSeismicSenseShader());
+            // MinecraftClient.getInstance().getShaderLoader().
+            //TODO this.loadPostProcessor(SeismicSenseAbilityKt.getSeismicSenseShader());
         }
     }
 }

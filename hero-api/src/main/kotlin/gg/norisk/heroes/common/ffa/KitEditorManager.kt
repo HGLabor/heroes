@@ -46,7 +46,7 @@ object KitEditorManager {
         it.inventory.main.set(0, Items.STONE_SWORD.defaultStack)
     }
     var onBack: (ServerPlayerEntity) -> Unit = {
-        it.teleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f)
+        it.teleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f, true)
     }
     private val kitEditorSpawn = Vec3d(0.5, 90.5, 0.5)
 
@@ -94,7 +94,7 @@ object KitEditorManager {
 
         ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
             val item = entity as? ItemEntity? ?: return@register
-            if (item.world == world) {
+            if (item.world == this.world) {
                 entity.discard()
             }
         }
@@ -105,7 +105,7 @@ object KitEditorManager {
                 player.changeGameMode(GameMode.ADVENTURE)
                 mcCoroutineTask(sync = false, client = false) {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
-                    println("Loaded ${ffaPlayer}")
+                    logger.info("Loaded ${ffaPlayer}")
                     if (ffaPlayer.inventorySorting == null) {
                         resetInventory.invoke(player)
                         ffaPlayer.inventorySorting = player.toDatabaseInventory()
@@ -181,7 +181,8 @@ object KitEditorManager {
             kitEditorSpawn.z,
             PositionFlag.VALUES,
             0f,
-            0f
+            0f,
+            true
         )
         player.playSoundToPlayer(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 0.3f, 1f)
         player.serverWorld.syncWorldEvent(2003, player.blockPos, 0)
@@ -196,6 +197,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ItemStackParticleEffect(ParticleTypes.ITEM, ItemStack(Items.ENDER_EYE)),
+                true,
                 false,
                 d,
                 e,
@@ -214,6 +216,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ParticleTypes.PORTAL,
+                true,
                 false,
                 d + cos(g) * 5.0,
                 e - 0.4,
@@ -227,6 +230,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ParticleTypes.PORTAL,
+                true,
                 false,
                 d + cos(g) * 5.0,
                 e - 0.4,

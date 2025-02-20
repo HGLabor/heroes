@@ -24,6 +24,7 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.Camera
 import net.minecraft.entity.Entity
+import net.minecraft.entity.SpawnReason
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Items
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket
@@ -80,7 +81,7 @@ object TornadoAbility {
     }
 
     private fun ServerPlayerEntity.summonTornado() {
-        val tornadoEntity = EntityRegistry.TORNADO.create(this.serverWorld) ?: return
+        val tornadoEntity = EntityRegistry.TORNADO.create(this.serverWorld, SpawnReason.MOB_SUMMONED) ?: return
         aang.aang_tornadoEntity = tornadoEntity
         tornadoEntity.setPosition(this.pos)
         tornadoEntity.ownerId = this.id

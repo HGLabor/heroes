@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
     @ModifyExpressionValue(
-            method = "travel",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isOnGround()Z", ordinal = 2)
+            method = "travelMidAir",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isOnGround()Z")
     )
     private boolean isOnGroundInjection(boolean original) {
         return AirScooterAbility.INSTANCE.handleDrag((Entity) (Object) this) || original;

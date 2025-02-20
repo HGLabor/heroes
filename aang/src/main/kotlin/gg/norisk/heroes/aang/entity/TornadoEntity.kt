@@ -34,7 +34,7 @@ class TornadoEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
     var rotationTracker: PlayerRotationTracker? = PlayerRotationTracker()
 
     init {
-        this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 2.5
+        this.getAttributeInstance(EntityAttributes.STEP_HEIGHT)?.baseValue = 2.5
     }
 
     fun getLerpedScale(f: Float): Float {
@@ -184,7 +184,7 @@ class TornadoEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
         val owner = (world as ServerWorld).getEntityById(ownerId) as? PlayerEntity? ?: return
         val rotationTracker = this.rotationTracker
         if (rotationTracker != null) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue =
+            this.getAttributeInstance(EntityAttributes.SCALE)?.baseValue =
                 rotationTracker.getPercentageBetween(1f, 10f).toDouble()
         }
     }

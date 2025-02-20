@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
+import net.minecraft.entity.SpawnReason
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Items
@@ -132,7 +133,7 @@ object AirBallAbility {
         var soundFlag = true
         windCharges.forEach {
             val scaleAttribute =
-                it.attributes.getCustomInstance(EntityAttributes.GENERIC_SCALE) ?: return@forEach
+                it.attributes.getCustomInstance(EntityAttributes.SCALE) ?: return@forEach
             scaleAttribute.baseValue += forceStrength
             if (scaleAttribute.baseValue < 0.5) {
                 scaleAttribute.baseValue = 0.5
@@ -151,7 +152,7 @@ object AirBallAbility {
     private fun ServerPlayerEntity.launchAnyAirBall(packet: MousePacket) {
         if (packet.isLeft() && packet.isClicked()) {
             val windCharges = getLaunchableWindCharges().randomOrNull()
-            windCharges?.damage(this.damageSources.playerAttack(this), 0f)
+            windCharges?.damage(serverWorld, this.damageSources.playerAttack(this), 0f)
         } else if (packet.isMiddle() && packet.isClicked()) {
             getLaunchableWindCharges().randomOrNull()?.launchBoomerang()
         }
@@ -226,7 +227,7 @@ object AirBallAbility {
                     (player as IAangPlayer).aang_airBallSpinTracker.update(player)
 
                     val progress = player.aang.aang_airBallSpinTracker.getSpinProgress().toDouble()
-                    player.currentBendingEntity?.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue =
+                    player.currentBendingEntity?.getAttributeInstance(EntityAttributes.SCALE)?.baseValue =
                         2 * (progress / 100.0)
 
                     if (player.aang_airBallSpinTracker.hasSpunWildly()) {
@@ -244,7 +245,7 @@ object AirBallAbility {
         override fun onStart(player: PlayerEntity, abilityScope: AbilityScope) {
             super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
-                val airScooter = EntityRegistry.AIR_SCOOTER.create(player.world) ?: return
+                val airScooter = EntityRegistry.AIR_SCOOTER.create(player.world, SpawnReason.MOB_SUMMONED) ?: return
                 player.isAirBending = true
                 airScooter.ownerId = player.id
                 airScooter.bendingType = AirScooterEntity.Type.PROJECTILE

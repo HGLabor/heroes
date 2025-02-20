@@ -39,6 +39,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.entity.model.BipedEntityModel.ArmPose
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
+import net.minecraft.entity.SpawnReason
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
 import net.minecraft.item.Items
@@ -109,7 +110,7 @@ object WaterBendingAbility {
                     }
                 }
                 if (lastPos != null) {
-                    val water = EntityRegistry.WATER_BENDING.create(player.serverWorld) ?: return
+                    val water = EntityRegistry.WATER_BENDING.create(player.serverWorld,SpawnReason.MOB_SUMMONED) ?: return
                     /*player.serverWorld.setBlockState(
                         clipWithDistance.blockPos,
                         Fluids.FLOWING_WATER.getFlowing(1, false).blockState
@@ -124,7 +125,7 @@ object WaterBendingAbility {
                     if (player.waterCircleAmount > 0) {
                         player.waterCircleAmount -= 1
                         player.sound(SoundRegistry.WATER_CIRCLE_ADD, 0.4f, Random.nextDouble(1.5, 2.0))
-                        val water = EntityRegistry.WATER_BENDING.create(player.serverWorld) ?: return
+                        val water = EntityRegistry.WATER_BENDING.create(player.serverWorld, SpawnReason.MOB_SUMMONED) ?: return
                         water.setPosition(player.getWaterBendingPos())
                         water.ownerId = player.id
                         water.isInitial = false

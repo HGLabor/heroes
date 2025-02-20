@@ -92,13 +92,13 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             val player = it.entity as? PlayerEntity ?: return@listen
             if (it.key == EarthSurfKey) {
                 if (player.isEarthSurfing()) {
-                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue =
+                    player.attributes.getCustomInstance(EntityAttributes.STEP_HEIGHT)?.baseValue =
                         earthSurfStepHeight.getValue(player.uuid)
                     if (player.world.isClient) {
                         MinecraftClient.getInstance().soundManager.play(StoneSlideSoundInstance(player))
                     }
                 } else {
-                    player.attributes.getCustomInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
+                    player.attributes.getCustomInstance(EntityAttributes.STEP_HEIGHT)?.baseValue = 0.6
                 }
             }
         }
@@ -133,8 +133,8 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
         if (player is ServerPlayerEntity) {
             player.stopEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 0.6
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.removeModifier(EARTH_SURF_SPEED_BOOST.id)
+            player.getAttributeInstance(EntityAttributes.STEP_HEIGHT)?.baseValue = 0.6
+            player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)?.removeModifier(EARTH_SURF_SPEED_BOOST.id)
         } else if (MinecraftClient.getInstance().player == player) {
             player.showSpeedlines = false
         }
@@ -146,7 +146,7 @@ val EarthSurfAbility = object : ToggleAbility("Earth Surf") {
             player.playEmote("earth-surfing".toEmote())
             player.setSyncedData(EarthSurfKey, true)
             runCatching {
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                     ?.addTemporaryModifier(
                         EntityAttributeModifier(
                             "earth_surf".toId(),

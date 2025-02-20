@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +20,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damageShield(F)V"))
-    private void injected(Args args, DamageSource source, float amount) {
+    private void injected(Args args, ServerWorld world, DamageSource source, float amount) {
         if (source.getSource() instanceof IceShardEntity) {
             KataraManager.INSTANCE.getLogger().info("Shield auf Damage wurde halbiert");
             float damage = args.get(0);

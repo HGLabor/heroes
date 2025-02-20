@@ -90,7 +90,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
                         gameRenderer.invokeLoadPostProcessor(SeismicSenseShader)
                         player.spawnSeismicSenseGlowCircle()
                         player.toph.toph_seismicTasks += mcCoroutineTask(sync = true, delay = 90.ticks, client = true) {
-                            MinecraftClient.getInstance().gameRenderer.disablePostProcessor()
+                            MinecraftClient.getInstance().gameRenderer.clearPostProcessor()
                         }
                     }
                 } else {
@@ -135,7 +135,7 @@ val SeismicSenseAbility = object : PressAbility("Seismic Sense") {
         if (player is ServerPlayerEntity) {
             player.hasSeismicSense = false
         } else {
-            MinecraftClient.getInstance().gameRenderer.disablePostProcessor()
+            MinecraftClient.getInstance().gameRenderer.clearPostProcessor()
         }
     }
 

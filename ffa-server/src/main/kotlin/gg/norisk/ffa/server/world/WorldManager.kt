@@ -242,7 +242,8 @@ object WorldManager {
             realCoordinateZ,
             PositionFlag.VALUES,
             this.yaw,
-            this.pitch
+            this.pitch,
+            true
         )
     }
 

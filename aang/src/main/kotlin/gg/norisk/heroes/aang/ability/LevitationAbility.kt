@@ -103,8 +103,8 @@ object LevitationAbility {
         private fun cleanUp(player: PlayerEntity) {
             if (player is ServerPlayerEntity) {
                 player.isAirLevitating = false
-                player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue =
-                    EntityAttributes.GENERIC_GRAVITY.value().defaultValue
+                player.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue =
+                    EntityAttributes.GRAVITY.value().defaultValue
             }
         }
 
@@ -112,7 +112,7 @@ object LevitationAbility {
             super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 player.isAirLevitating = true
-                player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.01
+                player.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue = 0.01
             }
         }
 

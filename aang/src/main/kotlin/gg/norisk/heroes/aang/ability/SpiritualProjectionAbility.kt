@@ -52,7 +52,6 @@ import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Identifier
-import net.minecraft.util.TypedActionResult
 import net.minecraft.world.TeleportTarget
 import net.silkmc.silk.commands.command
 import net.silkmc.silk.core.entity.modifyVelocity
@@ -102,9 +101,9 @@ object SpiritualProjectionAbility {
             if (player.isSpiritualTransparent && !world.isClient) {
                 player.cancelSpiritMode()
                 //TODO
-                return@UseItemCallback TypedActionResult.fail(player.getStackInHand(hand))
+                return@UseItemCallback ActionResult.FAIL
             }
-            return@UseItemCallback TypedActionResult.pass(player.getStackInHand(hand))
+            return@UseItemCallback ActionResult.PASS
         })
 
         AttackEntityCallback.EVENT.register(AttackEntityCallback { player, world, hand, entity, hitResult ->

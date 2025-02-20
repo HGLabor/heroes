@@ -41,8 +41,8 @@ import kotlin.time.toJavaDuration
 class WaterBendingEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
     PathAwareEntity(entityType, world) {
     init {
-        this.ignoreCameraFrustum = true
-        //this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.02
+        //this.ignoreCameraFrustum = true
+        //this.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue = 0.02
     }
 
     var positions: MutableList<WaterRender> = mutableListOf<WaterRender>()
@@ -109,7 +109,7 @@ class WaterBendingEntity(entityType: EntityType<out PathAwareEntity>, world: Wor
                         this,
                         boundingBox.expand(2.89)
                     ) { it.isAlive && !it.isSpectator && it.canHit() && it != owner && it !is WaterBendingEntity }) {
-                        otherEntity.damage(this.damageSources.playerAttack(owner), 4f)
+                        otherEntity.damage(world as ServerWorld, this.damageSources.playerAttack(owner), 4f)
                         (otherEntity as? LivingEntity?)?.takeKnockback(1.1, Random.nextDouble(), Random.nextDouble())
                     }
                 }
@@ -312,9 +312,9 @@ class WaterBendingEntity(entityType: EntityType<out PathAwareEntity>, world: Wor
         }
     }
 
-    override fun damage(damageSource: DamageSource, f: Float): Boolean {
+    override fun damage(world: ServerWorld, damageSource: DamageSource, f: Float): Boolean {
         if (damageSource.isOf(DamageTypes.GENERIC_KILL)) {
-            return super.damage(damageSource, f)
+            return super.damage(world, damageSource, f)
         }
         val attacker = damageSource.attacker as? LivingEntity ?: return false
         if (attacker.id == ownerId) {

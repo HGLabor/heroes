@@ -17,7 +17,7 @@ object CombatTag {
         ServerPlayConnectionEvents.DISCONNECT.register(ServerPlayConnectionEvents.Disconnect { handler, server ->
             mcCoroutineTask(sync = true, client = false) {
                 val player = handler.player
-                player.kill()
+                player.kill(player.serverWorld)
             }
         })
         HeroEvents.heroDeathEvent.listen { event ->

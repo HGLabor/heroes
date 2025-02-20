@@ -10,6 +10,7 @@ import gg.norisk.heroes.aang.ability.AirScooterAbility.stopRidingAirBall
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.utils.Easing
 import gg.norisk.utils.OldAnimation
+import net.minecraft.block.Block
 import net.minecraft.entity.*
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
@@ -20,8 +21,10 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.FluidState
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.registry.Registries
+import net.minecraft.registry.entry.RegistryEntryList
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.MathHelper
@@ -29,7 +32,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraft.world.explosion.AdvancedExplosionBehavior
 import net.silkmc.silk.core.entity.modifyVelocity
-import net.silkmc.silk.core.text.broadcastText
 import java.util.*
 import java.util.function.Function
 import kotlin.random.Random
@@ -53,10 +55,10 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
     }
 
     init {
-        this.ignoreCameraFrustum = true
-        this.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT)?.baseValue = 2.0
-        this.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue = 0.0
-        this.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY)?.baseValue = 0.02
+        //this.ignoreCameraFrustum = true
+        this.getAttributeInstance(EntityAttributes.STEP_HEIGHT)?.baseValue = 2.0
+        this.getAttributeInstance(EntityAttributes.SCALE)?.baseValue = 0.0
+        this.getAttributeInstance(EntityAttributes.GRAVITY)?.baseValue = 0.02
     }
 
     // Apply player-controlled movement
@@ -156,7 +158,7 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
 
     private fun handleAirScooterType() {
         noClip = true
-        this.getAttributeInstance(EntityAttributes.GENERIC_SCALE)?.baseValue = startScaleAnimation.get().toDouble()
+        this.getAttributeInstance(EntityAttributes.SCALE)?.baseValue = startScaleAnimation.get().toDouble()
         val owner = getOwner()
         if (owner != null && !world.isClient) {
             setPosition(owner.pos.add(0.0, 0.2, 0.0))
@@ -175,14 +177,14 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
         return false
     }
 
-    override fun damage(damageSource: DamageSource, f: Float): Boolean {
+    override fun damage(world: ServerWorld, damageSource: DamageSource, f: Float): Boolean {
         if (world.isClient) {
             return false
         } else if (this.isDead) {
             return false
         }
         if (damageSource.isOf(DamageTypes.GENERIC_KILL)) {
-            return super.damage(damageSource, f)
+            return super.damage(world, damageSource, f)
         }
         val attacker = damageSource.attacker as? LivingEntity ?: return false
         if (attacker.id == ownerId) {
@@ -231,7 +233,8 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
             this.setSyncedData("BendingType", value.name)
         }
 
-    override fun calculateBoundingBox(): Box {
+
+    override fun calculateDefaultBoundingBox(pos: Vec3d): Box {
         val f = getDimensions(EntityPose.STANDING).withEyeHeight(0f).width / 2.0f
         val g = getDimensions(EntityPose.STANDING).withEyeHeight(0f).height
         val h = 0.15f * scale
@@ -285,7 +288,9 @@ class AirScooterEntity(entityType: EntityType<out PathAwareEntity>, world: World
                     true,
                     false,
                     Optional.of(power),
-                    Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
+                    Registries.BLOCK.getOptional(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map<RegistryEntryList<Block>>(
+                        Function.identity<RegistryEntryList.Named<Block>>()
+                    )
                 ),
                 vec3d.getX(),
                 vec3d.getY(),

@@ -67,7 +67,7 @@ object IceShardAbility {
             super.onStart(player, abilityScope)
             if (player is ServerPlayerEntity) {
                 player.isIceShooting = true
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                     ?.addTemporaryModifier(ICE_SHARD_SLOW_BOOST)
             }
         }
@@ -82,7 +82,7 @@ object IceShardAbility {
         fun cleanUp(player: PlayerEntity) {
             if (player is ServerPlayerEntity) {
                 player.isIceShooting = false
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                     ?.removeModifier(ICE_SHARD_SLOW_BOOST.id)
             }
         }

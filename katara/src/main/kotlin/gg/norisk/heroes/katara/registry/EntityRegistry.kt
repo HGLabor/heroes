@@ -14,6 +14,8 @@ import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
 
 object EntityRegistry {
     val WATER_BENDING: EntityType<WaterBendingEntity> = register("water_bending", { entityType, world ->
@@ -33,9 +35,9 @@ object EntityRegistry {
 
     fun createGenericEntityAttributes(): DefaultAttributeContainer.Builder {
         return PathAwareEntity.createLivingAttributes()
-            .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.80000000298023224)
-            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0).add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.1)
+            .add(EntityAttributes.MOVEMENT_SPEED, 0.80000000298023224)
+            .add(EntityAttributes.FOLLOW_RANGE, 16.0).add(EntityAttributes.MAX_HEALTH, 10.0)
+            .add(EntityAttributes.ATTACK_DAMAGE, 5.0).add(EntityAttributes.ATTACK_KNOCKBACK, 0.1)
     }
 
     private fun <T : Entity> register(
@@ -51,7 +53,11 @@ object EntityRegistry {
                 .apply {
                     requires(HeroesManager.heroesFlag)
                 }
-                .build(null)
+                .build(keyOf(name))
         )
+    }
+
+    private fun keyOf(id: String): RegistryKey<EntityType<*>> {
+        return RegistryKey.of(RegistryKeys.ENTITY_TYPE, id.toId())
     }
 }
