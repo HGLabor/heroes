@@ -11,6 +11,7 @@ import net.minecraft.client.resource.language.I18n
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
+import net.silkmc.silk.core.logging.logger
 import net.silkmc.silk.core.text.literalText
 import java.util.*
 import kotlin.io.path.Path
@@ -32,14 +33,21 @@ object LocalizationManager {
     }
 
     private fun loadAllLanguageFiles() {
-        langDir?.listFiles()?.forEach { langFile ->
-            val locale = runCatching { Locale.of(langFile.nameWithoutExtension) }
-                .onFailure {
-                    print("Localization error: ")
-                    it.printStackTrace()
-                }.getOrNull() ?: defaultLocale
+        if (FabricLoader.getInstance().environmentType == EnvType.SERVER) {
+            FabricLoader.getInstance().getModContainer(HeroesManager.MOD_ID).map { container ->
+                val modAssets = container.rootPath.toFile().resolve("assets/${HeroesManager.MOD_ID}")
+                val langDir = modAssets.resolve("lang")
 
-            LocalizationRegistry.register(locale).registerAllFromFile(langFile)
+                langDir.listFiles()?.forEach { langFile ->
+                    val locale = runCatching { Locale.of(langFile.nameWithoutExtension) }
+                        .onFailure {
+                            print("Localization error: ")
+                            it.printStackTrace()
+                        }.getOrNull() ?: defaultLocale
+                    logger().info("Found lang file for locale $locale")
+                    LocalizationRegistry.register(locale).registerAllFromFile(langFile)
+                }
+            }
         }
     }
 
