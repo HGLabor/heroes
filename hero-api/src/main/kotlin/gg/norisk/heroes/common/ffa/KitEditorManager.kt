@@ -4,20 +4,22 @@ import gg.norisk.heroes.common.HeroesManager.isServer
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.HeroesManager.prefix
 import gg.norisk.heroes.common.HeroesManager.toId
-import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.events.HeroEvents
 import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.common.player.InventorySorting
 import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
+import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.common.utils.PlayStyle
+import gg.norisk.heroes.common.utils.oldTeleport
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.minecraft.block.Blocks
+import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
@@ -45,7 +47,7 @@ object KitEditorManager {
         it.inventory.main.set(0, Items.STONE_SWORD.defaultStack)
     }
     var onBack: (ServerPlayerEntity) -> Unit = {
-        it.teleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f)
+        it.oldTeleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f, true)
     }
     private val kitEditorSpawn = Vec3d(0.5, 90.5, 0.5)
 
@@ -91,13 +93,20 @@ object KitEditorManager {
             }
         })
 
+        ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
+            val item = entity as? ItemEntity? ?: return@register
+            if (item.world == this.world) {
+                entity.discard()
+            }
+        }
+
         ServerEntityEvents.ENTITY_LOAD.register(ServerEntityEvents.Load { entity, world ->
             val player = entity as? ServerPlayerEntity? ?: return@Load
             if (world == this.world) {
                 player.changeGameMode(GameMode.ADVENTURE)
                 mcCoroutineTask(sync = false, client = false) {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
-                    println("Loaded ${ffaPlayer}")
+                    logger.info("Loaded ${ffaPlayer}")
                     if (ffaPlayer.inventorySorting == null) {
                         resetInventory.invoke(player)
                         ffaPlayer.inventorySorting = player.toDatabaseInventory()
@@ -166,14 +175,15 @@ object KitEditorManager {
     }
 
     private fun teleportToKitEditorSpawn(player: ServerPlayerEntity) {
-        player.teleport(
-            world,
+        player.oldTeleport(
+            world!!,
             kitEditorSpawn.x,
             kitEditorSpawn.y,
             kitEditorSpawn.z,
             PositionFlag.VALUES,
             0f,
-            0f
+            0f,
+            true
         )
         player.playSoundToPlayer(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 0.3f, 1f)
         player.serverWorld.syncWorldEvent(2003, player.blockPos, 0)
@@ -188,6 +198,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ItemStackParticleEffect(ParticleTypes.ITEM, ItemStack(Items.ENDER_EYE)),
+                true,
                 false,
                 d,
                 e,
@@ -206,6 +217,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ParticleTypes.PORTAL,
+                true,
                 false,
                 d + cos(g) * 5.0,
                 e - 0.4,
@@ -219,6 +231,7 @@ object KitEditorManager {
             player.serverWorld.spawnParticles(
                 player,
                 ParticleTypes.PORTAL,
+                true,
                 false,
                 d + cos(g) * 5.0,
                 e - 0.4,

@@ -142,7 +142,7 @@ object DebugCommand {
 
     fun PlayerEntity.sendDebugMessage(message: Text) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment) {
-            sendMessage(message)
+            sendMessage(message, false)
         }
     }
 
@@ -185,7 +185,7 @@ object DebugCommand {
                 )
             )
             text(" ${String.format("%.3f", levelInfo.percentageTillNextLevel)}%")
-        })
+        }, false)
     }
 
     fun getProgressBar(

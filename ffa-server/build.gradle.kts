@@ -1,4 +1,4 @@
-version = "1.3.17"
+version = "1.3.21"
 
 val worldEditVersion: String by project
 
@@ -18,12 +18,12 @@ dependencies {
     modApi(libs.bundles.nrc)
     modApi(libs.bundles.performance)
     modApi(libs.owolib)
-    modApi(libs.npcLibApi)
-    modApi(libs.npcLibCommon)
+    modApi(libs.bundles.npcLib)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
     //modImplementation(libs.bundles.cloudnet)
     modCompileOnly(libs.worldedit)
+    modCompileOnly(libs.luckperms)
     includeImplementation(libs.bundles.mongodb)
     modImplementation(libs.hglabor.database.utils) {
         exclude(module = "fabric-api")
@@ -32,7 +32,6 @@ dependencies {
     include(libs.hglabor.database.utils)
     //includeImplementation(libs.bundles.hglaborutils)
 
-    modImplementation(files("../libs/npc-lib-fabric-3.0.0-SNAPSHOT.jar"))
     // modCompileOnly("com.sk89q.worldedit:worldedit-fabric-mc${worldEditVersion}") // Ändere die Versionsnummer entsprechend der gewünschten Version
 
     handleIncludes(includeImplementation)

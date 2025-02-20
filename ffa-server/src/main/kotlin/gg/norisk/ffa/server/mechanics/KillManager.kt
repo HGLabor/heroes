@@ -191,7 +191,7 @@ object KillManager {
             runs {
                 val player = this.source.playerOrThrow
                 if (player.isInCombat()) {
-                    player.kill()
+                    player.kill(player.serverWorld)
                 } else {
                     player.setSelectorReady()
                 }

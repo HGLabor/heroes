@@ -1,26 +1,22 @@
 package gg.norisk.heroes.aang.client.render.entity.model
 
-import gg.norisk.heroes.aang.entity.AirScooterEntity
 import net.minecraft.client.model.*
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.entity.model.SinglePartEntityModel
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 
-class AirScooterEntityModel(modelPart: ModelPart) : SinglePartEntityModel<AirScooterEntity>(
+class AirScooterEntityModel(modelPart: ModelPart) : EntityModel<EntityRenderState>(
+    modelPart,
     RenderLayer::getEntityTranslucent
 ) {
     private val bone: ModelPart = modelPart.getChild("bone")
     private val windCharge: ModelPart = bone.getChild("wind_charge")
     private val wind: ModelPart = bone.getChild("wind")
 
-    override fun setAngles(
-        abstractWindChargeEntity: AirScooterEntity?, f: Float, g: Float, h: Float, i: Float, j: Float
-    ) {
-        windCharge.yaw = -h * 16.0f * ((Math.PI / 180.0).toFloat())
-        wind.yaw = h * 16.0f * ((Math.PI / 180.0).toFloat())
-    }
-
-    override fun getPart(): ModelPart {
-        return this.bone
+    override fun setAngles(state: EntityRenderState) {
+        super.setAngles(state)
+        windCharge.yaw = -state.age * 16.0f * (Math.PI / 180.0).toFloat()
+        wind.yaw = state.age * 16.0f * (Math.PI / 180.0).toFloat()
     }
 
     companion object {

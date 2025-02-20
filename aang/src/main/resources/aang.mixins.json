@@ -18,7 +18,6 @@
     "client.ClientPlayNetworkHandlerMixin",
     "client.GameOptionsMixin",
     "client.GameRendererMixin",
-    "client.HeldItemRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin"
   ]

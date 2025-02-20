@@ -1,6 +1,5 @@
 package gg.norisk.ffa.server.selector
 
-import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.mechanics.Scoreboard
@@ -16,6 +15,7 @@ import gg.norisk.heroes.common.networking.Networking
 import gg.norisk.heroes.common.networking.dto.HeroSelectorPacket
 import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.player.ffaPlayer
+import gg.norisk.heroes.common.utils.oldTeleport
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
@@ -25,6 +25,7 @@ import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.network.packet.s2c.play.PositionFlag
 import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.entry.RegistryEntry
@@ -47,7 +48,7 @@ object SelectorServerManager {
             player.changeGameMode(GameMode.SURVIVAL)
             player.isFFA = true
             val spawn = server.overworld.findSpawnLocation().toCenterPos()
-            player.teleport(server.overworld, spawn.x, spawn.y, spawn.z, 0f, 0f)
+            player.oldTeleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f)
             player.setArenaReady()
         }
         ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join { handler, sender, server ->
@@ -81,8 +82,8 @@ object SelectorServerManager {
             KitEditor.handleKit(this)
         }
         if (!KitEditor.isUHC()) {
-            setSyncedData("duels:OLD_PVP", true)
-            getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED)?.baseValue = 100.0
+            //setSyncedData("duels:OLD_PVP", true)
+            getAttributeInstance(EntityAttributes.ATTACK_SPEED)?.baseValue = 100.0
         }
         hungerManager.foodLevel = 20
         hungerManager.saturationLevel = 5f
@@ -102,9 +103,9 @@ object SelectorServerManager {
             giveItemStack(Items.MUSHROOM_STEW.defaultStack)
         }
         inventory.setStack(8, Tracker.tracker)
-        inventory.setStack(13, ItemStack(Items.BOWL, 8))
-        inventory.setStack(14, ItemStack(Items.RED_MUSHROOM, 8))
-        inventory.setStack(15, ItemStack(Items.BROWN_MUSHROOM, 8))
+        inventory.setStack(13, ItemStack(Items.BOWL, 16))
+        inventory.setStack(14, ItemStack(Items.RED_MUSHROOM, 16))
+        inventory.setStack(15, ItemStack(Items.BROWN_MUSHROOM, 16))
     }
 
     fun PlayerEntity.setUHCItems() {
@@ -165,7 +166,7 @@ object SelectorServerManager {
     }
 
     private fun RegistryKey<Enchantment>.getEntry(world: World): RegistryEntry<Enchantment> {
-        return world.registryManager.get(RegistryKeys.ENCHANTMENT).getEntry(this.value).get()
+        return world.registryManager.getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(this.value).get()
     }
 
     fun ServerPlayerEntity.setSelectorReady() {
@@ -181,7 +182,7 @@ object SelectorServerManager {
             this,
         )
         val spawn = server.overworld.getCenter().toCenterPos()
-        this.teleport(server.overworld, spawn.x, spawn.y, spawn.z, 0f, 0f)
+        this.oldTeleport(server.overworld, spawn.x, spawn.y, spawn.z, PositionFlag.VALUES, 0f, 0f, true)
         scoreboards[uuid]?.hideFromPlayer(this)
     }
 }

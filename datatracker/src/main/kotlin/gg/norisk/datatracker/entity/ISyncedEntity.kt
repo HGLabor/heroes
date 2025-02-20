@@ -52,7 +52,7 @@ fun initSyncedEntitiesClient() {
             for ((clazz, serializer) in registeredTypes) {
                 if (packet.second.clazz == clazz.toString()) {
                     val decodedValue = runCatching { dataTrackerJson.decodeFromString(serializer as KSerializer<Any>, packet.second.value) }.onFailure { it.printStackTrace() }.getOrNull()
-                    logger.info("Setting $entity $packet")
+                    logger.debug("Setting {} {}", entity, packet)
                     entity?.setSyncedData(packet.first.key, decodedValue)
                     break
                 }
@@ -146,7 +146,7 @@ internal fun Entity.writeSyncedNbtData(nbtCompound: NbtCompound) {
                 }
 
                 else -> {
-                    logger.info("NOT SUPPORTED: [$key/$value] ${value::class}")
+                    logger.debug("NOT SUPPORTED: [{}/{}] {}", key, value, value::class)
                 }
             }
         }.onSuccess {}.onFailure {

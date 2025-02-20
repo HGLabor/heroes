@@ -20,7 +20,7 @@ object ClientHeroCommand {
                             text("FFA Player:")
                             emptyLine()
                             text(ConfigManagerClient.JSON.encodeToString(player.ffaPlayer))
-                        })
+                        }, false)
                     }
                 }
             }

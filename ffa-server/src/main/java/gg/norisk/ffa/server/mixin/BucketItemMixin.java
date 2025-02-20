@@ -11,8 +11,8 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,11 +27,15 @@ import org.spongepowered.asm.mixin.*;
 //Thanks to https://github.com/K0LALA/WaterProofLeaves
 @Mixin(BucketItem.class)
 public abstract class BucketItemMixin extends Item {
-    @Shadow @Final private Fluid fluid;
+    @Shadow
+    @Final
+    private Fluid fluid;
 
-    @Shadow public abstract boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult);
+    @Shadow
+    public abstract boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult);
 
-    @Shadow public abstract void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos);
+    @Shadow
+    public abstract void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos);
 
     public BucketItemMixin(Settings settings) {
         super(settings);
@@ -47,21 +51,21 @@ public abstract class BucketItemMixin extends Item {
      * @reason Avoid placing water in leaves without sneaking
      */
     @Overwrite
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = raycast(
                 world, user, this.fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE
         );
         if (blockHitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.pass(itemStack);
+            return ActionResult.PASS;
         } else if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-            return TypedActionResult.pass(itemStack);
+            return ActionResult.PASS;
         } else {
             BlockPos blockPos = blockHitResult.getBlockPos();
             Direction direction = blockHitResult.getSide();
             BlockPos blockPos2 = blockPos.offset(direction);
             if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos2, direction, itemStack)) {
-                return TypedActionResult.fail(itemStack);
+                return ActionResult.FAIL;
             } else if (this.fluid == Fluids.EMPTY) {
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
@@ -72,28 +76,28 @@ public abstract class BucketItemMixin extends Item {
                         world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
                         ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
                         if (!world.isClient) {
-                            Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
+                            Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity) user, itemStack2);
                         }
 
-                        return TypedActionResult.success(itemStack3, world.isClient());
+                        return ActionResult.SUCCESS;
                     }
                 }
 
-                return TypedActionResult.fail(itemStack);
+                return ActionResult.FAIL;
             } else {
                 BlockState blockState = world.getBlockState(blockPos);
                 BlockPos blockPos3 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER && !(blockState.getBlock() instanceof LeavesBlock && !user.isSneaking()) ? blockPos : blockPos2;
                 if (this.placeFluid(user, world, blockPos3, blockHitResult)) {
                     this.onEmptied(user, world, itemStack, blockPos3);
                     if (user instanceof ServerPlayerEntity) {
-                        Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
+                        Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity) user, blockPos3, itemStack);
                     }
 
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
                     ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, user, getEmptiedStack(itemStack, user));
-                    return TypedActionResult.success(itemStack2, world.isClient());
+                    return ActionResult.SUCCESS;
                 } else {
-                    return TypedActionResult.fail(itemStack);
+                    return ActionResult.FAIL;
                 }
             }
         }

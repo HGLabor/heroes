@@ -3,8 +3,8 @@ package gg.norisk.heroes.common.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import gg.norisk.heroes.client.renderer.CameraShaker;
 import gg.norisk.heroes.client.ui.OrthoCamera;
 import net.minecraft.client.MinecraftClient;
@@ -90,7 +90,7 @@ public abstract class GameRendererMixin {
             method = "renderWorld",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/render/RenderTickCounter;ZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
+                    target = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/ObjectAllocator;Lnet/minecraft/client/render/RenderTickCounter;ZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
 
             ),
             index = 6
@@ -99,7 +99,7 @@ public abstract class GameRendererMixin {
         if (OrthoCamera.INSTANCE.isEnabled()) {
             float tickDelta = tickCounter.getTickDelta(true);
             Matrix4f mat = OrthoCamera.INSTANCE.createOrthoMatrix(tickDelta, 0.0F);
-            RenderSystem.setProjectionMatrix(mat, VertexSorter.BY_Z);
+            RenderSystem.setProjectionMatrix(mat, ProjectionType.ORTHOGRAPHIC);
             return mat;
         }
         return projMat;

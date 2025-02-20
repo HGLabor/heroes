@@ -19,8 +19,9 @@ object EntityEvents {
 
     open class EntityRendererEvent(
         val entity: Entity,
-        val f: Float,
-        val g: Float,
+        val x: Double,
+        val y: Double,
+        val z: Double,
         val matrixStack: MatrixStack,
         val vertexConsumerProvider: VertexConsumerProvider,
         val light: Int

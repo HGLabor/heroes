@@ -20,7 +20,7 @@ class IceShardEntity(entityType: EntityType<out PersistentProjectileEntity>, wor
 
     override fun tick() {
         super.tick()
-        if (!inGround) {
+        if (!isInGround) {
             if (world.isClient) {
                 if (Random.nextBoolean() && Random.nextBoolean()) {
                     world.addParticle(ParticleTypes.SNOWFLAKE, this.x, this.y, this.z, 0.0, 0.0, 0.0)

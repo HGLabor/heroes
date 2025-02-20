@@ -1,5 +1,6 @@
 package gg.norisk.ffa.server.mechanics.lootdrop
 
+import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.mechanics.KitEditor
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ExperienceLootdropItem
 import gg.norisk.ffa.server.mechanics.lootdrop.loottable.ItemStackLootdropItem
@@ -189,9 +190,10 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
     }
 
     fun onBarrelOpen(player: PlayerEntity) {
+        if (!player.isFFA || player.isSpectator) return
         state = LootdropState.OPENED
         if (xpReward > 0) {
-            player.sendMessage(Text.translatable("ffa.mechanic.lootdrop.found_xp", xpReward))
+            player.sendMessage(Text.translatable("ffa.mechanic.lootdrop.found_xp", xpReward), false)
             player.addXp(ExperienceReason("lootdrop_secured", xpReward))
         }
         end()
@@ -432,7 +434,7 @@ class Lootdrop(private val world: ServerWorld, private val blockPos: BlockPos) {
                 isInvulnerable = true
                 addStatusEffect(StatusEffectInstance(StatusEffects.INVISIBILITY, Int.MAX_VALUE, 0, true, false))
                 addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, Int.MAX_VALUE, 200, true, false))
-                attributes.getCustomInstance(EntityAttributes.GENERIC_SCALE)?.baseValue = 0.2
+                attributes.getCustomInstance(EntityAttributes.SCALE)?.baseValue = 0.2
                 goalSelector.goals.clear()
                 registerEntity(this)
             }

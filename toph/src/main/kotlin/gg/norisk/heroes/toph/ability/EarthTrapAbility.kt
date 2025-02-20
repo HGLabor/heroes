@@ -24,9 +24,11 @@ import gg.norisk.heroes.toph.render.BlockTrapFeatureRenderer
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
 import net.minecraft.client.render.entity.model.EntityModel
 import net.minecraft.client.render.entity.model.EntityModelLayers
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributeModifier
@@ -77,8 +79,8 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
                     val model = context.getPart(modelPart)
                     registrationHelper.register(
                         BlockTrapFeatureRenderer(
-                            entityRenderer as FeatureRendererContext<LivingEntity, EntityModel<LivingEntity>>,
-                            context.heldItemRenderer,
+                            entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>,
+                            MinecraftClient.getInstance().entityRenderDispatcher.heldItemRenderer,
                             model
                         )
                     )
@@ -153,7 +155,7 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
                         entity.sound(SoundRegistry.EARTH_COLUMN_1)
                         entity.setSyncedData(EarthTrappedKey, true)
                         (entity as? LivingEntity?)?.apply {
-                            getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.addTemporaryModifier(
+                            getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)?.addTemporaryModifier(
                                 EntityAttributeModifier(
                                     Identifier.of("earth_trap"),
                                     earthTrapSlownessProperty.getValue(player.uuid),
@@ -182,7 +184,7 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
                         ) {
                             entity.setSyncedData(EarthTrappedKey, false)
                             (entity as? LivingEntity?)?.apply {
-                                getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.removeModifier(
+                                getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)?.removeModifier(
                                     EARTH_TRAP_SLOW_BOOST.id
                                 )
                             }

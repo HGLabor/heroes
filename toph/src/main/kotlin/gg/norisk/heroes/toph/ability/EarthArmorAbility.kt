@@ -18,9 +18,10 @@ import gg.norisk.heroes.toph.render.ChestItemFeatureRenderer
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
-import net.minecraft.client.network.AbstractClientPlayerEntity
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
-import net.minecraft.client.render.entity.model.PlayerEntityModel
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.component.DataComponentTypes
 import net.minecraft.component.type.AttributeModifierSlot
 import net.minecraft.component.type.AttributeModifiersComponent
@@ -82,7 +83,7 @@ object EarthArmorAttributeModifiers {
 
     fun addTo(stack: ItemStack, player: PlayerEntity) {
         val ARMOR_ENTRY = AttributeModifiersComponent.Entry(
-            EntityAttributes.GENERIC_ARMOR,
+            EntityAttributes.ARMOR,
             EntityAttributeModifier(
                 "armor_modifier".toId(),
                 earthArmorArmorProperty.getValue(player.uuid),
@@ -92,7 +93,7 @@ object EarthArmorAttributeModifiers {
         )
 
         val KNOCKBACK_ENTRY = AttributeModifiersComponent.Entry(
-            EntityAttributes.GENERIC_ATTACK_KNOCKBACK,
+            EntityAttributes.ATTACK_KNOCKBACK,
             EntityAttributeModifier(
                 "knockback_modifier".toId(),
                 earthArmorKnockbackProperty.getValue(player.uuid),
@@ -102,7 +103,7 @@ object EarthArmorAttributeModifiers {
         )
 
         val SPEED_ENTRY = AttributeModifiersComponent.Entry(
-            EntityAttributes.GENERIC_MOVEMENT_SPEED,
+            EntityAttributes.MOVEMENT_SPEED,
             EntityAttributeModifier(
                 "speed_modifier".toId(),
                 earthArmorSpeedProperty.getValue(player.uuid),
@@ -136,8 +137,8 @@ object EarthArmorAttributeModifiers {
                     if (entityType !== EntityType.PLAYER) return@register
                     registrationHelper.register(
                         ChestItemFeatureRenderer(
-                            entityRenderer as FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>,
-                            context.heldItemRenderer
+                            entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>,
+                            MinecraftClient.getInstance().entityRenderDispatcher.heldItemRenderer,
                         )
                     )
                 }

@@ -5,7 +5,7 @@ object ExperienceRegistry {
 
     val KILLED_PLAYER = register("killed_player", 200)
     val PLAYER_DEATH = register("player_death", 25)
-    val SOUP_EATEN = register("soup_eaten", 5)
+    val SOUP_EATEN = register("soup_eaten", 1)
     val SMALL_ABILITY_USE = register("small_ability_use", 5)
     val RECRAFT = register("soup_recraft", 5)
     val END_KILL_STREAK = register("end_kill_streak", 1000)

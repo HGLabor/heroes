@@ -4,11 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem
 import gg.norisk.datatracker.entity.getSyncedData
 import gg.norisk.datatracker.entity.setSyncedData
 import gg.norisk.heroes.common.HeroesManager.toId
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gl.Defines
 import net.minecraft.client.gl.GlUniform
-import net.minecraft.client.gl.ShaderProgram
+import net.minecraft.client.gl.ShaderProgramKey
+import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.entity.player.PlayerEntity
@@ -20,8 +21,11 @@ import kotlin.math.min
 object Speedlines {
     var lerpedSpeed: Double = 0.0
 
-    lateinit var edge: GlUniform
-    lateinit var speedlinesRenderTypeProgram: ShaderProgram
+    var edge: GlUniform? = null
+    val speedlinesRenderTypeProgramKey: ShaderProgramKey = ShaderProgramKey(
+        "core/speedlines".toId(),
+        VertexFormats.POSITION, Defines.EMPTY
+    )
 
     private const val SPEEDLINES_KEY = "speedlines"
 
@@ -32,14 +36,15 @@ object Speedlines {
         }
 
     fun initClient() {
-        CoreShaderRegistrationCallback.EVENT.register(CoreShaderRegistrationCallback { context: CoreShaderRegistrationCallback.RegistrationContext ->
+        ShaderProgramKeys.getAll().add(speedlinesRenderTypeProgramKey)
+        /*CoreShaderRegistrationCallback.EVENT.register(CoreShaderRegistrationCallback { context: CoreShaderRegistrationCallback.RegistrationContext ->
             context.register(
                 "speedlines".toId(), VertexFormats.POSITION
             ) { shaderProgram: ShaderProgram ->
                 speedlinesRenderTypeProgram = shaderProgram
                 edge = shaderProgram.getUniform("Edge")!!
             }
-        })
+        })*/
 
         HudRenderCallback.EVENT.register(HudRenderCallback { context: DrawContext, tickCounter: RenderTickCounter ->
             val player = MinecraftClient.getInstance().player ?: return@HudRenderCallback
@@ -53,7 +58,12 @@ object Speedlines {
 
                 var speed = max(0.0, (lerpedSpeed - 0.2) / 2f)
                 speed = min(speed, 0.2)
-                edge.set((0.5f - speed).toFloat())
+                //TODO
+                if (edge == null) {
+                    val program = MinecraftClient.getInstance().shaderLoader.getOrCreateProgram(speedlinesRenderTypeProgramKey)
+                    edge = program?.getUniform("Edge")!!
+                }
+                edge?.set((0.5f - speed).toFloat())
 
                 val positionMatrix = context.matrices.peek().positionMatrix
                 val tessellator = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION)
@@ -61,7 +71,7 @@ object Speedlines {
                 tessellator.vertex(positionMatrix, 0f, 0f, 0f)
                 tessellator.vertex(positionMatrix, width, 0f, 0f)
                 tessellator.vertex(positionMatrix, width, height, 0f)
-                RenderSystem.setShader { speedlinesRenderTypeProgram }
+                RenderSystem.setShader(speedlinesRenderTypeProgramKey)
                 setupRender()
                 BufferRenderer.drawWithGlobalProgram(tessellator.end())
                 endRender()

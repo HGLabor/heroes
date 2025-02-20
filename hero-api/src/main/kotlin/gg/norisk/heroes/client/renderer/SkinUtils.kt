@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import gg.norisk.heroes.common.HeroesManager.logger
 import gg.norisk.heroes.common.hero.Hero
 import gg.norisk.heroes.common.hero.getHero
+import gg.norisk.heroes.common.mixin.accessor.NativeImageAccessor
+import gg.norisk.heroes.common.mixin.accessor.TextureManagerAccessor
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
@@ -49,7 +51,11 @@ object SkinUtils {
         val skin = hero?.overlaySkin
         if (hero != null && skin != null) {
             val mergedSkin = original.toOverlaySkin(hero.internalKey.lowercase())
-            if (MinecraftClient.getInstance().textureManager.getOrDefault(mergedSkin, null) != null) {
+            if ((MinecraftClient.getInstance().textureManager as TextureManagerAccessor).textures.getOrDefault(
+                    mergedSkin,
+                    null
+                ) != null
+            ) {
                 return mergedSkin
             } else {
                 applyOverlay(original, skin, hero)
@@ -84,7 +90,11 @@ object SkinUtils {
     fun combineSkins(baseSkin: Identifier, overlaySkin: Identifier): NativeImage? {
         return try {
             // Lade die Basis- und Overlay-Skins als NativeImage
-            val baseImageTexture = MinecraftClient.getInstance().textureManager.getOrDefault(baseSkin, null)
+            val baseImageTexture =
+                (MinecraftClient.getInstance().textureManager as TextureManagerAccessor).textures.getOrDefault(
+                    baseSkin,
+                    null
+                )
 
             val overlayImage = loadSkinAsNativeImage(overlaySkin)
 
@@ -107,16 +117,20 @@ object SkinUtils {
             // Durchlaufen der Pixel und anwenden des Overlays auf das neue Bild
             for (x in 0 until baseImage.width) {
                 for (y in 0 until baseImage.height) {
-                    val baseColor = baseImage.getColor(x, y)
-                    val overlayColor = overlayImage.getColor(x, y)
+                    val dummy = baseImage as NativeImageAccessor
+                    val dummy2 = overlayImage as NativeImageAccessor
+                    val dummy3 = combinedImage as NativeImageAccessor
+
+                    val baseColor = baseImage.invokeGetColor(x, y)
+                    val overlayColor = overlayImage.invokeGetColor(x, y)
                     val alpha = (overlayColor shr 24) and 0xFF  // Alpha-Wert extrahieren
 
                     // Wenn das Overlay-Pixel nicht transparent ist, kopiere es ins kombinierte Bild
                     if (alpha > 0) {
-                        combinedImage.setColor(x, y, overlayColor)
+                        combinedImage.invokeSetColor(x, y, overlayColor)
                     } else {
                         // Andernfalls kopiere das Basis-Pixel
-                        combinedImage.setColor(x, y, baseColor)
+                        combinedImage.invokeSetColor(x, y, baseColor)
                     }
                 }
             }

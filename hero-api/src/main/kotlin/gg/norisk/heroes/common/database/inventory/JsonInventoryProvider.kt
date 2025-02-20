@@ -43,7 +43,7 @@ class JsonInventoryProvider : AbstractInventoryProvider(PlayStyle.current) {
 
     override suspend fun save(data: InventorySorting?) {
         if (data == null) {
-            logger.info("Cant save Inventory `null`")
+            logger.debug("Cant save Inventory `null`")
             return
         }
 

@@ -8,6 +8,6 @@ import net.minecraft.world.World
 
 object EnchantmentUtils {
     fun RegistryKey<Enchantment>.getEntry(world: World): RegistryEntry<Enchantment> {
-        return world.registryManager.get(RegistryKeys.ENCHANTMENT).getEntry(this.value).get()
+        return world.registryManager.getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(this.value).get()
     }
 }

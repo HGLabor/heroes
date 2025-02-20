@@ -22,6 +22,9 @@ import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.entity.feature.FeatureRendererContext
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.effect.StatusEffectInstance
@@ -89,7 +92,7 @@ object HealingAbility {
 
     fun initClient() {
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register(LivingEntityFeatureRendererRegistrationCallback { entityType, entityRenderer, registrationHelper, context ->
-            registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer))
+            registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>))
         })
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
             val player = MinecraftClient.getInstance().player ?: return@register
@@ -136,14 +139,14 @@ object HealingAbility {
     }
 
     val waterHealingRegeneration = NumberProperty(
-        0.0, 3,
+        0.0, 2,
         "Regeneration",
-        AddValueTotal(1.0, 1.0, 1.0)
+        AddValueTotal(1.0, 1.0)
     ).apply {
         icon = {
             Components.item(itemStack(Items.POTION) {
                 setPotion(
-                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                    MinecraftClient.getInstance().world!!.registryManager.getOrThrow(RegistryKeys.POTION)
                         .getEntry(Potions.REGENERATION.value())
                 )
             })
@@ -168,7 +171,7 @@ object HealingAbility {
                 it.getCurrentBendingEntity() != null
             }
             //this.usageProperty = buildMultipleUses(1.0, 3, AddValueTotal(1.0, 1.0, 1.0))
-            this.cooldownProperty = buildCooldown(50.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
+            this.cooldownProperty = buildCooldown(90.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
 
             this.properties = listOf(waterHealingRegeneration, waterHealingMaxDuration)
         }
@@ -176,7 +179,7 @@ object HealingAbility {
         override fun getIconComponent(): Component {
             return Components.item(itemStack(Items.POTION) {
                 setPotion(
-                    MinecraftClient.getInstance().world!!.registryManager.get(RegistryKeys.POTION)
+                    MinecraftClient.getInstance().world!!.registryManager.getOrThrow(RegistryKeys.POTION)
                         .getEntry(Potions.REGENERATION.value())
                 )
             })

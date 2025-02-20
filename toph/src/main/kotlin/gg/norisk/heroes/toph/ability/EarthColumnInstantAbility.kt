@@ -18,6 +18,7 @@ import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
 import gg.norisk.heroes.common.networking.cameraShakePacket
 import gg.norisk.heroes.common.networking.dto.BlockInfoSmall
 import gg.norisk.heroes.common.serialization.BlockPosSerializer
+import gg.norisk.heroes.common.utils.oldTeleport
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.toph.TophManager
@@ -71,7 +72,7 @@ val earthColumnRadius = NumberProperty(2.0, 3, "Radius", AddValueTotal(1.0, 1.0,
     }
 }
 
-val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(1.0, 1.0)).apply {
+val earthColumnBoost = NumberProperty(1.0, 2, "Earth Column Boost", AddValueTotal(0.5, 0.5)).apply {
     icon = {
         Components.item(Items.FIREWORK_ROCKET.defaultStack)
     }
@@ -90,7 +91,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
     init {
         client {
             this.keyBind = HeroKeyBindings.thirdKeyBind
-            WorldRenderEvents.AFTER_TRANSLUCENT.register {
+            WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
                 val world = it.world()
                 val player = MinecraftClient.getInstance().player ?: return@register
                 val matrices = it.matrixStack() ?: return@register
@@ -132,7 +133,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         )
 
         this.cooldownProperty =
-            buildCooldown(110.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
+            buildCooldown(90.0, 4, AddValueTotal(-10.0, -10.0, -10.0, -10.0))
         this.maxDurationProperty =
             buildMaxDuration(5.0, 5, AddValueTotal(0.1, 0.4, 0.2, 0.8, 1.5, 1.0))
 
@@ -199,7 +200,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
                 1f
             )
             runCatching {
-                player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                     ?.addTemporaryModifier(EARTH_COLUMN_SLOW_BOOST)
             }
         }
@@ -214,7 +215,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
         if (player is ServerPlayerEntity) {
             player.stopEmote("earth-column-start".toEmote())
             player.setSyncedData(EarthColumnKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+            player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                 ?.removeModifier(EARTH_COLUMN_SLOW_BOOST.id)
         }
     }
@@ -237,7 +238,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
             cameraShakePacket.send(BoomShake(0.1, 0.2, 0.4), player as ServerPlayerEntity)
             player.sound(SoundRegistry.STONE_SMASH)
             player.setSyncedData(EarthColumnKey, false)
-            player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+            player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED)
                 ?.removeModifier(EARTH_COLUMN_SLOW_BOOST.id)
         } else if (player == MinecraftClient.getInstance().player) {
             val world = player.world
@@ -283,14 +284,15 @@ private fun EarthColumnDescription.move(
         world.setBlockState(newPos, state)
         world.getOtherEntities(null, Box.from(newPos.toCenterPos())).filterIsInstance<LivingEntity>()
             .forEach { entity ->
-                entity.teleport(
+                entity.oldTeleport(
                     world,
                     entity.x,
                     entity.y + 1,
                     entity.z,
                     PositionFlag.VALUES,
                     entity.yaw,
-                    entity.pitch
+                    entity.pitch,
+                    true
                 )
             }
     }
@@ -303,7 +305,7 @@ private fun EarthColumnDescription.move(
                 world.getOtherEntities(null, Box.from(newPos).expand(earthColumnRadius.getValue(player.uuid)))
                     .filterIsInstance<LivingEntity>()
                     .forEach { entity ->
-                        entity.damage(entity.damageSources.playerAttack(player), 0.001f)
+                        entity.damage(world,entity.damageSources.playerAttack(player), 0.001f)
                         if (!entity.isSneaking) {
                             entity.modifyVelocity(Vec3d(0.0, earthColumnBoost.getValue(player.uuid), 0.0))
                         }

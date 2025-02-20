@@ -3,6 +3,7 @@ package gg.norisk.heroes.katara.client.render
 import gg.norisk.heroes.katara.ability.WaterPillarAbility
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
 import gg.norisk.utils.OldAnimation
+import gg.norisk.utils.ext.EntityRenderStateExt
 import net.minecraft.block.BlockState
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayers
@@ -10,6 +11,7 @@ import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.render.entity.LivingEntityRenderer
 import net.minecraft.client.render.entity.model.EntityModelLayers
+import net.minecraft.client.render.entity.state.LivingEntityRenderState
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
@@ -21,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class WaterBendingEntityRenderer(context: EntityRendererFactory.Context) :
-    LivingEntityRenderer<WaterBendingEntity, WaterBendingEntityModel>(
+    LivingEntityRenderer<WaterBendingEntity, LivingEntityRenderState, WaterBendingEntityModel>(
         context,
         //doesnt matter
         WaterBendingEntityModel(context.getPart(EntityModelLayers.PIG)),
@@ -29,14 +31,16 @@ class WaterBendingEntityRenderer(context: EntityRendererFactory.Context) :
     ) {
 
     override fun render(
-        livingEntity: WaterBendingEntity,
-        f: Float,
-        g: Float,
+        livingEntityRenderState: LivingEntityRenderState,
         matrixStack: MatrixStack,
         vertexConsumerProvider: VertexConsumerProvider,
         i: Int
     ) {
+        val livingEntity =
+            (livingEntityRenderState as EntityRenderStateExt).nrc_entity as? WaterBendingEntity? ?: return
         val owner = livingEntity.getOwner()
+        val f = MinecraftClient.getInstance().renderTickCounter.getTickDelta(false)
+        val g = MinecraftClient.getInstance().renderTickCounter.getTickDelta(false)
         renderWater(
             matrixStack,
             livingEntity.pos,
@@ -61,7 +65,6 @@ class WaterBendingEntityRenderer(context: EntityRendererFactory.Context) :
             )
             matrixStack.pop()
         }
-        // super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i)
     }
 
     fun renderWater(
@@ -117,7 +120,12 @@ class WaterBendingEntityRenderer(context: EntityRendererFactory.Context) :
         matrixStack.pop()
     }
 
-    override fun getTexture(entity: WaterBendingEntity): Identifier {
+
+    override fun getTexture(state: LivingEntityRenderState?): Identifier {
         return MinecraftClient.getInstance().player!!.skinTextures.texture
+    }
+
+    override fun createRenderState(): LivingEntityRenderState {
+        return LivingEntityRenderState()
     }
 }
