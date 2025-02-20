@@ -2,8 +2,8 @@ package gg.norisk.heroes.common.localization.minimessage
 
 import net.fabricmc.api.EnvType
 import net.fabricmc.loader.api.FabricLoader
-import net.kyori.adventure.platform.fabric.FabricClientAudiences
-import net.kyori.adventure.platform.fabric.FabricServerAudiences
+import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.*
@@ -13,9 +13,9 @@ import net.silkmc.silk.core.Silk
 object MiniMessageUtils {
     private val audiences by lazy {
         if (FabricLoader.getInstance().environmentType == EnvType.SERVER) {
-            FabricServerAudiences.builder(Silk.serverOrThrow).build()
+            MinecraftServerAudiences.builder(Silk.serverOrThrow).build()
         } else {
-            FabricClientAudiences.builder().build()
+            MinecraftClientAudiences.builder().build()
         }
     }
 
@@ -29,7 +29,7 @@ object MiniMessageUtils {
 
     fun deserialize(string: String): Text {
         val miniMessageComponent = miniMessage.deserialize(string, tagResolver)
-        val text = audiences.toNative(miniMessageComponent)
+        val text = audiences.asNative(miniMessageComponent)
         return text
     }
 }

@@ -1,5 +1,6 @@
 package gg.norisk.heroes.common.localization
 
+import gg.norisk.heroes.common.HeroesManager
 import gg.norisk.heroes.common.localization.minimessage.MiniMessageUtils
 import gg.norisk.heroes.common.utils.createIfNotExists
 import net.fabricmc.api.EnvType
@@ -48,12 +49,12 @@ object LocalizationManager {
         val locale = Locale.of(language)
         val translations = LocalizationRegistry.get(locale)
         if (translations == null) {
-            println("translationRegistry is null. all locales: ${LocalizationRegistry.locales.keys}")
+            HeroesManager.logger.warn("translationRegistry for locale `${locale}` does not exist. all locales: ${LocalizationRegistry.locales.keys}")
         }
 
         val minimessage = translations?.getAsMinimessage(key, *args)
         if (minimessage == null) {
-            println("minimessage is null. all translations: ${translations?.translations?.keys}")
+            HeroesManager.logger.warn("Translation for key `$key` does not exist.")
         }
         val text = minimessage
             ?: literalText {
@@ -89,5 +90,5 @@ fun PlayerEntity.getLocalized(key: String, vararg args: Any): Text {
 }
 
 fun PlayerEntity.sendLocalized(key: String, vararg args: Any) {
-    sendMessage(this.getLocalized(key, *args))
+    sendMessage(this.getLocalized(key, *args), false)
 }

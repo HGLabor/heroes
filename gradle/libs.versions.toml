@@ -48,7 +48,7 @@ protocolLib = "6845acd89d"
 
 cloudnet = "4.0.0-RC10"
 luckperms = "5.4"
-kyoriAdventure = "5.14.1"
+kyoriAdventure = "6.2.0"
 
 [libraries]
 
