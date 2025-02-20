@@ -94,7 +94,7 @@ object KitEditorManager {
 
         ServerEntityEvents.ENTITY_LOAD.register { entity, world ->
             val item = entity as? ItemEntity? ?: return@register
-            if (item.world == world) {
+            if (item.world == this.world) {
                 entity.discard()
             }
         }
@@ -105,7 +105,7 @@ object KitEditorManager {
                 player.changeGameMode(GameMode.ADVENTURE)
                 mcCoroutineTask(sync = false, client = false) {
                     val ffaPlayer = PlayerProvider.get(player.uuid)
-                    println("Loaded ${ffaPlayer}")
+                    logger.info("Loaded ${ffaPlayer}")
                     if (ffaPlayer.inventorySorting == null) {
                         resetInventory.invoke(player)
                         ffaPlayer.inventorySorting = player.toDatabaseInventory()

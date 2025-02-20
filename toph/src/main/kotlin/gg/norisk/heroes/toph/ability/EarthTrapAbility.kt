@@ -20,10 +20,15 @@ import gg.norisk.heroes.toph.TophManager.isEarthBlock
 import gg.norisk.heroes.toph.entity.ITrappedEntity
 import gg.norisk.heroes.toph.registry.ParticleRegistry
 import gg.norisk.heroes.toph.registry.SoundRegistry
+import gg.norisk.heroes.toph.render.BlockTrapFeatureRenderer
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.entity.feature.FeatureRendererContext
+import net.minecraft.client.render.entity.model.EntityModel
 import net.minecraft.client.render.entity.model.EntityModelLayers
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributeModifier
@@ -72,13 +77,13 @@ val EarthTrapAbility = object : PressAbility("Earth Trap") {
                     .firstOrNull { it.id.path == entityType.untranslatedName.lowercase() }
                 if (modelPart != null) {
                     val model = context.getPart(modelPart)
-                    /*TODO 1.21.4 registrationHelper.register(
+                    registrationHelper.register(
                         BlockTrapFeatureRenderer(
-                            entityRenderer as FeatureRendererContext<LivingEntity, EntityModel<LivingEntity>>,
-                            context.heldItemRenderer,
+                            entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>,
+                            MinecraftClient.getInstance().entityRenderDispatcher.heldItemRenderer,
                             model
                         )
-                    )*/
+                    )
                 }
             }
         }

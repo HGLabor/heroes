@@ -14,9 +14,14 @@ import gg.norisk.heroes.toph.TophManager.toEmote
 import gg.norisk.heroes.toph.TophManager.toId
 import gg.norisk.heroes.toph.entity.IBendingItemEntity
 import gg.norisk.heroes.toph.registry.SoundRegistry
+import gg.norisk.heroes.toph.render.ChestItemFeatureRenderer
 import io.wispforest.owo.ui.component.Components
 import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.entity.feature.FeatureRendererContext
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.component.DataComponentTypes
 import net.minecraft.component.type.AttributeModifierSlot
 import net.minecraft.component.type.AttributeModifiersComponent
@@ -130,12 +135,12 @@ object EarthArmorAttributeModifiers {
 
                 LivingEntityFeatureRendererRegistrationCallback.EVENT.register { entityType, entityRenderer, registrationHelper, context ->
                     if (entityType !== EntityType.PLAYER) return@register
-                    /*TODO 1.21.4 registrationHelper.register(
+                    registrationHelper.register(
                         ChestItemFeatureRenderer(
-                            entityRenderer as FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>,
-                            context.heldItemRenderer
+                            entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>,
+                            MinecraftClient.getInstance().entityRenderDispatcher.heldItemRenderer,
                         )
-                    )*/
+                    )
                 }
             }
 
