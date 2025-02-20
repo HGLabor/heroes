@@ -9,7 +9,7 @@ import com.github.juliarn.npclib.api.profile.ProfileProperty
 import com.github.juliarn.npclib.api.protocol.meta.EntityMetadataFactory
 import com.github.juliarn.npclib.common.event.DefaultInteractNpcEvent
 import com.github.juliarn.npclib.fabric.FabricPlatform
-import gg.norisk.datatracker.entity.setSyncedData
+import com.github.juliarn.npclib.fabric.util.FabricUtil
 import gg.norisk.ffa.server.FFAServer.isFFA
 import gg.norisk.ffa.server.FFAServer.logger
 import gg.norisk.ffa.server.selector.SelectorServerManager.setSelectorReady
@@ -21,25 +21,21 @@ import gg.norisk.heroes.common.ffa.KitEditorManager
 import gg.norisk.heroes.common.ffa.KitEditorManager.onBack
 import gg.norisk.heroes.common.ffa.KitEditorManager.onReset
 import gg.norisk.heroes.common.ffa.KitEditorManager.world
-import gg.norisk.heroes.common.player.InventorySorting
-import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
 import gg.norisk.heroes.common.utils.PlayStyle
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AllowDamage
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
-import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.world.World
 import net.silkmc.silk.core.event.ServerEvents
-import net.silkmc.silk.core.text.literal
 import java.util.*
 
 object KitEditor {
-    val platform by lazy { FabricPlatform.minestomNpcPlatformBuilder().extension(this).actionController({}).build() }
-    lateinit var backNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
-    lateinit var resetNpc: Npc<World, ServerPlayerEntity, ItemStack, Any>
+    val platform by lazy { FabricPlatform.fabricNpcPlatformBuilder().extension(this).actionController {}.build() }
+    lateinit var backNpc: Npc<ServerWorld, ServerPlayerEntity, ItemStack, Any>
+    lateinit var resetNpc: Npc<ServerWorld, ServerPlayerEntity, ItemStack, Any>
 
     fun initServer() {
         logger.info("Initializing Mode: ${PlayStyle.current}")
@@ -67,8 +63,9 @@ object KitEditor {
 
         ServerEvents.postStart.listen { event ->
             if (world != null) {
-                spawnNpcs()
-                registerNpcEvents()
+                //FabricUtil.setServer(event.server)
+                //spawnNpcs()
+                //registerNpcEvents()
             }
         }
     }

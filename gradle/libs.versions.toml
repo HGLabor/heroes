@@ -28,6 +28,9 @@ mongodb = "5.2.0"
 playerAnimator = "1.0.2-rc1+1.21"
 geckolib = "4.8.4"
 
+# npclib
+npcLib = "3.0.0-beta11"
+
 
 # general
 gson = "2.11.0"
@@ -97,8 +100,9 @@ ferrite-core = { group = "maven.modrinth", name = "ferrite-core", version = "7.1
 nvidium = { group = "maven.modrinth", name = "nvidium", version = "0.3.1" }
 
 # npc-lib
-npcLibApi = { group = "io.github.juliarn", name = "npc-lib-api", version = "3.0.0-beta10" }
-npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version = "3.0.0-beta10" }
+npcLibApi = { group = "io.github.juliarn", name = "npc-lib-api", version.ref = "npcLib" }
+npcLibCommon = { group = "io.github.juliarn", name = "npc-lib-common", version.ref = "npcLib" }
+npcLibFabric = { group = "io.github.juliarn", name = "npc-lib-fabric", version.ref = "npcLib" }
 
 # animation
 playerAnimator = { group = "dev.kosmx.player-anim", name = "player-animation-lib-fabric", version.ref = "playerAnimator" }
@@ -142,6 +146,7 @@ nrc = ["nrcFreelook", "nrcFullbright", "nrcZoom", "nrcNametag"]
 mongodb = ["mongodb-core", "mongodb-kotlin", "mongodb-bson"]
 hglaborutils = ["hglabor-database-utils"]
 cloudnet = ["cloudnet-bridge", "cloudnet-driver", "cloudnet-wrapper"]
+npcLib = ["npcLibApi", "npcLibCommon", "npcLibFabric"]
 
 [plugins]
 
