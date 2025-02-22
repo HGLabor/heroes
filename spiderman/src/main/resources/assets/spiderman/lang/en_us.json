@@ -1,3 +1,8 @@
 {
-  "text.hero.spiderman.description": "Spiderman description???"
+  "text.hero.spiderman.description": "Spiderman description???",
+  "hero.spiderman.ability.web_shoot.description": "Shoot a web and swing.",
+  "heroes.property.web_shoot_power": "Web shoot power",
+  "heroes.property.web_shoot_power.description": "The shooting power.",
+  "heroes.property.rope_length": "Web rope length",
+  "heroes.property.rope_length.description": "The length of your web rope."
 }

@@ -1,3 +1,8 @@
 {
-  "text.hero.spiderman.description": "Spiderman Beschreibung???"
+  "text.hero.spiderman.description": "Spiderman Beschreibung???",
+  "hero.spiderman.ability.web_shoot.description": "Scheiße ein Netz und schwinge.",
+  "heroes.property.web_shoot_power": "Schusskraft",
+  "heroes.property.web_shoot_power.description": "Die Kraft, mit der zu das Netz schießt.",
+  "heroes.property.rope_length": "Netzlänge",
+  "heroes.property.rope_length.description": "Die Länge deines Netzes."
 }
