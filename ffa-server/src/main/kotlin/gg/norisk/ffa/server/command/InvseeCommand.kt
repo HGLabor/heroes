@@ -15,12 +15,10 @@ import net.silkmc.silk.core.task.mcCoroutineTask
 import net.silkmc.silk.core.text.literalText
 import net.silkmc.silk.igui.*
 import net.silkmc.silk.igui.elements.GuiPlaceholder
-import kotlin.time.Duration.Companion.seconds
 
 object InvseeCommand {
     fun init() {
         command("invsee") {
-            alias("inv")
             requires { it.playerOrThrow.hasPermission("hglabor.staff.invsee") }
 
             argument("player", EntityArgumentType.player()) { playerArg ->
@@ -40,11 +38,6 @@ object InvseeCommand {
                             return@mcCoroutineTask updateJob!!.cancel()
                         }
                         gui.loadPage(createPageFromPlayer(player))
-                    }
-
-                    mcCoroutineTask(sync = false, delay = 5.seconds) {
-                        sender.inventory.clear()
-                        sender.inventory.updateItems()
                     }
                 }
             }
