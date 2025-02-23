@@ -1,12 +1,17 @@
 {
-  "targets": [
-    "swap"
-  ],
+  "targets": {
+    "swap": {}
+  },
   "passes": [
     {
-      "name": "color_convolve",
-      "intarget": "minecraft:main",
-      "outtarget": "swap",
+      "program": "minecraft:post/color_convolve",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        }
+      ],
+      "output": "swap",
       "uniforms": [
         {
           "name": "RedMatrix",
@@ -35,9 +40,14 @@
       ]
     },
     {
-      "name": "bits",
-      "intarget": "swap",
-      "outtarget": "minecraft:main",
+      "program": "minecraft:post/bits",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main",
       "uniforms": [
         {
           "name": "Resolution",
@@ -48,7 +58,7 @@
         {
           "name": "MosaicSize",
           "values": [
-            2.0
+            4.0
           ]
         }
       ]

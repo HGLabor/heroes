@@ -16,8 +16,7 @@ dependencies {
     modApi(libs.bundles.nrc)
     modApi(libs.bundles.performance)
     modApi(libs.owolib)
-    modApi(libs.npcLibApi)
-    modApi(libs.npcLibCommon)
+    modApi(libs.bundles.npcLib)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
     modImplementation(libs.bundles.cloudnet)
@@ -31,7 +30,6 @@ dependencies {
     include(libs.hglabor.database.utils)
     //includeImplementation(libs.bundles.hglaborutils)
 
-    modImplementation(files("../libs/npc-lib-fabric-3.0.0-SNAPSHOT.jar"))
     // modCompileOnly("com.sk89q.worldedit:worldedit-fabric-mc${worldEditVersion}") // Ändere die Versionsnummer entsprechend der gewünschten Version
 
     handleIncludes(includeImplementation)

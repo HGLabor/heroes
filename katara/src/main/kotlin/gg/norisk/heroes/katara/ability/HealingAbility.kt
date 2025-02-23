@@ -12,6 +12,7 @@ import gg.norisk.heroes.common.hero.ability.implementation.PressAbility
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.getCurrentBendingEntity
 import gg.norisk.heroes.katara.ability.WaterBendingAbility.waterBendingDistance
+import gg.norisk.heroes.katara.client.render.HealingWaterFeatureRenderer
 import gg.norisk.heroes.katara.client.sound.WaterHealingSoundInstance
 import gg.norisk.heroes.katara.entity.IKataraEntity
 import gg.norisk.heroes.katara.entity.WaterBendingEntity
@@ -21,6 +22,9 @@ import io.wispforest.owo.ui.core.Component
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.entity.feature.FeatureRendererContext
+import net.minecraft.client.render.entity.model.EntityModel
+import net.minecraft.client.render.entity.state.EntityRenderState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.effect.StatusEffectInstance
@@ -88,7 +92,7 @@ object HealingAbility {
 
     fun initClient() {
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register(LivingEntityFeatureRendererRegistrationCallback { entityType, entityRenderer, registrationHelper, context ->
-            //TODO 1.21.4 registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer))
+            registrationHelper.register(HealingWaterFeatureRenderer(entityRenderer as FeatureRendererContext<EntityRenderState, EntityModel<EntityRenderState>>))
         })
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
             val player = MinecraftClient.getInstance().player ?: return@register

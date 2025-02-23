@@ -7,6 +7,7 @@ import gg.norisk.ffa.server.utils.CloudNetManager
 import gg.norisk.ffa.server.world.MapPlacer.chunkSize
 import gg.norisk.ffa.server.world.MapPlacer.mapSize
 import gg.norisk.heroes.common.HeroesManager
+import gg.norisk.heroes.common.utils.oldTeleport
 import kotlinx.coroutines.Job
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
@@ -235,7 +236,7 @@ object WorldManager {
 
         val realCoordinateX = mapSize * x + relativeX
         val realCoordinateZ = mapSize * z + relativeZ
-        this.teleport(
+        this.oldTeleport(
             world,
             realCoordinateX,
             this.y,

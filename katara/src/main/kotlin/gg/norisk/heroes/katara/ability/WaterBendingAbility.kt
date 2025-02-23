@@ -226,7 +226,8 @@ object WaterBendingAbility {
     }
 
     fun initClient() {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register {
+        //ungeil 1.21.4 in 1.21 war das geiler
+        WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
             val player = MinecraftClient.getInstance().player ?: return@register
             val matrices = it.matrixStack() ?: return@register
             if (!player.isWaterSelecting) return@register

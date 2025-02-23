@@ -12,6 +12,7 @@ import gg.norisk.heroes.common.player.InventorySorting.Companion.CURRENT_VERSION
 import gg.norisk.heroes.common.player.InventorySorting.Companion.loadInventory
 import gg.norisk.heroes.common.player.ffaPlayer
 import gg.norisk.heroes.common.utils.PlayStyle
+import gg.norisk.heroes.common.utils.oldTeleport
 import gg.norisk.heroes.server.database.player.PlayerProvider
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -46,7 +47,7 @@ object KitEditorManager {
         it.inventory.main.set(0, Items.STONE_SWORD.defaultStack)
     }
     var onBack: (ServerPlayerEntity) -> Unit = {
-        it.teleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f, true)
+        it.oldTeleport(it.server.overworld, 0.0, 100.0, 0.0, PositionFlag.VALUES, 0f, 0f, true)
     }
     private val kitEditorSpawn = Vec3d(0.5, 90.5, 0.5)
 
@@ -174,8 +175,8 @@ object KitEditorManager {
     }
 
     private fun teleportToKitEditorSpawn(player: ServerPlayerEntity) {
-        player.teleport(
-            world,
+        player.oldTeleport(
+            world!!,
             kitEditorSpawn.x,
             kitEditorSpawn.y,
             kitEditorSpawn.z,

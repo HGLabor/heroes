@@ -18,6 +18,7 @@ import gg.norisk.heroes.common.networking.Networking.mouseScrollPacket
 import gg.norisk.heroes.common.networking.cameraShakePacket
 import gg.norisk.heroes.common.networking.dto.BlockInfoSmall
 import gg.norisk.heroes.common.serialization.BlockPosSerializer
+import gg.norisk.heroes.common.utils.oldTeleport
 import gg.norisk.heroes.common.utils.random
 import gg.norisk.heroes.common.utils.sound
 import gg.norisk.heroes.toph.TophManager
@@ -90,7 +91,7 @@ val EarthColumnInstantAbility: HoldAbility = object : HoldAbility(
     init {
         client {
             this.keyBind = HeroKeyBindings.thirdKeyBind
-            WorldRenderEvents.AFTER_TRANSLUCENT.register {
+            WorldRenderEvents.BEFORE_DEBUG_RENDER.register {
                 val world = it.world()
                 val player = MinecraftClient.getInstance().player ?: return@register
                 val matrices = it.matrixStack() ?: return@register
@@ -283,7 +284,7 @@ private fun EarthColumnDescription.move(
         world.setBlockState(newPos, state)
         world.getOtherEntities(null, Box.from(newPos.toCenterPos())).filterIsInstance<LivingEntity>()
             .forEach { entity ->
-                entity.teleport(
+                entity.oldTeleport(
                     world,
                     entity.x,
                     entity.y + 1,
