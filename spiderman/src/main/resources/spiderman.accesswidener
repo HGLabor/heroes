@@ -1,0 +1,5 @@
+accessWidener	v2	named
+accessible class net/minecraft/client/gui/hud/InGameHud$HeartType
+accessible field net/minecraft/entity/FallingBlockEntity block Lnet/minecraft/block/BlockState;
+accessible class net/minecraft/client/render/BackgroundRenderer$DarknessFogModifier
+accessible class net/minecraft/client/render/BackgroundRenderer$FogData

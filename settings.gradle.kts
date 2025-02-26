@@ -17,5 +17,6 @@ include(":hero-api")
 include(":katara")
 include(":aang")
 include(":toph")
+include(":spiderman")
 include(":ffa-server")
 

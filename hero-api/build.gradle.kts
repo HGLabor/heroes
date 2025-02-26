@@ -1,3 +1,5 @@
+version = "1.3.2"
+
 loom {
     accessWidenerPath.set(file("src/main/resources/hero-api.accesswidener"))
 }

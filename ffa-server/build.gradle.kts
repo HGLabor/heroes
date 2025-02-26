@@ -1,3 +1,5 @@
+version = "1.3.21"
+
 val worldEditVersion: String by project
 
 val includeImplementation: Configuration by configurations.creating {
@@ -10,6 +12,7 @@ dependencies {
     api(project(":katara", configuration = "namedElements"))
     api(project(":aang", configuration = "namedElements"))
     api(project(":toph", configuration = "namedElements"))
+    api(project(":spiderman", configuration = "namedElements"))
 
     modApi(libs.bundles.fabric)
     modApi(libs.bundles.silk)
@@ -19,7 +22,7 @@ dependencies {
     modApi(libs.bundles.npcLib)
     modApi(libs.geckolib)
     modApi(libs.emoteLib)
-    modImplementation(libs.bundles.cloudnet)
+    //modImplementation(libs.bundles.cloudnet)
     modCompileOnly(libs.worldedit)
     modCompileOnly(libs.luckperms)
     includeImplementation(libs.bundles.mongodb)

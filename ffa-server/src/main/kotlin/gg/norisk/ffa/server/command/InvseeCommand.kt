@@ -2,7 +2,6 @@ package gg.norisk.ffa.server.command
 
 import gg.norisk.ffa.server.utils.luckperms.hasPermission
 import kotlinx.coroutines.Job
-import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.command.argument.EntityArgumentType
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
@@ -78,8 +77,8 @@ object InvseeCommand {
 
             put(53, GuiPlaceholder(itemStack(Items.POPPY) {
                 setCustomName {
-                    text("Health: ") { color = NamedTextColor.GRAY.value(); italic = false }
-                    text("${player.health.toInt() / 2.0}") { color = NamedTextColor.RED.value(); italic = false }
+                    text("Health: ") { color = 0xAAAAAA; italic = false }
+                    text("${player.health.toInt() / 2.0}") { color = 0xAAAAAA; italic = false }
                 }
             }.guiIcon))
         }
